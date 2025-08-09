@@ -1,0 +1,89 @@
+const express = require('express');
+const multer = require('multer');
+const path = require('path');
+const { createArticle, getAllArticles, deleteArticle, updateArticle, getArticleById } = require('../controllers/articleController');
+const { authenticateToken, checkPermission, requireRole } = require('../middleware/auth');
+const logActivity = require('../middleware/logActivity');
+
+const router = express.Router();
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, '../../uploads'));
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+// فلتر للصور
+const imageFilter = (req, file, cb) => {
+  console.log('معالجة ملف:', file.originalname, 'نوع:', file.mimetype);
+  
+  // التحقق من نوع الملف
+  if (file.mimetype.startsWith('image/')) {
+    console.log('تم قبول الصورة:', file.originalname);
+    cb(null, true);
+  } else {
+    console.log('تم رفض الملف (ليس صورة):', file.originalname);
+    cb(new Error('يسمح فقط بملفات الصور (jpg, png, gif, webp)'), false);
+  }
+};
+
+const upload = multer({ 
+  storage,
+  fileFilter: imageFilter,
+  limits: {
+    fileSize: 2 * 1024 * 1024 // 2MB
+  }
+});
+
+// فقط راوت إضافة مقال
+router.post('/', authenticateToken, requireRole(['editor', 'admin', 'system_admin']), upload.single('image'), logActivity('create_article', 'content', (req) => `Article created: ${req.body.title}`), createArticle);
+router.get('/', getAllArticles);
+router.get('/:id', getArticleById);
+router.delete('/:id', authenticateToken, requireRole(['editor', 'admin', 'system_admin']), logActivity('delete_article', 'content', (req) => `Article deleted: ID ${req.params.id}`), deleteArticle);
+router.put('/:id', authenticateToken, requireRole(['editor', 'admin', 'system_admin']), upload.single('image'), logActivity('update_article', 'content', (req) => `Article updated: ${req.body.title}`), updateArticle);
+
+// معالجة أخطاء multer
+router.use((error, req, res, next) => {
+  console.error('خطأ في رفع الملف:', error);
+  
+  if (error instanceof multer.MulterError) {
+    console.error('خطأ Multer:', error.code, error.message);
+    
+    if (error.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({ 
+        error: 'حجم الملف كبير جداً. الحد الأقصى 2 ميجابايت' 
+      });
+    }
+    
+    if (error.code === 'LIMIT_FILE_COUNT') {
+      return res.status(400).json({ 
+        error: 'عدد الملفات كبير جداً' 
+      });
+    }
+    
+    if (error.code === 'LIMIT_UNEXPECTED_FILE') {
+      return res.status(400).json({ 
+        error: 'تم رفع ملف غير متوقع' 
+      });
+    }
+    
+    return res.status(400).json({ 
+      error: 'خطأ في رفع الملف: ' + error.message 
+    });
+  }
+  
+  if (error.message && error.message.includes('يسمح فقط بملفات الصور')) {
+    return res.status(400).json({ 
+      error: error.message 
+    });
+  }
+  
+  // إذا لم يكن خطأ multer، انتقل للمعالج التالي
+  next(error);
+});
+
+module.exports = router;

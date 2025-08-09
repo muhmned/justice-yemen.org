@@ -1,0 +1,314 @@
+{
+    "projectName": "SAM_Organization_Website",
+    "description": "Comprehensive website for SAM Organization, focusing on human rights, news, reports, and transitional justice.",
+    "language": "ar",
+    "uiTheme": {
+      "primaryColor": "#007bff",
+      "secondaryColor": "#ffffff",
+      "fontFamily": "Arial, sans-serif",
+      "logoPath": "/assets/images/sam-logo.png"
+    },
+    "navigation": [
+      {"title": "الرئيسية", "path": "/"},
+      {"title": "الاخبار ", "path": "/news"},
+      {"title": "بيانات", "path": "/statements"},
+      {"title": "تقارير", "path": "/reports"},
+      {"title": "قصص حقوقية", "path": "/stories"},
+      {"title": "دراسات وبحوث", "path": "/studies"},
+      {"title": "العدالة الإنتقالية", "path": "/transitional-justice"},
+      {"title": "الحقوق الرقمية", "path": "/digital-rights"},
+      {"title": "أرشيف", "path": "/archive"},
+      {"title": "اتصل بنا", "path": "/contact-us"},
+      {"title": "من نحن", "path": "/about-us"}
+    ],
+    "pages": [
+      {
+        "id": "home",
+        "path": "/",
+        "template": "HomePage",
+        "components": [
+          {
+            "type": "HeroSlider",
+            "dataModel": "Article",
+            "query": {"isFeatured": true, "limit": 4},
+            "displayFields": ["title", "image", "link"]
+          },
+          {
+            "type": "FeaturedContentGrid",
+            "sections": [
+              {"title": "أحدث الأخبار", "dataModel": "Article", "query": {"sortBy": "publishDate", "order": "desc", "limit": 3}},
+              {"title": "أحدث التقارير", "dataModel": "Report", "query": {"sortBy": "publishDate", "order": "desc", "limit": 3}},
+              {"title": "الحملات", "dataModel": "Campaign", "query": {"sortBy": "startDate", "order": "desc", "limit": 1}}
+            ],
+            "itemDisplay": {
+              "Article": ["title", "image", "date", "link"],
+              "Report": ["title", "thumbnail", "date", "downloadLink"],
+              "Campaign": ["title", "image", "date", "link"]
+            }
+          }
+        ]
+      },
+      {
+        "id": "news",
+        "path": "/news",
+        "template": "ListingPage",
+        "dataModel": "Article",
+        "filters": ["category", "date"],
+        "pagination": true,
+        "displayFields": ["title", "image", "summary", "date", "link"]
+      },
+      {
+        "id": "single-article",
+        "path": "/news/:slug",
+        "template": "SingleContentPage",
+        "dataModel": "Article",
+        "displayFields": ["title", "image", "content", "date", "category"]
+      },
+      {
+        "id": "reports",
+        "path": "/reports",
+        "template": "ListingPage",
+        "dataModel": "Report",
+        "filters": ["year", "country", "topic"],
+        "pagination": true,
+        "displayFields": ["title", "thumbnail", "summary", "date", "downloadLink"]
+      },
+      {
+        "id": "statements",
+        "path": "/statements",
+        "template": "ListingPage",
+        "dataModel": "Statement",
+        "filters": ["topic", "date"],
+        "pagination": true,
+        "displayFields": ["title", "summary", "date", "link"]
+      },
+      {
+        "id": "stories",
+        "path": "/stories",
+        "template": "ListingPage",
+        "dataModel": "Story",
+        "filters": ["category", "location"],
+        "pagination": true,
+        "displayFields": ["title", "image", "summary", "link"]
+      },
+      {
+        "id": "studies",
+        "path": "/studies",
+        "template": "ListingPage",
+        "dataModel": "Study",
+        "filters": ["topic", "author", "year"],
+        "pagination": true,
+        "displayFields": ["title", "author", "date", "summary", "downloadLink"]
+      },
+      {
+        "id": "transitional-justice",
+        "path": "/transitional-justice",
+        "template": "StaticPage",
+        "content": [
+          {"type": "heading", "text": "العدالة الإنتقالية"},
+          {"type": "textBlock", "text_ar": "مقدمة عن العدالة الانتقالية..."},
+          {"type": "image", "src": "/assets/images/tj-banner.jpg"},
+          {"type": "textBlock", "text_ar": "أعمالنا في هذا المجال..."}
+        ]
+      },
+      {
+        "id": "digital-rights",
+        "path": "/digital-rights",
+        "template": "StaticPage",
+        "content": [
+          {"type": "heading", "text": "الحقوق الرقمية"},
+          {"type": "textBlock", "text_ar": "مقدمة عن الحقوق الرقمية..."}
+        ]
+      },
+      {
+        "id": "about-us",
+        "path": "/about-us",
+        "template": "StaticPage",
+        "content": [
+          {"type": "heading", "text": "من نحن"},
+          {"type": "textBlock", "text_ar": " "},
+          {"type": "heading", "text": "رؤيتنا ورسالتنا"},
+          {"type": "textBlock", "text_ar": "نص مفصل عن الرؤية والرسالة..."}
+        ]
+      },
+      {
+        "id": "contact-us",
+        "path": "/contact-us",
+        "template": "ContactPage",
+        "contactInfo": {
+          "phone": "004177956022",
+          "email": "info@samri.org",
+          "address": "Avenue Louis-Casaï 18, 1209 Genève",
+          "coordinates": {"lat": 46.220138, "lng": 6.136777}
+        },
+        "formFields": [
+          {"name": "name", "label": "الاسم الكامل", "type": "text", "required": true},
+          {"name": "email", "label": "البريد الإلكتروني", "type": "email", "required": true},
+          {"name": "subject", "label": "الموضوع", "type": "text", "required": true},
+          {"name": "message", "label": "الرسالة", "type": "textarea", "required": true}
+        ]
+      }
+    ],
+    "dataModels": [
+      {
+        "name": "Article",
+        "tableName": "articles",
+        "fields": [
+          {"name": "id", "type": "UUID", "isPrimaryKey": true},
+          {"name": "title", "type": "String", "maxLength": 255, "isTranslatable": true, "isRequired": true},
+          {"name": "content", "type": "Text", "isTranslatable": true, "isRequired": true},
+          {"name": "summary", "type": "Text", "isTranslatable": true},
+          {"name": "image", "type": "String", "format": "URL"},
+          {"name": "thumbnail", "type": "String", "format": "URL"},
+          {"name": "categoryId", "type": "ForeignKey", "references": "Category"},
+          {"name": "publishDate", "type": "DateTime", "default": "CURRENT_TIMESTAMP"},
+          {"name": "lastUpdated", "type": "DateTime", "autoUpdate": true},
+          {"name": "status", "type": "Enum", "values": ["draft", "published", "archived"], "default": "draft"},
+          {"name": "isFeatured", "type": "Boolean", "default": false}
+        ]
+      },
+      {
+        "name": "Category",
+        "tableName": "categories",
+        "fields": [
+          {"name": "id", "type": "UUID", "isPrimaryKey": true},
+          {"name": "name", "type": "String", "maxLength": 100, "isTranslatable": true, "isUnique": true},
+          {"name": "slug", "type": "String", "maxLength": 100, "isUnique": true}
+        ]
+      },
+      {
+        "name": "Report",
+        "tableName": "reports",
+        "fields": [
+          {"name": "id", "type": "UUID", "isPrimaryKey": true},
+          {"name": "title", "type": "String", "maxLength": 255, "isTranslatable": true, "isRequired": true},
+          {"name": "summary", "type": "Text", "isTranslatable": true},
+          {"name": "pdfUrl", "type": "String", "format": "URL", "isRequired": true},
+          {"name": "thumbnail", "type": "String", "format": "URL"},
+          {"name": "publishDate", "type": "DateTime", "default": "CURRENT_TIMESTAMP"},
+          {"name": "status", "type": "Enum", "values": ["draft", "published", "archived"], "default": "draft"}
+        ]
+      },
+      {
+        "name": "Statement",
+        "tableName": "statements",
+        "fields": [
+          {"name": "id", "type": "UUID", "isPrimaryKey": true},
+          {"name": "title", "type": "String", "maxLength": 255, "isTranslatable": true, "isRequired": true},
+          {"name": "content", "type": "Text", "isTranslatable": true, "isRequired": true},
+          {"name": "publishDate", "type": "DateTime", "default": "CURRENT_TIMESTAMP"},
+          {"name": "status", "type": "Enum", "values": ["draft", "published", "archived"], "default": "draft"}
+        ]
+      },
+      {
+        "name": "Story",
+        "tableName": "stories",
+        "fields": [
+          {"name": "id", "type": "UUID", "isPrimaryKey": true},
+          {"name": "title", "type": "String", "maxLength": 255, "isTranslatable": true, "isRequired": true},
+          {"name": "storyContent", "type": "Text", "isTranslatable": true, "isRequired": true},
+          {"name": "image", "type": "String", "format": "URL"},
+          {"name": "publishDate", "type": "DateTime", "default": "CURRENT_TIMESTAMP"},
+          {"name": "location", "type": "String", "maxLength": 100}
+        ]
+      },
+      {
+        "name": "Campaign",
+        "tableName": "campaigns",
+        "fields": [
+          {"name": "id", "type": "UUID", "isPrimaryKey": true},
+          {"name": "title", "type": "String", "maxLength": 255, "isTranslatable": true, "isRequired": true},
+          {"name": "description", "type": "Text", "isTranslatable": true},
+          {"name": "image", "type": "String", "format": "URL"},
+          {"name": "startDate", "type": "Date"},
+          {"name": "endDate", "type": "Date"},
+          {"name": "status", "type": "Enum", "values": ["active", "completed", "upcoming"], "default": "active"}
+        ]
+      },
+      {
+        "name": "User",
+        "tableName": "users",
+        "fields": [
+          {"name": "id", "type": "UUID", "isPrimaryKey": true},
+          {"name": "username", "type": "String", "maxLength": 50, "isUnique": true, "isRequired": true},
+          {"name": "passwordHash", "type": "String", "maxLength": 255, "isRequired": true},
+          {"name": "email", "type": "String", "maxLength": 255, "isUnique": true, "isRequired": true},
+          {"name": "role", "type": "Enum", "values": ["admin", "editor", "contributor"], "default": "contributor"},
+          {"name": "createdAt", "type": "DateTime", "default": "CURRENT_TIMESTAMP"}
+        ]
+      },
+      {
+        "name": "Setting",
+        "tableName": "settings",
+        "fields": [
+          {"name": "id", "type": "UUID", "isPrimaryKey": true},
+          {"name": "key", "type": "String", "maxLength": 100, "isUnique": true, "isRequired": true},
+          {"name": "value", "type": "Text"}
+        ]
+      }
+    ],
+    "apiEndpoints": [
+      {"path": "/api/articles", "method": "GET", "description": "Get all articles", "authRequired": false},
+      {"path": "/api/articles/:id", "method": "GET", "description": "Get single article by ID", "authRequired": false},
+      {"path": "/api/articles", "method": "POST", "description": "Create new article", "authRequired": true, "roles": ["editor", "admin"]},
+      {"path": "/api/articles/:id", "method": "PUT", "description": "Update article", "authRequired": true, "roles": ["editor", "admin"]},
+      {"path": "/api/articles/:id", "method": "DELETE", "description": "Delete article", "authRequired": true, "roles": ["admin"]},
+  
+      {"path": "/api/reports", "method": "GET", "description": "Get all reports", "authRequired": false},
+      {"path": "/api/reports", "method": "POST", "description": "Create new report", "authRequired": true, "roles": ["editor", "admin"]},
+      {"path": "/api/statements", "method": "GET", "description": "Get all statements", "authRequired": false},
+      {"path": "/api/statements", "method": "POST", "description": "Create new statement", "authRequired": true, "roles": ["editor", "admin"]},
+      {"path": "/api/stories", "method": "GET", "description": "Get all stories", "authRequired": false},
+      {"path": "/api/stories", "method": "POST", "description": "Create new story", "authRequired": true, "roles": ["editor", "admin"]},
+      {"path": "/api/campaigns", "method": "GET", "description": "Get all campaigns", "authRequired": false},
+      {"path": "/api/campaigns", "method": "POST", "description": "Create new campaign", "authRequired": true, "roles": ["editor", "admin"]},
+  
+      {"path": "/api/contact", "method": "POST", "description": "Submit contact form", "authRequired": false},
+      {"path": "/api/users/login", "method": "POST", "description": "User login", "authRequired": false},
+      {"path": "/api/users", "method": "GET", "description": "Get all users (admin only)", "authRequired": true, "roles": ["admin"]},
+      {"path": "/api/users/:id", "method": "PUT", "description": "Update user (admin only)", "authRequired": true, "roles": ["admin"]},
+      {"path": "/api/settings", "method": "GET", "description": "Get website settings", "authRequired": false},
+      {"path": "/api/settings", "method": "PUT", "description": "Update website settings (admin only)", "authRequired": true, "roles": ["admin"]}
+    ],
+    "adminPanelDefinition": {
+      "dashboard": [
+        {"widget": "StatsCard", "title": "Total Articles", "dataModel": "Article", "query": {"status": "published"}},
+        {"widget": "StatsCard", "title": "Total Reports", "dataModel": "Report", "query": {"status": "published"}},
+        {"widget": "RecentItems", "title": "Latest News", "dataModel": "Article", "limit": 5},
+        {"widget": "RecentItems", "title": "Recent Contact Messages", "dataModel": "ContactMessage", "limit": 5}
+      ],
+      "crudViews": [
+        {"dataModel": "Article", "fields": ["title", "publishDate", "status", "isFeatured"]},
+        {"dataModel": "Report", "fields": ["title", "publishDate", "status"]},
+        {"dataModel": "Statement", "fields": ["title", "publishDate", "status"]},
+        {"dataModel": "Story", "fields": ["title", "publishDate", "location"]},
+        {"dataModel": "Campaign", "fields": ["title", "startDate", "endDate", "status"]},
+        {"dataModel": "Category", "fields": ["name", "slug"]},
+        {"dataModel": "User", "fields": ["username", "email", "role"]},
+        {"dataModel": "Setting", "fields": ["key", "value"]}
+      ],
+      "forms": {
+        "Article": [
+          {"field": "title", "type": "text", "label": "العنوان", "multilingual": true},
+          {"field": "content", "type": "richtext", "label": "المحتوى", "multilingual": true},
+          {"field": "summary", "type": "textarea", "label": "الملخص", "multilingual": true},
+          {"field": "image", "type": "file_upload", "label": "الصورة الرئيسية"},
+          {"field": "thumbnail", "type": "file_upload", "label": "صورة مصغرة"},
+          {"field": "categoryId", "type": "select", "label": "التصنيف", "optionsFromModel": "Category"},
+          {"field": "publishDate", "type": "datetime", "label": "تاريخ النشر"},
+          {"field": "status", "type": "select", "label": "الحالة", "options": ["draft", "published", "archived"]},
+          {"field": "isFeatured", "type": "checkbox", "label": "محتوى مميز في الرئيسية"}
+        ]
+      }
+    },
+    "assetPaths": {
+      "images": "/assets/images/",
+      "css": "/assets/css/",
+      "js": "/assets/js/"
+    },
+    "seoSettings": {
+      "defaultTitle": "",
+      "defaultDescription": "",
+      "keywords": ["حقوق الإنسان", "اليمن", "سام", "انتهاكات", "تقارير", "أخبار"]
+    }
+  }

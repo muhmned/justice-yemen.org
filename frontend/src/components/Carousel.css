@@ -1,0 +1,131 @@
+.main-carousel {
+    position: relative;
+    height: 500px;
+    margin-bottom: 40px;
+    overflow: hidden;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.carousel-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transform: scale(1.05);
+    transition: opacity 1.5s ease-in-out, transform 1.5s ease-in-out;
+}
+
+.carousel-slide.active {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.carousel-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.carousel-slide a::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 50%);
+}
+
+.carousel-caption {
+    position: absolute;
+    bottom: 30px;
+    left: 30px;
+    right: 30px;
+    color: white;
+    padding: 20px;
+    text-align: right;
+    z-index: 1;
+    transition: bottom 0.5s ease;
+}
+
+.carousel-caption h3 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: bold;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+}
+
+.slide-type {
+    background-color: #007bff;
+    color: white;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    display: inline-block;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.carousel-dots {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 12px;
+    z-index: 1;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    transition: all 0.4s ease;
+    border: 2px solid transparent;
+}
+
+.dot:hover {
+    background-color: rgba(255, 255, 255, 0.7);
+}
+
+.dot.active {
+    background-color: white;
+    transform: scale(1.2);
+    border-color: rgba(0,0,0,0.2);
+}
+
+.carousel-loading, .carousel-empty {
+    text-align: center;
+    padding: 50px;
+    font-size: 1.2rem;
+    height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (max-width: 768px) {
+    .main-carousel, .carousel-loading, .carousel-empty {
+        height: 300px;
+    }
+
+    .carousel-caption h3 {
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-carousel, .carousel-loading, .carousel-empty {
+        height: 200px;
+    }
+
+    .carousel-caption h3 {
+        font-size: 1rem;
+    }
+}

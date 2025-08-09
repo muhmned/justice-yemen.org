@@ -1,0 +1,178 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String        @id @default(cuid())
+  username     String        @unique
+  passwordHash String
+  email        String        @unique
+  role         String
+  createdAt    DateTime      @default(now())
+  status       String        @default("active")
+  permissions  Json?
+  bio          String?
+  ActivityLog  ActivityLog[]
+  Article      Article[]
+  news         News[]
+  reports      Report[]
+  notifications Notification[]
+  contactMessages ContactMessage[]
+}
+
+model News {
+  id          String    @id @default(cuid())
+  title       String
+  summary     String
+  content     String
+  image       String?
+  status      String    @default("draft")
+  userId      String
+  createdAt   DateTime  @default(now())
+  publishDate DateTime?
+  user        User      @relation(fields: [userId], references: [id])
+}
+
+model Report {
+  id          String   @id @default(cuid())
+  title       String
+  summary     String?
+  pdfUrl      String?
+  thumbnail   String?
+  publishDate DateTime @default(now())
+  status      String   @default("draft")
+  content     String?
+  createdAt   DateTime @default(now())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model Section {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  slug        String    @unique
+  status      String    @default("active")
+  order       Int       @default(0)
+  description String?
+  Article     Article[]
+}
+
+model ActivityLog {
+  id         String   @id @default(cuid())
+  userId     String
+  action     String
+  actionType String
+  details    String?
+  status     String
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+  User       User     @relation(fields: [userId], references: [id])
+}
+
+model Article {
+  id          String    @id @default(cuid())
+  title       String
+  content     String
+  sectionId   String?
+  publishDate DateTime  @default(now())
+  categoryId  String?
+  createdAt   DateTime  @default(now())
+  image       String?
+  summary     String?
+  userId      String
+  Category    Category? @relation(fields: [categoryId], references: [id])
+  Section     Section?  @relation(fields: [sectionId], references: [id])
+  User        User      @relation(fields: [userId], references: [id])
+}
+
+model BasicInfo {
+  id              String  @id
+  page            String  @unique
+  title           String
+  content         String?
+  image           String?
+  vision          String?
+  mission         String?
+  strategic_goals String?
+  values          String?
+  org_structure   String?
+  work_fields     String?
+}
+
+model Campaign {
+  id          String    @id
+  title       String
+  description String?
+  image       String?
+  startDate   DateTime?
+  endDate     DateTime?
+  status      String    @default("active")
+}
+
+model Category {
+  id      String    @id
+  name    String    @unique
+  slug    String    @unique
+  Article Article[]
+}
+
+model ContactInfo {
+  id          String  @id
+  phone       String?
+  email       String?
+  address     String?
+  description String?
+}
+
+model Setting {
+  id    String  @id
+  key   String  @unique
+  value String?
+}
+
+model Statement {
+  id          String   @id
+  title       String
+  content     String
+  publishDate DateTime @default(now())
+  status      String   @default("draft")
+}
+
+model Story {
+  id           String   @id
+  title        String
+  storyContent String
+  image        String?
+  publishDate  DateTime @default(now())
+  location     String?
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  title     String
+  message   String
+  type      String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String
+  message   String
+  status    String   @default("UNREAD") // e.g., UNREAD, READ, REPLIED, ARCHIVED
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  userId    String? // Optional: if the user is logged in
+  user      User?    @relation(fields: [userId], references: [id])
+}

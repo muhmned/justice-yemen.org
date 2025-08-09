@@ -1,0 +1,232 @@
+/* MessagesPage.css - تصميم صفحة إدارة الرسائل */
+
+.messages-page {
+  padding: 24px;
+  background: #f5f5f5;
+  min-height: 100vh;
+}
+
+.page-header {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.page-header h1 {
+  color: #2c3e50;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.page-header p {
+  color: #666;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+/* إحصائيات سريعة */
+.stats-row .ant-col {
+  margin-bottom: 16px;
+}
+
+.ant-statistic-title {
+  font-size: 0.9rem !important;
+  color: #666 !important;
+}
+
+.ant-statistic-content {
+  font-size: 1.5rem !important;
+  font-weight: 600 !important;
+}
+
+/* فلاتر البحث */
+.filters-card .ant-col {
+  margin-bottom: 12px;
+}
+
+.filters-card .ant-btn {
+  width: 100%;
+}
+
+/* جدول الرسائل */
+.messages-table {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ant-table-thead > tr > th {
+  background: #f8f9fa !important;
+  font-weight: 600 !important;
+  color: #2c3e50 !important;
+  border-bottom: 2px solid #e9ecef !important;
+}
+
+.ant-table-tbody > tr:hover > td {
+  background: #f8f9fa !important;
+}
+
+.ant-table-tbody > tr > td {
+  border-bottom: 1px solid #f0f0f0 !important;
+  padding: 12px 16px !important;
+}
+
+/* تفاصيل الرسالة */
+.message-details {
+  direction: rtl;
+  text-align: right;
+}
+
+.message-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.sender-info h3 {
+  color: #2c3e50;
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+}
+
+.sender-info p {
+  color: #666;
+  margin: 4px 0;
+  font-size: 0.9rem;
+}
+
+.message-status {
+  text-align: left;
+}
+
+.message-subject {
+  margin-bottom: 20px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #1890ff;
+}
+
+.message-subject h4 {
+  color: #2c3e50;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.message-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.message-content h4 {
+  color: #2c3e50;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+}
+
+.message-text {
+  color: #333;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.message-text p {
+  margin: 8px 0;
+}
+
+/* Pagination */
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+  padding: 16px 0;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .stats-row .ant-col {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+}
+
+@media (max-width: 768px) {
+  .messages-page {
+    padding: 16px;
+  }
+  
+  .page-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .page-header p {
+    font-size: 1rem;
+  }
+
+  .stats-row .ant-col,
+  .filters-card .ant-col {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  .filters-card .ant-col:last-child {
+    margin-bottom: 0;
+  }
+  
+  .message-header {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .message-status {
+    text-align: right;
+  }
+
+  /* Responsive Table - Card View */
+  .ant-table-thead {
+    display: none;
+  }
+
+  .ant-table-tbody > tr {
+    display: block;
+    margin-bottom: 16px;
+    border: 1px solid #f0f0f0;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    padding: 12px;
+  }
+
+  .ant-table-tbody > tr > td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 4px !important;
+    border-bottom: 1px solid #f0f0f0 !important;
+  }
+
+  .ant-table-tbody > tr > td:last-child {
+    border-bottom: none !important;
+  }
+
+  .ant-table-tbody > tr > td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #2c3e50;
+    margin-right: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .messages-page {
+    padding: 12px;
+  }
+}
