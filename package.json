@@ -1,13 +1,15 @@
 {
   "name": "justice_org",
   "version": "1.0.0",
-  "description": "Full stack project with backend and frontend",
-  "main": "index.js",
   "scripts": {
-    "start": "concurrently \"npm run dev --prefix backend\" \"npm start --prefix frontend\"",
-    "install-all": "npm install --prefix backend && npm install --prefix frontend"
+    "start": "concurrently \"npm run dev --prefix backend\" \"npm run start-client --prefix frontend\"",
+    "start-client": "react-scripts start",
+    "dev": "nodemon src/server.js",
+    "build": "npm install --prefix backend && npm install --prefix frontend && npm run build --prefix frontend"
   },
   "dependencies": {
-    "concurrently": "^9.0.0"
+    "concurrently": "^9.0.0",
+    "nodemon": "^3.1.0",
+    "react-scripts": "5.0.1"
   }
 }
