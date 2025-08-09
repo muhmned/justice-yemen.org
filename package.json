@@ -2,14 +2,7 @@
   "name": "justice_org",
   "version": "1.0.0",
   "scripts": {
-    "start": "concurrently \"npm run dev --prefix backend\" \"npm run start-client --prefix frontend\"",
-    "start-client": "react-scripts start",
-    "dev": "nodemon src/server.js",
-    "build": "npm install --prefix backend && npm install --prefix frontend && npm run build --prefix frontend"
-  },
-  "dependencies": {
-    "concurrently": "^9.0.0",
-    "nodemon": "^3.1.0",
-    "react-scripts": "5.0.1"
+    "build": "cd frontend && npm install && npm run build && cd ../backend && npm install",
+    "start": "cd backend && NODE_ENV=production node src/server.js"
   }
 }
