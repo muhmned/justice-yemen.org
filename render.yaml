@@ -17,3 +17,4 @@ services:
         value: your-super-secret-jwt-key-change-this-in-production
       - key: PORT
         value: 5000
+  
