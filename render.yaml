@@ -1,11 +1,14 @@
 services:
   - type: web
-    name: justice-org-backend
+    name: justice-org
     env: node
     plan: free
+    rootDir: backend
     buildCommand: |
       npm install
       npx prisma migrate deploy
+      npm install --prefix ../frontend --legacy-peer-deps
+      npm run build --prefix ../frontend
     startCommand: npm start
     envVars:
       - key: DATABASE_URL
@@ -14,15 +17,6 @@ services:
         sync: false
       - key: PORT
         value: 5000
-    rootDir: backend
     autoDeploy: true
     envSpecificConfigs:
       nodeVersion: 20.x
-
-  - type: static
-    name: justice-org-frontend
-    rootDir: frontend
-    buildCommand: |
-      npm install --legacy-peer-deps
-      npm run build
-    staticPublishPath: build
