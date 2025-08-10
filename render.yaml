@@ -1,0 +1,27 @@
+# render.yaml
+services:
+  # PostgreSQL Database
+  - type: pserv
+    name: justice-org-db
+    env: postgres
+    plan: free
+
+  # Node.js Backend Web Service
+  - type: web
+    name: justice-org-backend
+    env: node
+    plan: free
+    rootDir: backend
+    buildCommand: "npm install && prisma migrate deploy && npm run build"
+    startCommand: "npm start"
+    healthCheckPath: /api/health
+    envVars:
+      - key: DATABASE_URL
+        fromService:
+          type: pserv
+          name: justice-org-db
+          property: connectionString
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
