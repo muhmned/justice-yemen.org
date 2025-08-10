@@ -1,20 +1,28 @@
 services:
-  # Node.js Backend Web Service
   - type: web
     name: justice-org-backend
     env: node
     plan: free
-    rootDir: backend
-    buildCommand: "npm install && npx prisma migrate deploy && npm install --prefix ../frontend --legacy-peer-deps && npm run build --prefix ../frontend"
-    startCommand: "npm start"
-    healthCheckPath: /api/health
+    buildCommand: |
+      npm install
+      npx prisma migrate deploy
+      npm install --prefix ../frontend --legacy-peer-deps
+      npm run build --prefix ../frontend
+    startCommand: npm start
     envVars:
       - key: DATABASE_URL
-        value: postgresql://justice_org_user:aaLkyZabyVTIIlrZji35r3d45th5kike@dpg-d2bqmu7diees73f1l3s0-a.frankfurt-postgres.render.com:5432/justice_org
-      - key: NODE_ENV
-        value: production
+        sync: false
       - key: JWT_SECRET
-        value: your-super-secret-jwt-key-change-this-in-production
+        sync: false
       - key: PORT
         value: 5000
+    rootDir: backend
+    autoDeploy: true
+    envSpecificConfigs:
+      nodeVersion: 20.x
 
+  - type: static_site
+    name: justice-org-frontend
+    buildCommand: npm install --legacy-peer-deps && npm run build
+    publishDir: build
+    rootDir: frontend
