@@ -18,7 +18,7 @@ services:
         value: 5000
     rootDir: backend
     autoDeploy: true
-    nodeVersion: 20.x
+
 
   - type: web
     name: justice-org-frontend
