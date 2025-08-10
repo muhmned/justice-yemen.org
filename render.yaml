@@ -1,9 +1,4 @@
 services:
-  # PostgreSQL Database
-  - type: postgres
-    name: justice-org-db
-    plan: free
-
   # Node.js Backend Web Service
   - type: web
     name: justice-org-backend
@@ -15,10 +10,10 @@ services:
     healthCheckPath: /api/health
     envVars:
       - key: DATABASE_URL
-        fromDatabase:
-          name: justice-org-db
-          property: connectionString
+        value: postgresql://justice_org_user:aaLkyZabyVTIIlrZji35r3d45th5kike@dpg-d2bqmu7diees73f1l3s0-a.frankfurt-postgres.render.com:5432/justice_org
       - key: NODE_ENV
         value: production
       - key: JWT_SECRET
-        generateValue: true
+        value: your-super-secret-jwt-key-change-this-in-production
+      - key: PORT
+        value: 5000
