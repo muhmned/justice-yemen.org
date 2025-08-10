@@ -17,9 +17,10 @@ services:
           name: justice-org-db
           property: connectionString
 
-  # Frontend React App
-  - type: static_site
+  # Frontend React App (serve static build via Node.js)
+  - type: web
     name: justice-org-frontend
+    env: node
     plan: free
     region: frankfurt
     rootDir: frontend
@@ -27,7 +28,7 @@ services:
       npm install --legacy-peer-deps
       npm install @fortawesome/fontawesome-free
       npm run build
-    staticPublishPath: build
+    startCommand: npx serve -s build
     envVars:
       - key: REACT_APP_API_URL
         value: https://justice-org-backend.onrender.com
