@@ -20,9 +20,3 @@ services:
     autoDeploy: true
     envSpecificConfigs:
       nodeVersion: 20.x
-
-  - type: static_site
-    name: justice-org-frontend
-    buildCommand: npm install --legacy-peer-deps && npm run build
-    publishDir: build
-    rootDir: frontend
