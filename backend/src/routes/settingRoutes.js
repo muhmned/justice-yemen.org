@@ -1,9 +1,10 @@
-const express = require('express');
-const multer = require('multer');
-const path = require('path');
-const { PrismaClient } = require('@prisma/client');
-const { authenticateToken, requireRole } = require('../middleware/auth');
-const logActivity = require('../middleware/logActivity');
+import express from 'express';
+import multer from 'multer';
+import path from 'path';
+import { PrismaClient } from '@prisma/client';
+import { authenticateToken, requireRole } from '../middleware/auth.js';
+import logActivity from '../middleware/logActivity.js';
+
 const router = express.Router();
 const prisma = new PrismaClient();
 
@@ -141,4 +142,4 @@ router.post('/about-image', authenticateToken, requireRole(['admin', 'system_adm
   }
 });
 
-module.exports = router;
+export default router;

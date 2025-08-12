@@ -1,9 +1,9 @@
-const express = require('express');
-const router = express.Router();
-const { PrismaClient } = require('@prisma/client');
-const { authenticateToken, checkPermission } = require('../middleware/auth');
-const logActivity = require('../middleware/logActivity');
+import express from 'express';
+import { PrismaClient } from '@prisma/client';
+import { authenticateToken, checkPermission } from '../middleware/auth.js';
+import logActivity from '../middleware/logActivity.js';
 
+const router = express.Router();
 const prisma = new PrismaClient();
 
 // جلب جميع الأقسام
@@ -87,4 +87,4 @@ router.delete('/:id', authenticateToken, checkPermission('delete_section'), logA
   }
 });
 
-module.exports = router;
+export default router;

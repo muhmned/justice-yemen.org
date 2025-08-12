@@ -1,6 +1,6 @@
-const express = require('express');
-const { authenticateToken, requireRole } = require('../middleware/auth');
-const { getActivityLog } = require('../controllers/activityLogController');
+import express from 'express';
+import { authenticateToken, requireRole } from '../middleware/auth.js';
+import { getActivityLog } from '../controllers/activityLogController.js';
 
 const router = express.Router();
 
@@ -15,4 +15,4 @@ router.get('/me', verifyAdmin, (req, res) => {
   });
 });
 
-module.exports = router;
+export default router;

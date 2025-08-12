@@ -1,8 +1,10 @@
-const express = require('express');
+import express from 'express';
+import { body } from 'express-validator';
+import { getAllCampaigns, createCampaign } from '../controllers/campaignController.js';
+import { authenticateToken, requireRole } from '../middleware/auth.js';
+import logActivity from '../middleware/logActivity.js';
+
 const router = express.Router();
-const { getAllCampaigns, createCampaign } = require('../controllers/campaignController');
-const { authenticateToken, requireRole } = require('../middleware/auth');
-const { body } = require('express-validator');
 
 // Public: Get all campaigns
 router.get('/', getAllCampaigns);
@@ -14,4 +16,4 @@ const campaignValidation = [
 // Editor/Admin: Create campaign
 router.post('/', authenticateToken, requireRole(['editor', 'admin', 'system_admin']), campaignValidation, createCampaign);
 
-module.exports = router; 
+export default router; 

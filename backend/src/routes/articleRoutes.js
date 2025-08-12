@@ -1,9 +1,9 @@
-const express = require('express');
-const multer = require('multer');
-const path = require('path');
-const { createArticle, getAllArticles, deleteArticle, updateArticle, getArticleById } = require('../controllers/articleController');
-const { authenticateToken, checkPermission, requireRole } = require('../middleware/auth');
-const logActivity = require('../middleware/logActivity');
+import express from 'express';
+import multer from 'multer';
+import path from 'path';
+import { createArticle, getAllArticles, deleteArticle, updateArticle, getArticleById } from '../controllers/articleController.js';
+import { authenticateToken, checkPermission, requireRole } from '../middleware/auth.js';
+import logActivity from '../middleware/logActivity.js';
 
 const router = express.Router();
 
@@ -86,4 +86,4 @@ router.use((error, req, res, next) => {
   next(error);
 });
 
-module.exports = router;
+export default router;

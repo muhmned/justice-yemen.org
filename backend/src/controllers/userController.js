@@ -1,6 +1,5 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
-const bcrypt = require('bcryptjs');
+import prisma from '../prisma.js';
+import bcrypt from 'bcryptjs';
 
 // Get all users
 const getAllUsers = async (req, res) => {
@@ -444,7 +443,7 @@ const getUserStats = async (req, res) => {
   }
 };
 
-module.exports = {
+export {
   getAllUsers,
   updateUserRole,
   updateUserStatus,

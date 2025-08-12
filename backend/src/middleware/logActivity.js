@@ -1,4 +1,6 @@
-const prisma = require('../prisma');
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 const logActivity = (action, actionType = 'general', details) => (req, res, next) => {
   const originalSend = res.send;
@@ -52,4 +54,4 @@ const logActivity = (action, actionType = 'general', details) => (req, res, next
   next();
 };
 
-module.exports = logActivity;
+export default logActivity;

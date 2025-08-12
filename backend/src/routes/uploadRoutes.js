@@ -1,7 +1,7 @@
-const express = require('express');
-const multer = require('multer');
-const path = require('path');
-const { authenticateToken, requireRole } = require('../middleware/auth');
+import express from 'express';
+import multer from 'multer';
+import path from 'path';
+import { authenticateToken, requireRole } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -65,4 +65,4 @@ router.use((error, req, res, next) => {
   res.status(500).json({ error: 'حدث خطأ في الخادم' });
 });
 
-module.exports = router; 
+export default router; 

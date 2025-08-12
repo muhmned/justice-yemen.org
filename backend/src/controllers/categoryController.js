@@ -1,5 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+import prisma from '../prisma.js';
 
 // GET /api/categories
 async function getAllCategories(req, res) {
@@ -45,7 +44,7 @@ async function deleteCategory(req, res) {
   }
 }
 
-module.exports = {
+export {
   getAllCategories,
   createCategory,
   updateCategory,

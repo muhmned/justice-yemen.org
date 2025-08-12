@@ -1,8 +1,10 @@
-const express = require('express');
+import express from 'express';
+import { body } from 'express-validator';
+import { getAllStories, createStory } from '../controllers/storyController.js';
+import { authenticateToken, requireRole } from '../middleware/auth.js';
+import logActivity from '../middleware/logActivity.js';
+
 const router = express.Router();
-const { getAllStories, createStory } = require('../controllers/storyController');
-const { authenticateToken, requireRole } = require('../middleware/auth');
-const { body } = require('express-validator');
 
 // Public: Get all stories
 router.get('/', getAllStories);
@@ -15,4 +17,4 @@ const storyValidation = [
 // Editor/Admin: Create story
 router.post('/', authenticateToken, requireRole(['editor', 'admin', 'system_admin']), storyValidation, createStory);
 
-module.exports = router; 
+export default router; 

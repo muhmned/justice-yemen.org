@@ -1,15 +1,15 @@
-const express = require('express');
-const router = express.Router();
-const { authenticateToken, requireRole } = require('../middleware/auth');
-const logActivity = require('../middleware/logActivity');
-const {
+import express from 'express';
+import { authenticateToken, requireRole } from '../middleware/auth.js';
+import logActivity from '../middleware/logActivity.js';
+import {
   getAllMessages,
   getMessage,
   updateMessageStatus,
   deleteMessage,
-  getMessageStats,
-  createMessage
-} = require('../controllers/messageController');
+  getMessageStats
+} from '../controllers/messageController.js';
+
+const router = express.Router();
 
 // معظم المسارات تتطلب مصادقة وأدوار محددة
 router.use(authenticateToken);
@@ -33,4 +33,4 @@ router.get('/stats/overview', requireRole(['admin', 'system_admin']), getMessage
 // This is handled by contactRoutes.js now
 // router.post('/', createMessage);
 
-module.exports = router;
+export default router;

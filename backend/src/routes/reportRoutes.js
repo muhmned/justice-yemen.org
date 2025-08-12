@@ -1,12 +1,12 @@
-console.log('Loaded reportRoutes.js');
-const express = require('express');
-const multer = require('multer');
-const path = require('path');
+import express from 'express';
+import multer from 'multer';
+import path from 'path';
+import { body } from 'express-validator';
+import { getAllReports, createReport, updateReport, deleteReport, getReportById, searchReports } from '../controllers/reportController.js';
+import { authenticateToken, requireRole } from '../middleware/auth.js';
+import logActivity from '../middleware/logActivity.js';
+
 const router = express.Router();
-const { getAllReports, createReport, updateReport, deleteReport, getReportById, searchReports } = require('../controllers/reportController');
-const { authenticateToken, requireRole } = require('../middleware/auth');
-const { body } = require('express-validator');
-const logActivity = require('../middleware/logActivity');
 
 // إعداد multer للتقارير
 const storage = multer.diskStorage({
@@ -112,4 +112,4 @@ router.use((error, req, res, next) => {
   next(error);
 });
 
-module.exports = router;
+export default router;

@@ -1,6 +1,5 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
-const { validationResult } = require('express-validator');
+import prisma from '../prisma.js';
+import { validationResult } from 'express-validator';
 
 // GET /api/statements
 async function getAllStatements(req, res) {
@@ -23,4 +22,4 @@ async function createStatement(req, res) {
   }
 }
 
-module.exports = { getAllStatements, createStatement }; 
+export { getAllStatements, createStatement }; 

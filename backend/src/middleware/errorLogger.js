@@ -1,5 +1,6 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 function errorLogger(err, req, res, next) {
   const log = {
@@ -20,4 +21,4 @@ function errorLogger(err, req, res, next) {
   next(err);
 }
 
-module.exports = errorLogger; 
+export default errorLogger; 

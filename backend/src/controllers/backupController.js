@@ -1,13 +1,13 @@
-const fs = require('fs').promises;
-const path = require('path');
-const { exec } = require('child_process');
-const util = require('util');
+import { promises as fs } from 'fs';
+import path from 'path';
+import { exec } from 'child_process';
+import util from 'util';
+import prisma from '../prisma.js';
 const execAsync = util.promisify(exec);
 
-exports.backupDatabase = async (req, res) => {
+export const backupDatabase = async (req, res) => {
   try {
     const { type = 'full' } = req.body;
-    const prisma = req.app.locals.prisma;
     
     // التحقق من صحة نوع النسخة الاحتياطية
     if (!['full', 'tables', 'sections'].includes(type)) {
@@ -107,7 +107,7 @@ exports.backupDatabase = async (req, res) => {
   }
 };
 
-exports.importDatabase = async (req, res) => {
+export const importDatabase = async (req, res) => {
   const file = req.file;
   if (!file) {
     return res.status(400).json({ error: 'لم يتم رفع أي ملف' });
@@ -119,7 +119,6 @@ exports.importDatabase = async (req, res) => {
   }
   
   try {
-    const prisma = req.app.locals.prisma;
     
     console.log('Importing file:', file.path);
     console.log('File size:', file.size);
@@ -254,7 +253,7 @@ exports.importDatabase = async (req, res) => {
 };
 
 // الحصول على قائمة النسخ الاحتياطية
-exports.getBackups = async (req, res) => {
+export const getBackups = async (req, res) => {
   try {
     const backupDir = path.join(__dirname, '../../backups');
     
@@ -302,7 +301,7 @@ exports.getBackups = async (req, res) => {
 };
 
 // حذف نسخة احتياطية
-exports.deleteBackup = async (req, res) => {
+export const deleteBackup = async (req, res) => {
   try {
     const { filename } = req.params;
     
@@ -324,7 +323,6 @@ exports.deleteBackup = async (req, res) => {
     await fs.unlink(filePath);
     
     // تسجيل النشاط
-    const prisma = req.app.locals.prisma;
     await prisma.activityLog.create({
       data: {
         userId: req.user.id,
@@ -344,7 +342,7 @@ exports.deleteBackup = async (req, res) => {
 };
 
 // دالة لفحص استيراد ملف JSON فقط
-exports.importTestFile = async (req, res) => {
+export const importTestFile = async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ success: false, message: 'لم يتم رفع أي ملف' });

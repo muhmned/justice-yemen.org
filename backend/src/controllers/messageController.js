@@ -1,4 +1,4 @@
-const prisma = require('../prisma');
+import prisma from '../prisma.js';
 
 const ALLOWED_ROLES = ['system_admin', 'admin'];
 
@@ -250,7 +250,7 @@ async function createMessage(data) {
   return newMessage;
 }
 
-module.exports = {
+export {
   getAllMessages,
   getMessage,
   updateMessageStatus,

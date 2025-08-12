@@ -1,17 +1,18 @@
-const express = require('express');
-const router = express.Router();
-const multer = require('multer');
-const path = require('path');
-const { authenticateToken, checkPermission, requireRole } = require('../middleware/auth');
-const logActivity = require('../middleware/logActivity');
-const {
-  createNews,
+import express from 'express';
+import multer from 'multer';
+import path from 'path';
+import { authenticateToken, checkPermission, requireRole } from '../middleware/auth.js';
+import logActivity from '../middleware/logActivity.js';
+import {
   getAllNews,
-  getNewsById,
+  createNews,
   updateNews,
   deleteNews,
+  getNewsById,
   searchNews
-} = require('../controllers/newsController');
+} from '../controllers/newsController.js';
+
+const router = express.Router();
 
 // إعداد multer لرفع الصور
 const storage = multer.diskStorage({
@@ -49,4 +50,4 @@ router.post('/', authenticateToken, requireRole(['editor', 'admin', 'system_admi
 router.put('/:id', authenticateToken, requireRole(['editor', 'admin', 'system_admin']), upload.single('image'), logActivity('update_news', 'content', (req) => `News updated: ${req.body.title}`), updateNews); // تحديث خبر
 router.delete('/:id', authenticateToken, requireRole(['editor', 'admin', 'system_admin']), logActivity('delete_news', 'content', (req) => `News deleted: ID ${req.params.id}`), deleteNews); // حذف خبر
 
-module.exports = router;
+export default router;

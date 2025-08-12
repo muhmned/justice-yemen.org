@@ -1,5 +1,6 @@
-const jwt = require('jsonwebtoken');
-const prisma = require('../prisma');
+import jwt from 'jsonwebtoken';
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || 'changeme';
 
 async function authenticateToken(req, res, next) {
@@ -98,12 +99,12 @@ function checkPermission(permission) {
     console.log(`[MIDDLEWARE] checkPermission - User has permission? ${hasPermission}`);
     if (!hasPermission) {
       console.log(`[MIDDLEWARE] checkPermission - Access denied for permission: ${permission}`);
-      return res.status(403).json({ message: 'Access denied' });
+      return res.status(403).json({ message: 'Forbidden' });
     }
 
-    console.log(`[MIDDLEWARE] checkPermission - Success, permission granted.`);
+    console.log(`[MIDDLEWARE] checkPermission - Access granted for permission: ${permission}`);
     next();
   };
 }
 
-module.exports = { authenticateToken, requireRole, checkPermission };
+export { authenticateToken, requireRole, checkPermission };

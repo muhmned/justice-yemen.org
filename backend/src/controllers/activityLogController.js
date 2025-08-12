@@ -1,4 +1,4 @@
-const prisma = require('../prisma');
+import prisma from '../prisma.js';
 
 const getActivityLog = async (req, res) => {
   try {
@@ -52,6 +52,6 @@ const getActivityLog = async (req, res) => {
   }
 };
 
-module.exports = {
+export {
   getActivityLog,
 };

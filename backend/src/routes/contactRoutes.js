@@ -1,8 +1,9 @@
-const express = require('express');
+import express from 'express';
+import { body } from 'express-validator';
+import { createMessage } from '../controllers/messageController.js';
+import logActivity from '../middleware/logActivity.js';
+
 const router = express.Router();
-const { validationResult } = require('express-validator');
-const { createMessage } = require('../controllers/messageController');
-const logActivity = require('../middleware/logActivity');
 
 // التحقق من صحة البيانات
 const contactValidation = [
@@ -191,4 +192,4 @@ router.get('/info', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

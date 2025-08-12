@@ -1,6 +1,7 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
-const path = require('path');
+import prisma from '../prisma.js';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
 
 const allowedImageTypes = ['image/jpeg', 'image/png', 'image/webp'];
 
@@ -261,4 +262,4 @@ async function getArticleById(req, res) {
   }
 }
 
-module.exports = { createArticle, getAllArticles, deleteArticle, updateArticle, getArticleById };
+export { createArticle, getAllArticles, deleteArticle, updateArticle, getArticleById };

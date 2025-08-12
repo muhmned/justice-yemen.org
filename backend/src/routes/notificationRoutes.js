@@ -1,12 +1,14 @@
-const express = require('express');
+import express from 'express';
+import { PrismaClient } from '@prisma/client';
+import { authenticateToken, requireRole } from '../middleware/auth.js';
+import logActivity from '../middleware/logActivity.js';
+import {
+  getNotifications,
+  createNotification,
+  markAsRead
+} from '../controllers/notificationController.js';
+
 const router = express.Router();
-const { 
-  getNotifications, 
-  markAsRead, 
-  createNotification 
-} = require('../controllers/notificationController');
-const { authenticateToken, requireRole } = require('../middleware/auth');
-const logActivity = require('../middleware/logActivity');
 
 // جلب الإشعارات
 router.get('/notifications', authenticateToken, getNotifications);
@@ -17,4 +19,4 @@ router.put('/notifications/:notificationId/read', authenticateToken, logActivity
 // إنشاء إشعار جديد
 router.post('/notifications', authenticateToken, requireRole(['admin', 'system_admin']), logActivity('create_notification', 'admin', (req) => `Notification created: ${req.body.message}`), createNotification);
 
-module.exports = router;
+export default router;

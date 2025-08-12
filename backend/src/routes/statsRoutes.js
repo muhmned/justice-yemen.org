@@ -1,9 +1,11 @@
-const express = require('express');
+import express from 'express';
+import { PrismaClient } from '@prisma/client';
+import { getGeneralStats } from '../controllers/statsController.js';
+import { authenticateToken, checkPermission } from '../middleware/auth.js';
+
 const router = express.Router();
-const { getGeneralStats } = require('../controllers/statsController');
-const { authenticateToken, checkPermission } = require('../middleware/auth');
 
 // GET /api/stats/general - Accessible by users with dashboard_view permission
 router.get('/general', authenticateToken, checkPermission('dashboard_view'), getGeneralStats);
 
-module.exports = router;
+export default router;

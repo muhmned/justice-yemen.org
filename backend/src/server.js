@@ -1,30 +1,33 @@
-const express = require('express');
-const cors = require('cors');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const userRoutes = require('./routes/userRoutes');
-const articleRoutes = require('./routes/articleRoutes');
-const newsRoutes = require('./routes/newsRoutes');
-const reportRoutes = require('./routes/reportRoutes');
-const statementRoutes = require('./routes/statementRoutes');
-const storyRoutes = require('./routes/storyRoutes');
-const campaignRoutes = require('./routes/campaignRoutes');
-const categoryRoutes = require('./routes/categoryRoutes');
-const settingRoutes = require('./routes/settingRoutes');
-const contactRoutes = require('./routes/contactRoutes');
-const messageRoutes = require('./routes/messageRoutes');
-const path = require('path');
-const uploadRoutes = require('./routes/uploadRoutes');
-const errorHandler = require('./middleware/errorHandler');
-const basicInfoRoutes = require('./routes/basicInfoRoutes');
-const sectionRoutes = require('./routes/sectionRoutes');
-const backupRoutes = require('./routes/backupRoutes');
-const notificationRoutes = require('./routes/notificationRoutes');
-const adminRoutes = require('./routes/adminRoutes');
-const statsRoutes = require('./routes/statsRoutes');
-const dotenv = require('dotenv');
-const errorLogger = require('./middleware/errorLogger');
-const logActivity = require('./middleware/logActivity');
+import express from "express";
+import path from "path";
+import { fileURLToPath } from "url";
+import cors from "cors";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
+import userRoutes from './routes/userRoutes.js';
+import articleRoutes from './routes/articleRoutes.js';
+import newsRoutes from './routes/newsRoutes.js';
+import reportRoutes from './routes/reportRoutes.js';
+import statementRoutes from './routes/statementRoutes.js';
+import storyRoutes from './routes/storyRoutes.js';
+import campaignRoutes from './routes/campaignRoutes.js';
+import categoryRoutes from './routes/categoryRoutes.js';
+import settingRoutes from './routes/settingRoutes.js';
+import contactRoutes from './routes/contactRoutes.js';
+import messageRoutes from './routes/messageRoutes.js';
+
+import uploadRoutes from './routes/uploadRoutes.js';
+import errorHandler from './middleware/errorHandler.js';
+import basicInfoRoutes from './routes/basicInfoRoutes.js';
+import sectionRoutes from './routes/sectionRoutes.js';
+import backupRoutes from './routes/backupRoutes.js';
+import notificationRoutes from './routes/notificationRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
+import statsRoutes from './routes/statsRoutes.js';
+import dotenv from 'dotenv';
+import errorLogger from './middleware/errorLogger.js';
+import logActivity from './middleware/logActivity.js';
+import prisma from './prisma.js';
 
 // تحميل متغيرات البيئة
 dotenv.config();
@@ -32,12 +35,13 @@ dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET || 'changeme';
 
 const app = express();
-const prisma = require('./prisma');
 
 // جعل PrismaClient متاحًا للراوترز
-
 app.locals.prisma = prisma;
 
+// حل لمتغير __dirname في ES Modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // إعدادات CORS محسنة
 app.use(cors({
@@ -119,7 +123,7 @@ app.post('/api/auth/login', logActivity('login'), async (req, res) => {
     }
 
     // Check password using bcrypt
-    const bcrypt = require('bcryptjs');
+    
     const isValidPassword = await bcrypt.compare(password, user.passwordHash);
     if (!isValidPassword) {
       return res.status(401).json({ 
@@ -232,17 +236,27 @@ app.use('/api', notificationRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/stats', statsRoutes);
 
-// Serves frontend's build folder in production
-if (process.env.NODE_ENV === 'production') {
-  // Serve static files from the React app
-  app.use(express.static(path.join(__dirname, '..', '..', 'frontend', 'build')));
+// Serve static files from the React app build folder
+app.use(express.static(path.join(__dirname, '../frontend/build')));
 
-  // The "catchall" handler: for any request that doesn't
-  // match one above, send back React's index.html file.
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', '..', 'frontend', 'build', 'index.html'));
-  });
-}
+// The "catchall" handler: for any request that doesn't
+// match one above, send back React's index.html file.
+// This route should be placed after all API routes
+// Express 5.x compatible catchall route
+app.get('*', (req, res) => {
+  // Skip API routes
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({ error: 'API endpoint not found' });
+  }
+  
+  // Skip uploads route
+  if (req.path.startsWith('/uploads/')) {
+    return res.status(404).json({ error: 'File not found' });
+  }
+  
+  // Serve React app for all other routes (SPA routing)
+  res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
+});
 
 // في نهاية جميع الراوتات:
 app.use(errorLogger);
@@ -287,4 +301,5 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`Health check: http://localhost:${PORT}/api/health`);
+  console.log(`Frontend will be served from: ${path.join(__dirname, '../frontend/build')}`);
 });

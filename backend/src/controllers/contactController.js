@@ -1,6 +1,6 @@
 // src/controllers/contactController.js
 // This is a placeholder. In production, you might send an email or store the message in the DB.
-const { validationResult } = require('express-validator');
+import { validationResult } from 'express-validator';
 
 async function submitContactForm(req, res) {
   const errors = validationResult(req);
@@ -15,4 +15,4 @@ async function submitContactForm(req, res) {
   res.json({ success: true, message: 'Contact form submitted successfully' });
 }
 
-module.exports = { submitContactForm }; 
+export { submitContactForm }; 

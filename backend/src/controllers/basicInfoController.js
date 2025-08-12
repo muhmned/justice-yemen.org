@@ -1,5 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+import prisma from '../prisma.js';
 
 // جلب بيانات الصفحة (home أو about)
 async function getBasicInfo(req, res) {
@@ -81,4 +80,4 @@ async function updateBasicInfo(req, res) {
   }
 }
 
-module.exports = { getBasicInfo, updateBasicInfo }; 
+export { getBasicInfo, updateBasicInfo }; 

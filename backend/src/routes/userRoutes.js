@@ -1,7 +1,6 @@
-const express = require('express');
-const router = express.Router();
-const logActivity = require('../middleware/logActivity');
-const {
+import express from 'express';
+import logActivity from '../middleware/logActivity.js';
+import {
   getAllUsers,
   updateUserRole,
   updateUserStatus,
@@ -13,8 +12,10 @@ const {
   getUserStats,
   updateProfile,
   changePassword,
-} = require('../controllers/userController');
-const { authenticateToken, requireRole } = require('../middleware/auth');
+} from '../controllers/userController.js';
+import { authenticateToken, requireRole } from '../middleware/auth.js';
+
+const router = express.Router();
 
 // Get current user (accessible to any authenticated user)
 router.get('/me', authenticateToken, getMe);
@@ -56,4 +57,4 @@ router.put('/:userId', authenticateToken, requireRole(['admin', 'system_admin'])
 // Delete a user
 router.delete('/:userId', authenticateToken, requireRole(['admin', 'system_admin']), logActivity('delete_user', 'admin', (req) => `User deleted: ID ${req.params.userId}`), deleteUser);
 
-module.exports = router;
+export default router;

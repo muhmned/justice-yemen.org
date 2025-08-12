@@ -1,5 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+import prisma from '../prisma.js';
 
 // GET /api/settings
 async function getSettings(req, res) {
@@ -28,4 +27,4 @@ async function updateSettings(req, res) {
   }
 }
 
-module.exports = { getSettings, updateSettings }; 
+export { getSettings, updateSettings }; 

@@ -1,8 +1,7 @@
 
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+import prisma from '../prisma.js';
 
-exports.getNotifications = async (req, res) => {
+export const getNotifications = async (req, res) => {
   try {
     const userId = req.user.id;
 
@@ -24,7 +23,7 @@ exports.getNotifications = async (req, res) => {
   }
 };
 
-exports.markAsRead = async (req, res) => {
+export const markAsRead = async (req, res) => {
   try {
     const { notificationId } = req.params;
     const userId = req.user.id;
@@ -46,7 +45,7 @@ exports.markAsRead = async (req, res) => {
   }
 };
 
-exports.createNotification = async (req, res) => {
+export const createNotification = async (req, res) => {
   try {
     const { title, message, type, userId } = req.body;
 
@@ -223,7 +222,7 @@ async function createRealisticNotifications(prisma, userId) {
 }
 
 // دالة لإنشاء إشعار عند إضافة مقال جديد
-exports.createArticleNotification = async (prisma, articleId, userId) => {
+export const createArticleNotification = async (prisma, articleId, userId) => {
   try {
     const article = await prisma.article.findUnique({
       where: { id: articleId },
@@ -246,7 +245,7 @@ exports.createArticleNotification = async (prisma, articleId, userId) => {
 };
 
 // دالة لإنشاء إشعار عند نشر مقال
-exports.createPublishNotification = async (prisma, articleId, userId) => {
+export const createPublishNotification = async (prisma, articleId, userId) => {
   try {
     const article = await prisma.article.findUnique({
       where: { id: articleId },
@@ -269,7 +268,7 @@ exports.createPublishNotification = async (prisma, articleId, userId) => {
 };
 
 // دالة لإنشاء إشعار عند إنشاء نسخة احتياطية
-exports.createBackupNotification = async (prisma, backupType, userId) => {
+export const createBackupNotification = async (prisma, backupType, userId) => {
   try {
     await prisma.notification.create({
       data: {
@@ -285,7 +284,7 @@ exports.createBackupNotification = async (prisma, backupType, userId) => {
 };
 
 // دالة لإنشاء إشعار عند تسجيل مستخدم جديد
-exports.createUserNotification = async (prisma, username, userId) => {
+export const createUserNotification = async (prisma, username, userId) => {
   try {
     await prisma.notification.create({
       data: {
