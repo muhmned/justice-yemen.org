@@ -7,7 +7,7 @@
 6 silly config load:file:C:\Users\Elite\AppData\Roaming\npm\etc\npmrc
 7 verbose title npm start
 8 verbose argv "start"
-9 verbose logfile logs-max:10 dir:C:\Users\Elite\Desktop\justice_org\backend\.npm-cache\_logs\2025-08-13T17_31_05_384Z-
-10 verbose logfile C:\Users\Elite\Desktop\justice_org\backend\.npm-cache\_logs\2025-08-13T17_31_05_384Z-debug-0.log
-11 silly logfile done cleaning log files
-12 http fetch GET 200 https://registry.npmjs.org/npm 1003ms
+9 verbose logfile logs-max:10 dir:C:\Users\Elite\Desktop\justice_org\backend\.npm-cache\_logs\2025-08-13T20_45_04_408Z-
+10 verbose logfile C:\Users\Elite\Desktop\justice_org\backend\.npm-cache\_logs\2025-08-13T20_45_04_408Z-debug-0.log
+11 silly logfile start cleaning logs, removing 1 files
+12 silly logfile done cleaning log files
