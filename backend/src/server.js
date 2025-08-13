@@ -28,6 +28,7 @@ import dotenv from 'dotenv';
 import errorLogger from './middleware/errorLogger.js';
 import logActivity from './middleware/logActivity.js';
 import prisma from './prisma.js';
+import renderConfig from './config/render.js';
 
 // تحميل متغيرات البيئة
 dotenv.config();
@@ -283,20 +284,27 @@ process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection:', reason);
 });
 
+// التحقق من إعدادات Render
+try {
+  renderConfig.validateConfig();
+  console.log('📋 Render diagnostic info:', renderConfig.getDiagnosticInfo());
+} catch (error) {
+  console.error('❌ Render configuration error:', error.message);
+  process.exit(1);
+}
+
 // تشغيل الخادم
-const PORT = process.env.PORT || 5000;
-
-
-// إعدادات إضافية للخادم
-const server = app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🔗 Health check: http://localhost:${PORT}/api/health`);
-  console.log(`📊 Database check: http://localhost:${PORT}/api/health/db`);
+const server = app.listen(renderConfig.port, renderConfig.host, () => {
+  console.log(`🚀 Server running on ${renderConfig.host}:${renderConfig.port}`);
+  console.log(`🌍 Environment: ${renderConfig.environment}`);
+  console.log(`🔗 Health check: http://${renderConfig.host}:${renderConfig.port}/api/health`);
+  console.log(`📊 Database check: http://${renderConfig.host}:${renderConfig.port}/api/health/db`);
   
   // معلومات إضافية للتشخيص
-  if (process.env.NODE_ENV === 'production') {
+  if (renderConfig.environment === 'production') {
     console.log(`🌐 Production mode - External access enabled`);
+    console.log(`🔧 Render deployment ready - Port binding on ${renderConfig.host}`);
+    console.log(`📡 Ready to accept external connections`);
   } else {
     console.log(`🔧 Development mode - Local access only`);
   }
