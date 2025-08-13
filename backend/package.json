@@ -8,7 +8,7 @@
     "dev": "nodemon src/server.js",
     "build": "prisma generate",
     "postinstall": "prisma generate",
-    "test:render": "node test_render_port.js"
+    "test:render": "node test_render.js"
   },
   "dependencies": {
     "@prisma/client": "^6.11.1",
