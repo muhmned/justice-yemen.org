@@ -4,8 +4,9 @@ services:
     env: node
     plan: free
     buildCommand: |
-      npm install
-      npm run build
+      cd backend && npm install --no-cache --production=false
+      cd frontend && npm install --no-cache --legacy-peer-deps --production=false
+      cd frontend && npm run build
     startCommand: npm start
     envVars:
       - key: DATABASE_URL

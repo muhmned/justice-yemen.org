@@ -5,13 +5,15 @@ const allowedOrigins = [
   // Development origins
   'http://localhost:3000',
   'http://localhost:3001',
+  'http://localhost:5000',
   'http://127.0.0.1:3000',
   'http://127.0.0.1:3001',
-  
+  'http://127.0.0.1:5000',
+
   // Production origins - استبدل هذه بأسماء النطاقات الخاصة بك
   'https://justice-org.onrender.com',
   'https://your-custom-domain.com',
-  
+
   // Render preview URLs (for testing)
   'https://*.onrender.com'
 ];
