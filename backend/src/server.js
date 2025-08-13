@@ -1,9 +1,9 @@
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
-import cors from "cors";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import corsConfig from './config/cors.js';
 import userRoutes from './routes/userRoutes.js';
 import articleRoutes from './routes/articleRoutes.js';
 import newsRoutes from './routes/newsRoutes.js';
@@ -43,21 +43,8 @@ app.locals.prisma = prisma;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// إعدادات CORS محسنة
-app.use(cors({
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: [
-    'Content-Type', 
-    'Authorization', 
-    'X-Requested-With',
-    'x-requested-with',
-    'Accept',
-    'Origin',
-    'Cache-Control',
-    'X-File-Name'
-  ]
-}));
+// إعدادات CORS محسنة للعمل مع Render
+app.use(corsConfig);
 
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ limit: '100mb', extended: true }));
@@ -298,7 +285,36 @@ process.on('unhandledRejection', (reason, promise) => {
 
 // تشغيل الخادم
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`Health check: http://localhost:${PORT}/api/health`);
+const HOST = process.env.HOST || '0.0.0.0';
+
+// إعدادات إضافية للخادم
+const server = app.listen(PORT, HOST, () => {
+  console.log(`🚀 Server running on ${HOST}:${PORT}`);
+  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`🔗 Health check: http://${HOST}:${PORT}/api/health`);
+  console.log(`📊 Database check: http://${HOST}:${PORT}/api/health/db`);
+  
+  // معلومات إضافية للتشخيص
+  if (process.env.NODE_ENV === 'production') {
+    console.log(`🌐 Production mode - External access enabled`);
+  } else {
+    console.log(`🔧 Development mode - Local access only`);
+  }
+});
+
+// معالجة إغلاق الخادم بشكل آمن
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received, shutting down gracefully');
+  server.close(() => {
+    console.log('Process terminated');
+    process.exit(0);
+  });
+});
+
+process.on('SIGINT', () => {
+  console.log('SIGINT received, shutting down gracefully');
+  server.close(() => {
+    console.log('Process terminated');
+    process.exit(0);
+  });
 });
