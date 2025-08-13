@@ -17,6 +17,9 @@ router.use(authenticateToken);
 // جلب جميع الرسائل (للمدير فقط)
 router.get('/', requireRole(['admin', 'system_admin']), getAllMessages);
 
+// إحصائيات الرسائل - يجب أن يكون قبل /:id
+router.get('/stats/overview', requireRole(['admin', 'system_admin']), getMessageStats);
+
 // جلب رسالة واحدة
 router.get('/:id', requireRole(['admin', 'system_admin']), getMessage);
 
@@ -25,9 +28,6 @@ router.put('/:id', logActivity('update_message_status', 'admin', (req) => `Messa
 
 // حذف رسالة
 router.delete('/:id', requireRole(['admin', 'system_admin']), logActivity('delete_message', 'admin', (req) => `Message deleted: ID ${req.params.id}`), deleteMessage);
-
-// إحصائيات الرسائل
-router.get('/stats/overview', requireRole(['admin', 'system_admin']), getMessageStats);
 
 // إنشاء رسالة جديدة (من نموذج الاتصال)
 // This is handled by contactRoutes.js now

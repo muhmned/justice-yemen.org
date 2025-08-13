@@ -11,12 +11,12 @@ import {
 const router = express.Router();
 
 // جلب الإشعارات
-router.get('/notifications', authenticateToken, getNotifications);
+router.get('/', authenticateToken, getNotifications);
 
 // تحديث حالة الإشعار كمقروء
-router.put('/notifications/:notificationId/read', authenticateToken, logActivity('mark_notification_read', 'user', (req) => `Notification marked as read: ID ${req.params.notificationId}`), markAsRead);
+router.put('/:notificationId/read', authenticateToken, logActivity('mark_notification_read', 'user', (req) => `Notification marked as read: ID ${req.params.notificationId}`), markAsRead);
 
 // إنشاء إشعار جديد
-router.post('/notifications', authenticateToken, requireRole(['admin', 'system_admin']), logActivity('create_notification', 'admin', (req) => `Notification created: ${req.body.message}`), createNotification);
+router.post('/', authenticateToken, requireRole(['admin', 'system_admin']), logActivity('create_notification', 'admin', (req) => `Notification created: ${req.body.message}`), createNotification);
 
 export default router;

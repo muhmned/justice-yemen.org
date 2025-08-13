@@ -31,7 +31,7 @@ router.get('/active', async (req, res) => {
   }
 });
 
-// جلب قسم حسب slug
+// جلب قسم حسب slug - يجب أن يكون قبل /:id لتجنب تضارب المسارات
 router.get('/slug/:slug', async (req, res) => {
   try {
     const section = await prisma.section.findUnique({
@@ -41,6 +41,20 @@ router.get('/slug/:slug', async (req, res) => {
     res.json(section);
   } catch (error) {
     console.error('❌ [Sections] Error fetching by slug:', error);
+    res.status(500).json({ error: 'حدث خطأ أثناء جلب القسم.' });
+  }
+});
+
+// جلب قسم حسب ID
+router.get('/:id', async (req, res) => {
+  try {
+    const section = await prisma.section.findUnique({
+      where: { id: req.params.id }
+    });
+    if (!section) return res.status(404).json({ error: 'القسم غير موجود.' });
+    res.json(section);
+  } catch (error) {
+    console.error('❌ [Sections] Error fetching by ID:', error);
     res.status(500).json({ error: 'حدث خطأ أثناء جلب القسم.' });
   }
 });

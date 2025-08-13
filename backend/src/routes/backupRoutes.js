@@ -15,10 +15,10 @@ import {
 
 const router = express.Router();
 
-router.post('/backup', authenticateToken, backupDatabase);
+router.post('/', authenticateToken, backupDatabase);
 router.post('/import', authenticateToken, upload.single('file'), importDatabase);
 router.post('/import-test', authenticateToken, upload.single('file'), importTestFile);
-router.get('/backups', authenticateToken, getBackups);
-router.delete('/backups/:filename', authenticateToken, deleteBackup);
+router.get('/', authenticateToken, getBackups);
+router.delete('/:filename', authenticateToken, deleteBackup);
 
 export default router;

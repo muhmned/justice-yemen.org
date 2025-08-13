@@ -231,8 +231,8 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 app.use('/api/upload', uploadRoutes);
 app.use('/api/basic-info', basicInfoRoutes);
 app.use('/api/sections', sectionRoutes);
-app.use('/api', backupRoutes);
-app.use('/api', notificationRoutes);
+app.use('/api/backup', backupRoutes);
+app.use('/api/notifications', notificationRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/stats', statsRoutes);
 
@@ -242,8 +242,8 @@ app.use(express.static(path.join(__dirname, '../frontend/build')));
 // The "catchall" handler: for any request that doesn't
 // match one above, send back React's index.html file.
 // This route should be placed after all API routes
-// Express 5.x compatible catchall route
-app.get('*', (req, res) => {
+// Express 5.x compatible catchall route using RegExp to avoid path-to-regexp parsing issues
+app.get(/.*/, (req, res) => {
   // Skip API routes
   if (req.path.startsWith('/api/')) {
     return res.status(404).json({ error: 'API endpoint not found' });

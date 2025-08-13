@@ -39,12 +39,12 @@ const upload = multer({
   }
 });
 
-// فقط راوت إضافة مقال
-router.post('/', authenticateToken, requireRole(['editor', 'admin', 'system_admin']), upload.single('image'), logActivity('create_article', 'content', (req) => `Article created: ${req.body.title}`), createArticle);
-router.get('/', getAllArticles);
-router.get('/:id', getArticleById);
-router.delete('/:id', authenticateToken, requireRole(['editor', 'admin', 'system_admin']), logActivity('delete_article', 'content', (req) => `Article deleted: ID ${req.params.id}`), deleteArticle);
-router.put('/:id', authenticateToken, requireRole(['editor', 'admin', 'system_admin']), upload.single('image'), logActivity('update_article', 'content', (req) => `Article updated: ${req.body.title}`), updateArticle);
+// Routes for articles - ترتيب المسارات مهم!
+router.get('/', getAllArticles); // جلب جميع المقالات (عام)
+router.post('/', authenticateToken, requireRole(['editor', 'admin', 'system_admin']), upload.single('image'), logActivity('create_article', 'content', (req) => `Article created: ${req.body.title}`), createArticle); // إضافة مقال جديد
+router.get('/:id', getArticleById); // جلب مقال محدد (عام)
+router.put('/:id', authenticateToken, requireRole(['editor', 'admin', 'system_admin']), upload.single('image'), logActivity('update_article', 'content', (req) => `Article updated: ${req.body.title}`), updateArticle); // تحديث مقال
+router.delete('/:id', authenticateToken, requireRole(['editor', 'admin', 'system_admin']), logActivity('delete_article', 'content', (req) => `Article deleted: ID ${req.params.id}`), deleteArticle); // حذف مقال
 
 // معالجة أخطاء multer
 router.use((error, req, res, next) => {

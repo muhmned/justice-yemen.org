@@ -54,8 +54,11 @@ const reportValidation = [
 
 // عام: جلب جميع التقارير
 router.get('/', getAllReports);
-// عام: البحث في التقارير
+// عام: البحث في التقارير - يجب أن يكون قبل /:id
 router.get('/search', searchReports);
+// عام: جلب تقرير محدد - يجب أن يكون بعد /search
+router.get('/:id', getReportById);
+
 // محرر/مدير: إضافة تقرير
 router.post('/', authenticateToken, requireRole(['editor', 'admin', 'system_admin']), upload.fields([
   { name: 'pdfFile', maxCount: 1 },
@@ -68,9 +71,6 @@ router.put('/:id', authenticateToken, requireRole(['editor', 'admin', 'system_ad
 ]), reportValidation, logActivity('update_report', 'content', (req) => `Report updated: ${req.body.title}`), updateReport);
 // محرر/مدير: حذف تقرير
 router.delete('/:id', authenticateToken, requireRole(['editor', 'admin', 'system_admin']), logActivity('delete_report', 'content', (req) => `Report deleted: ID ${req.params.id}`), deleteReport);
-
-// في نهاية الملف
-router.get('/:id', getReportById);
 
 // معالجة أخطاء multer
 router.use((error, req, res, next) => {

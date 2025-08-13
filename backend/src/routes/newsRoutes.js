@@ -40,9 +40,9 @@ const upload = multer({
   }
 });
 
-// Routes للأخبار
+// Routes للأخبار - ترتيب المسارات مهم!
 router.get('/', getAllNews); // جلب جميع الأخبار (عام)
-router.get('/search', searchNews); // البحث في الأخبار (عام)
+router.get('/search', searchNews); // البحث في الأخبار (عام) - يجب أن يكون قبل /:id
 router.get('/:id', getNewsById); // جلب خبر محدد (عام)
 
 // Routes تتطلب مصادقة
