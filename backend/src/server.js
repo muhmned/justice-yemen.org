@@ -285,14 +285,14 @@ process.on('unhandledRejection', (reason, promise) => {
 
 // تشغيل الخادم
 const PORT = process.env.PORT || 5000;
-const HOST = process.env.HOST || '0.0.0.0';
+
 
 // إعدادات إضافية للخادم
-const server = app.listen(PORT, HOST, () => {
-  console.log(`🚀 Server running on ${HOST}:${PORT}`);
+const server = app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
   console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🔗 Health check: http://${HOST}:${PORT}/api/health`);
-  console.log(`📊 Database check: http://${HOST}:${PORT}/api/health/db`);
+  console.log(`🔗 Health check: http://localhost:${PORT}/api/health`);
+  console.log(`📊 Database check: http://localhost:${PORT}/api/health/db`);
   
   // معلومات إضافية للتشخيص
   if (process.env.NODE_ENV === 'production') {
