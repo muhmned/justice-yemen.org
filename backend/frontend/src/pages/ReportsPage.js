@@ -13,28 +13,30 @@ const ReportsPage = () => {
   const [years, setYears] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/reports')
-      .then(res => res.json())
-      .then(data => {
-        const reportsData = data.reports || data;
-        setReports(reportsData);
-        
-        // استخراج السنوات الفريدة
-        const uniqueYears = [...new Set(reportsData.map(report => {
-          const year = new Date(report.publishDate).getFullYear();
-          return year;
-        }).filter(Boolean))].sort((a, b) => b - a);
-        
-        setYears(uniqueYears);
-        setFilteredReports(reportsData);
-        setLoading(false);
-      })
-      .catch((error) => {
+    const fetchReports = async () => {
+      try {
+        const response = await fetch('/api/reports');
+        if (response.ok) {
+          const data = await response.json();
+          const publishedReports = Array.isArray(data) ? data.filter(item => item.status === 'published') : [];
+          setReports(publishedReports);
+          
+          // استخراج السنوات الفريدة
+          const uniqueYears = [...new Set(publishedReports.map(item => new Date(item.publishDate).getFullYear()).filter(Boolean))].sort((a, b) => b - a);
+          setYears(uniqueYears);
+          
+          setFilteredReports(publishedReports);
+          setLoading(false);
+        }
+      } catch (error) {
         console.error('خطأ في جلب التقارير:', error);
         setReports([]);
         setFilteredReports([]);
         setLoading(false);
-      });
+      }
+    };
+
+    fetchReports();
   }, []);
 
   // تصفية التقارير
@@ -75,11 +77,11 @@ const ReportsPage = () => {
     e.stopPropagation();
     
     try {
-      const pdfUrl = report.pdfUrl.startsWith('http')
-        ? report.pdfUrl
-        : `http://localhost:5000${report.pdfUrl}`;
+      const downloadUrl = report.pdfUrl.startsWith('http') 
+        ? report.pdfUrl 
+        : report.pdfUrl;
 
-      const response = await fetch(pdfUrl, { method: 'GET' });
+      const response = await fetch(downloadUrl, { method: 'GET' });
 
       if (!response.ok) {
         throw new Error(`فشل التحميل. كود الاستجابة: ${response.status}`);
@@ -209,8 +211,9 @@ const ReportsPage = () => {
                   <article key={report.id} className="report-card">
                     <div className="report-image">
                       <img 
-                        src={report.thumbnail ? (report.thumbnail.startsWith('http') ? report.thumbnail : `http://localhost:5000${report.thumbnail}`) : 'https://via.placeholder.com/400x250/28a745/ffffff?text=لا+توجد+صورة'} 
+                        src={report.thumbnail ? (report.thumbnail.startsWith('http') ? report.thumbnail : report.thumbnail) : 'https://via.placeholder.com/400x250/28a745/ffffff?text=لا+توجد+صورة'} 
                         alt={report.title} 
+                        className="report-image"
                       />
                       <div className="report-overlay">
                         <div className="overlay-actions">

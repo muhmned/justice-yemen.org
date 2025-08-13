@@ -26,22 +26,20 @@ const ContactUsPage = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    fetchContact();
-  }, []);
-
-  const fetchContact = async () => {
-    try {
-      const response = await fetch('http://localhost:5000/api/contact/info');
-      if (response.ok) {
-        const data = await response.json();
-        setContactInfo(data);
+    const fetchContactInfo = async () => {
+      try {
+        const response = await fetch('/api/contact/info');
+        if (response.ok) {
+          const data = await response.json();
+          setContactInfo(data);
+        }
+      } catch (error) {
+        console.error('خطأ في جلب معلومات الاتصال:', error);
       }
-    } catch (error) {
-      console.error('خطأ في جلب معلومات الاتصال:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    };
+
+    fetchContactInfo();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -60,7 +58,7 @@ const ContactUsPage = () => {
 
     try {
       // إرسال الرسالة إلى الخادم
-      const response = await fetch('http://localhost:5000/api/contact/send', {
+      const response = await fetch('/api/contact/send', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

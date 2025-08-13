@@ -7,13 +7,19 @@ const NewsDetailsPage = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/news/${id}`)
-      .then(res => res.json())
-      .then(data => {
-        setNews(data);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
+    const fetchNews = async () => {
+      try {
+        const response = await fetch(`/api/news/${id}`);
+        if (response.ok) {
+          const data = await response.json();
+          setNews(data);
+        }
+      } catch (error) {
+        console.error('خطأ في جلب الخبر:', error);
+      }
+    };
+
+    fetchNews();
   }, [id]);
 
   if (loading) return <div>جاري التحميل...</div>;
@@ -23,7 +29,11 @@ const NewsDetailsPage = () => {
     <div className="news-details" style={{ maxWidth: 800, margin: '40px auto', background: '#fff', padding: 0, borderRadius: 16, boxShadow: '0 4px 24px #e0e0e0', overflow: 'hidden' }}>
       {news.image && (
         <div style={{ width: '100%', height: 340, background: '#f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-          <img src={news.image.startsWith('http') ? news.image : `http://localhost:5000${news.image}`} alt={news.title} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }} />
+          <img 
+            src={news.image.startsWith('http') ? news.image : news.image} 
+            alt={news.title} 
+            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }} 
+          />
         </div>
       )}
       <div style={{ padding: 32 }}>

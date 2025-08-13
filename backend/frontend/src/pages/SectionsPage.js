@@ -10,16 +10,14 @@ const SectionsPage = (props) => {
         const fetchSections = async () => {
             setLoading(true);
             try {
-                const res = await fetch('http://localhost:5000/api/sections');
-                const data = await res.json();
-                setSections(Array.isArray(data) ? data : []);
-                if (props.showAlert) props.showAlert('تم جلب الأقسام بنجاح', 'success');
+                const res = await fetch('/api/sections');
+                if (res.ok) {
+                    const data = await res.json();
+                    const publishedSections = Array.isArray(data) ? data.filter(item => item.status === 'published') : [];
+                    setSections(publishedSections);
+                }
             } catch (error) {
-                console.error('Error fetching sections:', error);
-                setSections([]);
-                if (props.showAlert) props.showAlert('حدث خطأ أثناء جلب الأقسام', 'error');
-            } finally {
-                setLoading(false);
+                console.error('خطأ في جلب الأقسام:', error);
             }
         };
 

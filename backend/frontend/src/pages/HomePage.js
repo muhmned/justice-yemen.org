@@ -25,7 +25,7 @@ const HomePage = () => {
   const fetchHome = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/basic-info/home');
+      const res = await fetch('/api/basic-info/home');
       const data = await res.json();
       setHomeInfo({
         title: data.title || '',
@@ -47,7 +47,7 @@ const HomePage = () => {
   const fetchLatestNews = useCallback(async () => {
     setNewsLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/news');
+      const res = await fetch('/api/news');
       const data = await res.json();
       const publishedNews = Array.isArray(data) ? data.filter(news => news.status === 'published') : [];
       setFeaturedNews(publishedNews.slice(0, 6));
@@ -62,7 +62,7 @@ const HomePage = () => {
   const fetchLatestReports = useCallback(async () => {
     setReportsLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/reports');
+      const res = await fetch('/api/reports');
       const data = await res.json();
       if (Array.isArray(data)) {
         setLatestReports(data.slice(0, 3));
@@ -80,9 +80,9 @@ const HomePage = () => {
   const fetchStats = useCallback(async () => {
     try {
       const [newsRes, reportsRes, sectionsRes] = await Promise.all([
-        fetch('http://localhost:5000/api/news'),
-        fetch('http://localhost:5000/api/reports'),
-        fetch('http://localhost:5000/api/sections')
+        fetch('/api/news'),
+        fetch('/api/reports'),
+        fetch('/api/sections')
       ]);
 
       const [newsData, reportsData, sectionsData] = await Promise.all([
@@ -150,8 +150,8 @@ const HomePage = () => {
     try {
       // البحث في الأخبار والتقارير
       const [newsRes, reportsRes] = await Promise.all([
-        fetch(`http://localhost:5000/api/news/search?q=${encodeURIComponent(query)}`),
-        fetch(`http://localhost:5000/api/reports/search?q=${encodeURIComponent(query)}`)
+        fetch(`/api/news/search?q=${encodeURIComponent(query)}`),
+        fetch(`/api/reports/search?q=${encodeURIComponent(query)}`)
       ]);
 
       const [newsData, reportsData] = await Promise.all([
@@ -320,7 +320,7 @@ const HomePage = () => {
                   <div key={news.id} className="news-card">
                     <div className="news-image">
                       <img 
-                        src={news.image ? (news.image.startsWith('http') ? news.image : `http://localhost:5000${news.image}`) : 'https://via.placeholder.com/400x250/007bff/ffffff?text=لا+توجد+صورة'} 
+                        src={news.image ? (news.image.startsWith('http') ? news.image : news.image) : 'https://via.placeholder.com/400x250/007bff/ffffff?text=لا+توجد+صورة'} 
                         alt={news.title} 
                       />
                       <div className="news-overlay">
@@ -386,7 +386,7 @@ const HomePage = () => {
                   <div key={report.id} className="report-card">
                     <div className="report-image">
                       <img
-                        src={report.thumbnail ? (report.thumbnail.startsWith('http') ? report.thumbnail : `http://localhost:5000${report.thumbnail}`) : 'https://via.placeholder.com/400x250/28a745/ffffff?text=لا+توجد+صورة'}
+                        src={report.thumbnail ? (report.thumbnail.startsWith('http') ? report.thumbnail : report.thumbnail) : 'https://via.placeholder.com/400x250/28a745/ffffff?text=لا+توجد+صورة'} 
                         alt={report.title || 'Report'}
                       />
                       <div className="report-overlay">

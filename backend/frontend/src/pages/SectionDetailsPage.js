@@ -9,28 +9,41 @@ const SectionDetailsPage = () => {
   const [articles, setArticles] = useState([]);
 
   useEffect(() => {
-    setLoading(true);
-    fetch(`http://localhost:5000/api/sections/slug/${slug}`)
-      .then(res => {
-        if (!res.ok) throw new Error('لم يتم العثور على القسم');
-        return res.json();
-      })
-      .then(data => {
-        setSection(data);
-        setLoading(false);
-      })
-      .catch(err => {
-        setError(err.message);
-        setLoading(false);
-      });
-    // جلب جميع المقالات ثم تصفيتها حسب القسم
-    fetch('http://localhost:5000/api/articles')
-      .then(res => res.json())
-      .then(data => {
-        setArticles(Array.isArray(data) ? data : []);
-      })
-      .catch(() => setArticles([]));
+    const fetchSectionData = async () => {
+      try {
+        const response = await fetch(`/api/sections/slug/${slug}`);
+        if (response.ok) {
+          const data = await response.json();
+          setSection(data);
+        }
+      } catch (error) {
+        console.error('خطأ في جلب بيانات القسم:', error);
+      }
+    };
+
+    fetchSectionData();
   }, [slug]);
+
+  useEffect(() => {
+    const fetchArticles = async () => {
+      if (!section) return;
+      
+      try {
+        const response = await fetch('/api/articles');
+        if (response.ok) {
+          const data = await response.json();
+          const sectionArticles = Array.isArray(data) ? data.filter(article => 
+            article.sectionId === section.id && article.status === 'published'
+          ) : [];
+          setArticles(sectionArticles);
+        }
+      } catch (error) {
+        console.error('خطأ في جلب المقالات:', error);
+      }
+    };
+
+    fetchArticles();
+  }, [section]);
 
   if (loading) return <div style={{textAlign:'center'}}>جاري التحميل...</div>;
   if (error) return <div style={{color:'red',textAlign:'center'}}>{error}</div>;
@@ -61,7 +74,12 @@ const SectionDetailsPage = () => {
                 onMouseOver={e => {e.currentTarget.style.transform='translateY(-6px) scale(1.03)';e.currentTarget.style.boxShadow='0 8px 24px #d0d0d0';}}
                 onMouseOut={e => {e.currentTarget.style.transform='none';e.currentTarget.style.boxShadow='0 2px 8px #eee';}}>
                 <Link to={`/articles/${article.id}`} style={{ display: 'block', flex:1 }}>
-                  <img src={`http://localhost:5000${article.image}`} alt={article.title} className="card-image" style={{ width:'100%', height:170, objectFit:'cover', borderTopLeftRadius:10, borderTopRightRadius:10 }} />
+                  <img 
+                    src={article.image} 
+                    alt={article.title} 
+                    className="card-image" 
+                    style={{ width:'100%', height:170, objectFit:'cover', borderTopLeftRadius:10, borderTopRightRadius:10 }} 
+                  />
                   <div className="card-content" style={{padding:18}}>
                     <h3 className="card-title" style={{color:'#1e3c72',fontSize:20,marginBottom:8,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>
                       {article.title}

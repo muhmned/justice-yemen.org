@@ -13,25 +13,30 @@ const NewsPage = () => {
   const [filteredNews, setFilteredNews] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/news')
-      .then(res => res.json())
-      .then(data => {
-        const publishedNews = Array.isArray(data) ? data.filter(news => news.status === 'published') : [];
-        setNews(publishedNews);
-        
-        // استخراج الفئات الفريدة
-        const uniqueCategories = [...new Set(publishedNews.map(item => item.category).filter(Boolean))];
-        setCategories(uniqueCategories);
-        
-        setFilteredNews(publishedNews);
-        setLoading(false);
-      })
-      .catch((error) => {
+    const fetchNews = async () => {
+      try {
+        const response = await fetch('/api/news');
+        if (response.ok) {
+          const data = await response.json();
+          const publishedNews = Array.isArray(data) ? data.filter(item => item.status === 'published') : [];
+          setNews(publishedNews);
+          
+          // استخراج الفئات الفريدة
+          const uniqueCategories = [...new Set(publishedNews.map(item => item.category).filter(Boolean))];
+          setCategories(uniqueCategories);
+          
+          setFilteredNews(publishedNews);
+          setLoading(false);
+        }
+      } catch (error) {
         console.error('خطأ في جلب الأخبار:', error);
         setNews([]);
         setFilteredNews([]);
         setLoading(false);
-      });
+      }
+    };
+
+    fetchNews();
   }, []);
 
   // تصفية الأخبار
@@ -170,7 +175,7 @@ const NewsPage = () => {
                   <article key={item.id} className="news-card">
                     <div className="news-image">
                       <img 
-                        src={item.image ? (item.image.startsWith('http') ? item.image : `http://localhost:5000${item.image}`) : 'https://via.placeholder.com/400x250/007bff/ffffff?text=لا+توجد+صورة'} 
+                        src={item.image ? (item.image.startsWith('http') ? item.image : item.image) : 'https://via.placeholder.com/400x250/007bff/ffffff?text=لا+توجد+صورة'} 
                         alt={item.title} 
                       />
                       <div className="news-overlay">

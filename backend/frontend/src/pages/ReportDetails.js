@@ -7,13 +7,19 @@ const ReportDetails = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/reports/${id}`)
-      .then(res => res.json())
-      .then(data => {
-        setReport(data.report || data);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
+    const fetchReport = async () => {
+      try {
+        const response = await fetch(`/api/reports/${id}`);
+        if (response.ok) {
+          const data = await response.json();
+          setReport(data);
+        }
+      } catch (error) {
+        console.error('خطأ في جلب التقرير:', error);
+      }
+    };
+
+    fetchReport();
   }, [id]);
 
   if (loading) return <div>جاري التحميل...</div>;
@@ -26,46 +32,14 @@ const ReportDetails = () => {
       <p style={{ color: '#888', marginBottom: 16 }}>{report.publishDate && report.publishDate.slice(0, 10)}</p>
       <div dangerouslySetInnerHTML={{ __html: report.content }} style={{ marginBottom: 24 }} />
       {report.pdfUrl && (
-        <button
-          className="btn"
-          onClick={async (e) => {
-            console.log("تم الضغط على زر تحميل التقرير PDF");
-            try {
-              // تسجيل الرابط الأصلي
-              console.log("الرابط الأصلي من قاعدة البيانات:", report.pdfUrl);
-              // تحديد الرابط النهائي
-              const pdfUrl = report.pdfUrl.startsWith('http')
-                ? report.pdfUrl
-                : `http://localhost:5000${report.pdfUrl}`;
-              // تسجيل الرابط النهائي
-              console.log("الرابط النهائي المستخدم للتحميل:", pdfUrl);
-              // محاولة التحميل
-              const response = await fetch(pdfUrl, { method: 'GET' });
-              // تسجيل حالة الاستجابة
-              console.log("حالة الاستجابة:", response.status);
-              if (!response.ok) {
-                throw new Error(`فشل التحميل. كود الاستجابة: ${response.status}`);
-              }
-              const blob = await response.blob();
-              const url = window.URL.createObjectURL(blob);
-              const a = document.createElement('a');
-              a.href = url;
-              a.download = report.pdfUrl.split('/').pop();
-              document.body.appendChild(a);
-              a.click();
-              a.remove();
-              window.URL.revokeObjectURL(url);
-              // تسجيل نجاح التحميل
-              console.log("تم التحميل بنجاح");
-            } catch (err) {
-              // تسجيل الخطأ
-              console.error("حدث خطأ أثناء تحميل الملف:", err);
-              alert('حدث خطأ أثناء تحميل الملف: ' + err.message);
-            }
-          }}
+        <a 
+          href={report.pdfUrl.startsWith('http') ? report.pdfUrl : report.pdfUrl}
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="download-button"
         >
           تحميل التقرير PDF
-        </button>
+        </a>
       )}
     </div>
   );
