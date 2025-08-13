@@ -1,6 +1,6 @@
 const fetch = require('node-fetch');
 
-const API_URL = 'http://localhost:5000/api/auth/login';
+const API_URL = 'https://justice-org.onrender.com/api/auth/login';
 const USERNAME = 'admin';
 const PASSWORD = 'admin'; // تم التعديل هنا
 
