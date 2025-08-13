@@ -123,7 +123,7 @@ function App() {
   useEffect(() => {
     const checkDb = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/health');
+        const res = await fetch('https://justice-org.onrender.com/api/health');
         const data = await res.json();
         if (data.status && data.status.toLowerCase() === 'ok') {
           setDbStatus('ok');
