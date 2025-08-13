@@ -9,7 +9,7 @@ const ArticleDetailsPage = () => {
   useEffect(() => {
     const fetchArticle = async () => {
       try {
-        const response = await fetch(`/api/articles/${id}`);
+        const response = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/articles/${id}`);
         if (response.ok) {
           const data = await response.json();
           setArticle(data);

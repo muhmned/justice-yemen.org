@@ -15,7 +15,7 @@ const ReportsPage = () => {
   useEffect(() => {
     const fetchReports = async () => {
       try {
-        const response = await fetch('/api/reports');
+        const response = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/reports`);
         if (response.ok) {
           const data = await response.json();
           const publishedReports = Array.isArray(data) ? data.filter(item => item.status === 'published') : [];
@@ -79,7 +79,7 @@ const ReportsPage = () => {
     try {
       const downloadUrl = report.pdfUrl.startsWith('http') 
         ? report.pdfUrl 
-        : report.pdfUrl;
+        : `${process.env.REACT_APP_API_URL || ''}${report.pdfUrl}`;
 
       const response = await fetch(downloadUrl, { method: 'GET' });
 

@@ -10,7 +10,7 @@ const SectionsPage = (props) => {
         const fetchSections = async () => {
             setLoading(true);
             try {
-                const res = await fetch('/api/sections');
+                const res = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/sections`);
                 if (res.ok) {
                     const data = await res.json();
                     const publishedSections = Array.isArray(data) ? data.filter(item => item.status === 'published') : [];

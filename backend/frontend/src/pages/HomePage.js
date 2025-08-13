@@ -25,7 +25,7 @@ const HomePage = () => {
   const fetchHome = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/basic-info/home');
+      const res = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/basic-info/home`);
       const data = await res.json();
       setHomeInfo({
         title: data.title || '',
@@ -47,7 +47,7 @@ const HomePage = () => {
   const fetchLatestNews = useCallback(async () => {
     setNewsLoading(true);
     try {
-      const res = await fetch('/api/news');
+      const res = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/news`);
       const data = await res.json();
       const publishedNews = Array.isArray(data) ? data.filter(news => news.status === 'published') : [];
       setFeaturedNews(publishedNews.slice(0, 6));
@@ -62,7 +62,7 @@ const HomePage = () => {
   const fetchLatestReports = useCallback(async () => {
     setReportsLoading(true);
     try {
-      const res = await fetch('/api/reports');
+      const res = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/reports`);
       const data = await res.json();
       if (Array.isArray(data)) {
         setLatestReports(data.slice(0, 3));
@@ -80,9 +80,9 @@ const HomePage = () => {
   const fetchStats = useCallback(async () => {
     try {
       const [newsRes, reportsRes, sectionsRes] = await Promise.all([
-        fetch('/api/news'),
-        fetch('/api/reports'),
-        fetch('/api/sections')
+        fetch(`${process.env.REACT_APP_API_URL || ''}/api/news`),
+        fetch(`${process.env.REACT_APP_API_URL || ''}/api/reports`),
+        fetch(`${process.env.REACT_APP_API_URL || ''}/api/sections`)
       ]);
 
       const [newsData, reportsData, sectionsData] = await Promise.all([

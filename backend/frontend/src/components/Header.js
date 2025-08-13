@@ -49,7 +49,7 @@ const Header = ({ darkMode, setDarkMode }) => {
   }, []);
 
   useEffect(() => {
-    fetch('/api/sections/active')
+    fetch(`${process.env.REACT_APP_API_URL || ''}/api/sections/active`)
       .then(res => {
         if (!res.ok) throw new Error('تعذر جلب الأقسام');
         return res.json();
@@ -111,15 +111,15 @@ const Header = ({ darkMode, setDarkMode }) => {
     setIsSearching(true);
     try {
       // البحث في الأخبار
-      const newsResponse = await fetch(`/api/news/search?q=${encodeURIComponent(query)}`);
+      const newsResponse = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/news/search?q=${encodeURIComponent(query)}`);
       const newsData = await newsResponse.json();
 
       // البحث في التقارير
-      const reportsResponse = await fetch(`/api/reports/search?q=${encodeURIComponent(query)}`);
+      const reportsResponse = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/reports/search?q=${encodeURIComponent(query)}`);
       const reportsData = await reportsResponse.json();
 
       // البحث في الأقسام
-      const sectionsResponse = await fetch(`/api/sections/search?q=${encodeURIComponent(query)}`);
+      const sectionsResponse = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/sections/search?q=${encodeURIComponent(query)}`);
       const sectionsData = await sectionsResponse.json();
 
       // دمج النتائج

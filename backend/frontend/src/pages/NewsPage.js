@@ -15,7 +15,7 @@ const NewsPage = () => {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const response = await fetch('/api/news');
+        const response = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/news`);
         if (response.ok) {
           const data = await response.json();
           const publishedNews = Array.isArray(data) ? data.filter(item => item.status === 'published') : [];

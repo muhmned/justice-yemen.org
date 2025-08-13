@@ -11,7 +11,7 @@ const SectionDetailsPage = () => {
   useEffect(() => {
     const fetchSectionData = async () => {
       try {
-        const response = await fetch(`/api/sections/slug/${slug}`);
+        const response = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/sections/slug/${slug}`);
         if (response.ok) {
           const data = await response.json();
           setSection(data);
@@ -29,7 +29,7 @@ const SectionDetailsPage = () => {
       if (!section) return;
       
       try {
-        const response = await fetch('/api/articles');
+        const response = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/articles`);
         if (response.ok) {
           const data = await response.json();
           const sectionArticles = Array.isArray(data) ? data.filter(article => 

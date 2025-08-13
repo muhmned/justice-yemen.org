@@ -9,7 +9,7 @@ const NewsDetailsPage = () => {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const response = await fetch(`/api/news/${id}`);
+        const response = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/news/${id}`);
         if (response.ok) {
           const data = await response.json();
           setNews(data);

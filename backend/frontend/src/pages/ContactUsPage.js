@@ -28,7 +28,7 @@ const ContactUsPage = () => {
   useEffect(() => {
     const fetchContactInfo = async () => {
       try {
-        const response = await fetch('/api/contact/info');
+        const response = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/contact/info`);
         if (response.ok) {
           const data = await response.json();
           setContactInfo(data);
@@ -58,7 +58,7 @@ const ContactUsPage = () => {
 
     try {
       // إرسال الرسالة إلى الخادم
-      const response = await fetch('/api/contact/send', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/contact/send`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

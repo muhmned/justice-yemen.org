@@ -9,7 +9,7 @@ const ReportDetails = () => {
   useEffect(() => {
     const fetchReport = async () => {
       try {
-        const response = await fetch(`/api/reports/${id}`);
+        const response = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/reports/${id}`);
         if (response.ok) {
           const data = await response.json();
           setReport(data);
@@ -33,7 +33,7 @@ const ReportDetails = () => {
       <div dangerouslySetInnerHTML={{ __html: report.content }} style={{ marginBottom: 24 }} />
       {report.pdfUrl && (
         <a 
-          href={report.pdfUrl.startsWith('http') ? report.pdfUrl : report.pdfUrl}
+          href={report.pdfUrl.startsWith('http') ? report.pdfUrl : `${process.env.REACT_APP_API_URL || ''}${report.pdfUrl}`}
           target="_blank" 
           rel="noopener noreferrer"
           className="download-button"
