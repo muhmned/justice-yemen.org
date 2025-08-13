@@ -3,11 +3,12 @@
   "version": "1.0.0",
   "main": "src/server.js",
   "type": "module",
- "scripts": {
+   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "build": "prisma generate",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "test:render": "node test_render_port.js"
   },
   "dependencies": {
     "@prisma/client": "^6.11.1",

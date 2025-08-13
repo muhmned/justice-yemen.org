@@ -4,8 +4,8 @@
  */
 
 export const renderConfig = {
-  // إعدادات البورت
-  port: process.env.PORT || 5000,
+  // إعدادات البورت - Render يتطلب PORT محدد
+  port: process.env.PORT,
   
   // إعدادات الـ host
   host: '0.0.0.0',
@@ -17,9 +17,15 @@ export const renderConfig = {
   validateConfig() {
     const errors = [];
     
-    // التحقق من وجود PORT في الإنتاج
-    if (this.environment === 'production' && !process.env.PORT) {
-      errors.push('PORT environment variable is required in production');
+    // التحقق من وجود PORT - مطلوب دائماً
+    if (!process.env.PORT) {
+      errors.push('PORT environment variable is required');
+    } else {
+      // التحقق من أن PORT رقم صحيح
+      const portNum = parseInt(process.env.PORT);
+      if (isNaN(portNum) || portNum < 1 || portNum > 65535) {
+        errors.push('PORT must be a valid number between 1 and 65535');
+      }
     }
     
     // التحقق من وجود متغيرات مطلوبة
@@ -38,6 +44,9 @@ export const renderConfig = {
     }
     
     console.log('✅ Render configuration validated successfully');
+    console.log(`📋 Port: ${process.env.PORT}`);
+    console.log(`📋 Host: ${this.host}`);
+    console.log(`📋 Environment: ${this.environment}`);
     return true;
   },
   

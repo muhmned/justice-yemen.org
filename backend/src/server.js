@@ -293,18 +293,27 @@ try {
   process.exit(1);
 }
 
-// تشغيل الخادم
-const server = app.listen(renderConfig.port, renderConfig.host, () => {
-  console.log(`🚀 Server running on ${renderConfig.host}:${renderConfig.port}`);
+// تشغيل الخادم - استخدام PORT مباشرة من process.env
+const PORT = process.env.PORT;
+const HOST = '0.0.0.0';
+
+if (!PORT) {
+  console.error('❌ PORT environment variable is required');
+  process.exit(1);
+}
+
+const server = app.listen(PORT, HOST, () => {
+  console.log(`🚀 Server running on ${HOST}:${PORT}`);
   console.log(`🌍 Environment: ${renderConfig.environment}`);
-  console.log(`🔗 Health check: http://${renderConfig.host}:${renderConfig.port}/api/health`);
-  console.log(`📊 Database check: http://${renderConfig.host}:${renderConfig.port}/api/health/db`);
+  console.log(`🔗 Health check: http://${HOST}:${PORT}/api/health`);
+  console.log(`📊 Database check: http://${HOST}:${PORT}/api/health/db`);
   
   // معلومات إضافية للتشخيص
   if (renderConfig.environment === 'production') {
     console.log(`🌐 Production mode - External access enabled`);
-    console.log(`🔧 Render deployment ready - Port binding on ${renderConfig.host}`);
+    console.log(`🔧 Render deployment ready - Port binding on ${HOST}:${PORT}`);
     console.log(`📡 Ready to accept external connections`);
+    console.log(`🎯 Render port binding: ${HOST}:${PORT}`);
   } else {
     console.log(`🔧 Development mode - Local access only`);
   }
