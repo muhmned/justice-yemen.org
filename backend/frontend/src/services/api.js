@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { message } from 'antd';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+// Use relative URL for production (same server) or environment variable for custom backend
+const API_BASE_URL = process.env.REACT_APP_API_URL || '';
 
 const api = axios.create({
   baseURL: API_BASE_URL,

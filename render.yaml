@@ -17,3 +17,5 @@ services:
         value: production
       - key: HOST
         value: 0.0.0.0
+      - key: REACT_APP_API_URL
+        value: https://justice-org.onrender.com

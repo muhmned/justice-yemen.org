@@ -7,6 +7,7 @@
 6 silly config load:file:C:\Users\Elite\AppData\Roaming\npm\etc\npmrc
 7 verbose title npm start
 8 verbose argv "start"
-9 verbose logfile logs-max:10 dir:C:\Users\Elite\Desktop\justice_org\backend\.npm-cache\_logs\2025-08-13T17_56_47_858Z-
-10 verbose logfile C:\Users\Elite\Desktop\justice_org\backend\.npm-cache\_logs\2025-08-13T17_56_47_858Z-debug-0.log
-11 silly logfile done cleaning log files
+9 verbose logfile logs-max:10 dir:C:\Users\Elite\Desktop\justice_org\backend\.npm-cache\_logs\2025-08-13T21_37_58_698Z-
+10 verbose logfile C:\Users\Elite\Desktop\justice_org\backend\.npm-cache\_logs\2025-08-13T21_37_58_698Z-debug-0.log
+11 silly logfile start cleaning logs, removing 1 files
+12 silly logfile done cleaning log files
