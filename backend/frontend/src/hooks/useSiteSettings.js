@@ -23,7 +23,7 @@ export const SiteSettingsProvider = ({ children }) => {
   const fetchSettings = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/settings');
+     const res = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/settings`);
       const data = await res.json();
       setSettings({
         site_name: data.site_name || '',

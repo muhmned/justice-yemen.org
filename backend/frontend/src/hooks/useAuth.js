@@ -19,9 +19,9 @@ export const AuthProvider = ({ children }) => {
   const checkAuth = async () => {
     console.log('Checking auth with token:', token ? 'exists' : 'not found');
     if (token) {
-      try {
-        // We need a dedicated endpoint to get the current user's data
-        const response = await fetch('http://localhost:5000/api/users/me', {
+     try {
+  // We need a dedicated endpoint to get the current user's data
+  const response = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/users/me`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -49,8 +49,8 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (username, password) => {
     console.log('Login attempt for username:', username);
-    try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
+   try {
+  const response = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -67,7 +67,7 @@ const ActivityLog = () => {
         return;
       }
 
-      const res = await fetch('http://localhost:5000/api/admin/activity-log', {
+    const res = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/admin/activity-log`,  {
         headers: {
           'Authorization': `Bearer ${token}`
         }

@@ -20,7 +20,7 @@ export default function AboutEdit() {
   const fetchAbout = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/basic-info/about');
+const res = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/basic-info/about`);
       if (!res.ok) throw new Error('فشل في جلب البيانات');
       const data = await res.json();
       setAboutData({
@@ -60,7 +60,7 @@ export default function AboutEdit() {
       const values = await form.validateFields();
       console.log('بيانات الحفظ:', values);
       
-      const res = await fetch('http://localhost:5000/api/basic-info/about', {
+      const res = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/basic-info/about`,{
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -109,7 +109,7 @@ export default function AboutEdit() {
     const formData = new FormData();
     formData.append('about_image', pendingImage);
     try {
-      const res = await fetch('http://localhost:5000/api/settings/about-image', {
+const res = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/settings/about-image`,  {
         method: 'POST',
         body: formData,
         headers: {

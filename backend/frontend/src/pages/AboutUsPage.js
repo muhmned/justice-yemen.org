@@ -18,8 +18,8 @@ const AboutUsPage = () => {
 
   const fetchAbout = useCallback(async () => {
     setLoading(true);
-    try {
-      const res = await fetch('http://localhost:5000/api/basic-info/about');
+  try {
+  const res = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/basic-info/about`);
       const data = await res.json();
       setAbout({
         title: data.title || 'من نحن',

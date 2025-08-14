@@ -114,10 +114,10 @@ const HomePage = () => {
     e.preventDefault();
     e.stopPropagation();
     
-    try {
-      const pdfUrl = report.pdfUrl.startsWith('http')
-        ? report.pdfUrl
-        : `http://localhost:5000${report.pdfUrl}`;
+   try {
+  const pdfUrl = report.pdfUrl.startsWith('http')
+    ? report.pdfUrl
+    : `${process.env.REACT_APP_API_URL || ''}${report.pdfUrl}`;
 
       const response = await fetch(pdfUrl, { method: 'GET' });
 

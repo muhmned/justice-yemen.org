@@ -17,7 +17,7 @@ const AddArticle = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/sections/active')
+fetch(`${process.env.REACT_APP_API_URL || ''}/api/sections/active`)
       .then(res => res.json())
       .then(data => {
         setSections(Array.isArray(data) ? data : []);
@@ -80,7 +80,7 @@ const AddArticle = () => {
     try {
       const token = localStorage.getItem('admin_token');
       console.log('سيتم إرسال الطلب الآن');
-      const res = await fetch('http://localhost:5000/api/articles', {
+     const res = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/articles`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`
@@ -226,8 +226,7 @@ const AddArticle = () => {
                     paste_enable_default_filters: true,
                     paste_remove_styles_if_webkit: true,
                     paste_retain_style_properties: 'color font-size font-family',
-                    images_upload_url: 'http://localhost:5000/api/upload',
-                    images_upload_handler: async (blobInfo, success, failure) => {
+images_upload_url: `${process.env.REACT_APP_API_URL || ''}/api/upload`,                    images_upload_handler: async (blobInfo, success, failure) => {
                       try {
                         const formData = new FormData();
                         formData.append('file', blobInfo.blob());
@@ -259,7 +258,7 @@ const AddArticle = () => {
                             const formData = new FormData();
                             formData.append('file', file);
                             const token = localStorage.getItem('admin_token');
-                            const res = await fetch('http://localhost:5000/api/upload', {
+                          const res = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/upload`,{
                               method: 'POST',
                               headers: { Authorization: `Bearer ${token}` },
                               body: formData
