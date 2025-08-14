@@ -59,11 +59,15 @@ const Sections = () => {
         return;
       }
 
-        const res = await fetch(`${process.env.REACT_APP_API_URL}/api/sections`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/sections`, {
+  headers: { 'Authorization': `Bearer ${token}` }
+});
+
+if (!res.ok) {
+  const text = await res.text(); // نص الصفحة عند الخطأ
+  console.error('Fetch failed, response:', text);
+  throw new Error(`HTTP error! status: ${res.status}`);
+}
 
       if (res.ok) {
         const sectionsData = await res.json();
