@@ -18,9 +18,9 @@ const Login = () => {
   useEffect(() => {
     const token = localStorage.getItem('admin_token');
     if (token) {
-      fetch('http://localhost:5000/api/admin/dashboard', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      })
+      fetch(`${process.env.REACT_APP_API_URL || ''}/api/admin/dashboard`, {
+       headers: { 'Authorization': `Bearer ${token}` }
+           })
         .then(res => {
           if (res.ok) {
             navigate('/admin/dashboard');
