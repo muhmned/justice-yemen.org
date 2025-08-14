@@ -226,7 +226,7 @@ fetch(`${process.env.REACT_APP_API_URL || ''}/api/sections/active`)
                     paste_enable_default_filters: true,
                     paste_remove_styles_if_webkit: true,
                     paste_retain_style_properties: 'color font-size font-family',
-images_upload_url: `${process.env.REACT_APP_API_URL || ''}/api/upload`,                    images_upload_handler: async (blobInfo, success, failure) => {
+                    images_upload_url: `${process.env.REACT_APP_API_URL || ''}/api/upload`,                    images_upload_handler: async (blobInfo, success, failure) => {
                       try {
                         const formData = new FormData();
                         formData.append('file', blobInfo.blob());
