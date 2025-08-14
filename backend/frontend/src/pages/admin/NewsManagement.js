@@ -20,7 +20,7 @@ const NewsManagement = () => {
     setLoading(true);
     try {
       console.log('جاري جلب الأخبار...');
-      const res = await fetch('http://localhost:5000/api/news');
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/news`);
       console.log('استجابة الخادم:', res.status, res.statusText);
       
       if (!res.ok) {
@@ -53,7 +53,7 @@ const NewsManagement = () => {
         return;
       }
 
-      const res = await fetch(`http://localhost:5000/api/news/${id}`, {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/news/${id}`, {
         method: 'DELETE',
         headers: { 
           'Authorization': `Bearer ${token}`,
@@ -220,7 +220,7 @@ const NewsManagement = () => {
           <div>
             {selectedNews.image && (
               <img 
-                src={`http://localhost:5000${selectedNews.image}`} 
+          src={`${process.env.REACT_APP_API_URL}${selectedNews.image}`}
                 alt={selectedNews.title}
                 style={{ width: '100%', maxHeight: 300, objectFit: 'cover', marginBottom: 16 }}
               />

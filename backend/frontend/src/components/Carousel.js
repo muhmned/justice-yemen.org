@@ -9,12 +9,12 @@ const Carousel = () => {
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
-            try {
-                const [newsRes, reportsRes, articlesRes] = await Promise.all([
-                    fetch('http://localhost:5000/api/news'),
-                    fetch('http://localhost:5000/api/reports'),
-                    fetch('http://localhost:5000/api/articles')
-                ]);
+         try {
+              const [newsRes, reportsRes, articlesRes] = await Promise.all([
+                    fetch(`${process.env.REACT_APP_API_URL}/api/news`),
+                    fetch(`${process.env.REACT_APP_API_URL}/api/reports`),
+                    fetch(`${process.env.REACT_APP_API_URL}/api/articles`)
+                      ]);
 
                 const newsData = await newsRes.json();
                 const reportsData = await reportsRes.json();
@@ -76,8 +76,14 @@ const Carousel = () => {
                     {index === currentSlide && (
                         <Link to={slide.link}>
                             <img 
-                                src={slide.image || slide.thumbnail ? (slide.image || slide.thumbnail).startsWith('http') ? (slide.image || slide.thumbnail) : `http://localhost:5000${(slide.image || slide.thumbnail)}` : 'https://via.placeholder.com/1200x400/007bff/ffffff?text=Justice+Organization'} 
-                                alt={slide.title} 
+              src={
+              slide.image || slide.thumbnail
+                ? (slide.image || slide.thumbnail).startsWith('http')
+                ? (slide.image || slide.thumbnail)
+                : `${process.env.REACT_APP_API_URL}${slide.image || slide.thumbnail}`
+                : 'https://via.placeholder.com/1200x400/007bff/ffffff?text=Justice+Organization'
+                        }     
+                               alt={slide.title} 
                                 className="carousel-image" 
                             />
                             <div className="carousel-caption">

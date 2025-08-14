@@ -85,7 +85,7 @@ const Dashboard = () => {
       }
 
       // جلب الإحصائيات
-      const statsRes = await fetch('http://localhost:5000/api/admin/dashboard', {
+const statsRes = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/admin/dashboard`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -112,7 +112,7 @@ const Dashboard = () => {
       });
 
       // جلب المقالات الحديثة
-      const articlesRes = await fetch('http://localhost:5000/api/articles', {
+    const articlesRes = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/articles`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -128,7 +128,7 @@ const Dashboard = () => {
       setPendingReviews(pendingArticles.length);
 
       // جلب المستخدمين الحديثين
-      const usersRes = await fetch('http://localhost:5000/api/users', {
+    const usersRes = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/users`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -140,7 +140,7 @@ const Dashboard = () => {
       setRecentUsers(usersData.slice(0, 5));
 
       // جلب آخر نسخة احتياطية
-      const backupsRes = await fetch('http://localhost:5000/api/backups', {
+  const backupsRes = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/backups`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -171,7 +171,7 @@ const Dashboard = () => {
       if (!token) return;
 
       // جلب الإشعارات الحقيقية من قاعدة البيانات
-      const notificationsRes = await fetch('http://localhost:5000/api/notifications', {
+  const notificationsRes = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/notifications`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -265,7 +265,7 @@ const Dashboard = () => {
   const checkSystemHealth = async () => {
     try {
       // فحص صحة قاعدة البيانات
-      const dbHealthRes = await fetch('http://localhost:5000/api/health/db');
+  const dbHealthRes = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/health/db`);
       const dbHealth = dbHealthRes.ok ? 'healthy' : 'error';
 
       // فحص التخزين (محاكاة)

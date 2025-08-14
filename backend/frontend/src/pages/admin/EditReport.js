@@ -26,8 +26,8 @@ const EditReport = () => {
       setError('');
       try {
         const token = localStorage.getItem('admin_token');
-        const res = await fetch(`http://localhost:5000/api/reports/${id}`, {
-          headers: { 'Authorization': `Bearer ${token}` }
+const res = await fetch(`${process.env.REACT_APP_API_URL}/api/reports/${id}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
         });
         if (!res.ok) {
           let errorText = '';
@@ -127,7 +127,7 @@ const EditReport = () => {
       // إصلاح مسارات الصور
       const fixedContent = content.replace(/\.\.\/uploads\//g, '/uploads/');
       const token = localStorage.getItem('admin_token');
-      const res = await fetch(`http://localhost:5000/api/reports/${id}`, {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/reports/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -158,7 +158,7 @@ const EditReport = () => {
 
   const uploadProps = {
     name: 'file',
-    action: 'http://localhost:5000/api/upload',
+    action: `${process.env.REACT_APP_API_URL}/api/upload`,
     showUploadList: false,
     headers: {
       Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
@@ -276,8 +276,7 @@ const EditReport = () => {
                   formData.append('file', blobInfo.blob());
                   try {
                     const token = localStorage.getItem('admin_token');
-                    const res = await fetch('http://localhost:5000/api/upload', {
-                      method: 'POST',
+const res = await fetch(`${process.env.REACT_APP_API_URL}/api/upload`, {                      method: 'POST',
                       headers: { Authorization: `Bearer ${token}` },
                       body: formData
                     });
@@ -303,8 +302,7 @@ const EditReport = () => {
                       formData.append('file', file);
                       try {
                         const token = localStorage.getItem('admin_token');
-                        const res = await fetch('http://localhost:5000/api/upload', {
-                          method: 'POST',
+                        const res = await fetch(`${process.env.REACT_APP_API_URL}/api/upload`, {                          method: 'POST',
                           headers: { Authorization: `Bearer ${token}` },
                           body: formData
                         });

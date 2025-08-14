@@ -19,7 +19,7 @@ const ArticleManagement = () => {
   }, []);
 
   const fetchSections = async () => {
-    const res = await fetch('http://localhost:5000/api/sections');
+const res = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/sections`);
     const data = await res.json();
     setSections(Array.isArray(data) ? data : []);
   };
@@ -28,7 +28,7 @@ const ArticleManagement = () => {
     setLoading(true);
     try {
       console.log('جاري جلب المقالات...');
-      const res = await fetch('http://localhost:5000/api/articles');
+const res = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/articles`);
       console.log('استجابة الخادم:', res.status, res.statusText);
       
       if (!res.ok) {
@@ -61,7 +61,7 @@ const ArticleManagement = () => {
         return;
       }
 
-      const res = await fetch(`http://localhost:5000/api/articles/${id}`, {
+    const res = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/articles/${id}`, {
         method: 'DELETE',
         headers: { 
           'Authorization': `Bearer ${token}`,
@@ -468,7 +468,7 @@ const ArticleManagement = () => {
             {selectedArticle.image && (
               <div style={{ marginBottom: '16px', textAlign: 'center' }}>
                 <img 
-                  src={`http://localhost:5000${selectedArticle.image}`} 
+              src={`${process.env.REACT_APP_API_URL || ''}${selectedArticle.image}`}
                   alt="صورة المقال" 
                   style={{ maxWidth: '100%', maxHeight: '300px', objectFit: 'contain' }}
                 />

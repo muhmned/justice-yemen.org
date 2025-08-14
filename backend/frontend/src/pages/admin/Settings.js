@@ -67,7 +67,7 @@ const Settings = () => {
         return;
       }
 
-      const res = await fetch('http://localhost:5000/api/settings', {
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/api/settings`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -95,7 +95,7 @@ const Settings = () => {
       setSaving(true);
       const token = localStorage.getItem('admin_token');
 
-      const res = await fetch('http://localhost:5000/api/settings', {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/settings`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

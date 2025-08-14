@@ -31,7 +31,7 @@ const EditNews = () => {
         return;
       }
 
-      const res = await fetch(`http://localhost:5000/api/news/${id}`, {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/news/${id}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -46,7 +46,7 @@ const EditNews = () => {
         setNews(newsData);
         
         if (newsData.image) {
-          const imageUrl = `http://localhost:5000${newsData.image}`;
+      const imageUrl = `${process.env.REACT_APP_API_URL}${newsData.image}`;
           setImagePreview(imageUrl);
           console.log('تم تعيين صورة الخبر الحالية:', imageUrl);
         } else {
@@ -177,7 +177,7 @@ const EditNews = () => {
     try {
       const token = localStorage.getItem('admin_token');
       console.log('سيتم إرسال طلب التحديث الآن');
-      const res = await fetch(`http://localhost:5000/api/news/${id}`, {
+    const res = await fetch(`${process.env.REACT_APP_API_URL}/api/news/${id}`, {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${token}`
@@ -310,13 +310,13 @@ const EditNews = () => {
               paste_enable_default_filters: true,
               paste_remove_styles_if_webkit: true,
               paste_retain_style_properties: 'color font-size font-family',
-              images_upload_url: 'http://localhost:5000/api/upload',
+              images_upload_url: `${process.env.REACT_APP_API_URL}/api/upload`,
               images_upload_handler: async (blobInfo, success, failure) => {
                 const formData = new FormData();
                 formData.append('file', blobInfo.blob());
                 try {
                   const token = localStorage.getItem('admin_token');
-                  const res = await fetch('http://localhost:5000/api/upload', {
+                  const res = await fetch(`${process.env.REACT_APP_API_URL}/api/upload`, {
                     method: 'POST',
                     headers: { Authorization: `Bearer ${token}` },
                     body: formData
@@ -343,7 +343,7 @@ const EditNews = () => {
                     formData.append('file', file);
                     try {
                       const token = localStorage.getItem('admin_token');
-                      const res = await fetch('http://localhost:5000/api/upload', {
+                      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/upload`, {
                         method: 'POST',
                         headers: { Authorization: `Bearer ${token}` },
                         body: formData
@@ -387,7 +387,7 @@ const EditNews = () => {
                   size="small"
                   onClick={() => {
                     setImageFile(null);
-                    setImagePreview(news.image ? `http://localhost:5000${news.image}` : null);
+                    setImagePreview(news.image ? `${process.env.REACT_APP_API_URL}${news.image}` : null);
                   }}
                 >
                   إزالة
@@ -398,7 +398,7 @@ const EditNews = () => {
           {(imagePreview || news.image) && (
             <div style={{ marginTop: '8px' }}>
               <img 
-                src={imagePreview || `http://localhost:5000${news.image}`} 
+                src={imagePreview || `${process.env.REACT_APP_API_URL}${news.image}`}
                 alt="معاينة الصورة"
                 style={{ 
                   maxWidth: '100%', 

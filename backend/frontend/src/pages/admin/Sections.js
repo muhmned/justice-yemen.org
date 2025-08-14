@@ -59,7 +59,7 @@ const Sections = () => {
         return;
       }
 
-      const res = await fetch('http://localhost:5000/api/sections', {
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/api/sections`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -118,7 +118,7 @@ const Sections = () => {
   const handleDeleteSection = async (sectionId) => {
     try {
       const token = localStorage.getItem('admin_token');
-      const res = await fetch(`http://localhost:5000/api/sections/${sectionId}`, {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/sections/${sectionId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -141,9 +141,8 @@ const Sections = () => {
     try {
       const token = localStorage.getItem('admin_token');
       const url = editingSection
-        ? `http://localhost:5000/api/sections/${editingSection.id}`
-        : 'http://localhost:5000/api/sections';
-
+        ? `${process.env.REACT_APP_API_URL}/api/sections/${editingSection.id}`
+        : `${process.env.REACT_APP_API_URL}/api/sections`;
       const method = editingSection ? 'PUT' : 'POST';
 
       const res = await fetch(url, {

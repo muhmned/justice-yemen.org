@@ -59,7 +59,7 @@ const UserManagement = () => {
         return;
       }
 
-      const res = await fetch('http://localhost:5000/api/users', {
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/api/users`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -108,8 +108,8 @@ const UserManagement = () => {
   const handleDeleteUser = async (userId) => {
     try {
       const token = localStorage.getItem('admin_token');
-      const res = await fetch(`http://localhost:5000/api/users/${userId}`, {
-        method: 'DELETE',
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/users/${userId}`, {
+          method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -132,8 +132,8 @@ const UserManagement = () => {
       const token = localStorage.getItem('admin_token');
       const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
       
-      const res = await fetch(`http://localhost:5000/api/users/${userId}`, {
-        method: 'PUT',
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/users/${userId}`, {
+          method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -156,10 +156,10 @@ const UserManagement = () => {
   const handleSubmit = async (values) => {
     try {
       const token = localStorage.getItem('admin_token');
-      const url = editingUser 
-        ? `http://localhost:5000/api/users/${editingUser.id}`
-        : 'http://localhost:5000/api/users';
-      
+    const url = editingUser
+  ? `${process.env.REACT_APP_API_URL}/api/users/${editingUser.id}`
+  : `${process.env.REACT_APP_API_URL}/api/users`;
+
       const method = editingUser ? 'PUT' : 'POST';
       
       const res = await fetch(url, {

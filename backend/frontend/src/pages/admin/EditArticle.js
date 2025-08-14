@@ -247,7 +247,7 @@ const EditArticle = () => {
       // 4. فحص الاتصال بالخادم (اختياري)
       console.log('🌐 فحص الاتصال بالخادم...');
       try {
-        const testResponse = await fetch('http://localhost:5000/api/health', {
+const testResponse = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/health`, {
           method: 'GET',
           timeout: 3000
         });
@@ -352,7 +352,7 @@ const EditArticle = () => {
         return;
       }
 
-      const res = await fetch(`http://localhost:5000/api/articles/${id}`, {
+      const res = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/articles/${id}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -376,8 +376,8 @@ const EditArticle = () => {
         setContent(cleaned);
         
         if (fixedData.image) {
-          const imageUrl = `http://localhost:5000${fixedData.image}`;
-          setImagePreview(imageUrl);
+      const imageUrl = `${process.env.REACT_APP_API_URL || ''}${fixedData.image}`;
+            setImagePreview(imageUrl);
           console.log('تم تعيين صورة المقال الحالية:', imageUrl);
         } else {
           console.log('المقال لا يحتوي على صورة');
@@ -414,8 +414,8 @@ const EditArticle = () => {
         return;
       }
 
-      const res = await fetch('http://localhost:5000/api/sections/active', {
-        headers: {
+    const res = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/sections/active`, {
+          headers: {
           'Authorization': `Bearer ${token}`
         }
       });
@@ -656,8 +656,8 @@ const EditArticle = () => {
       }
 
       console.log('🚀 إرسال البيانات إلى الخادم...');
-      const res = await fetch(`http://localhost:5000/api/articles/${id}`, {
-        method: 'PUT',
+    const res = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/articles/${id}`, {
+          method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`
         },
@@ -820,14 +820,13 @@ const EditArticle = () => {
                     language: 'ar',
                     directionality: 'rtl',
                     content_style: 'body { font-family: Arial, sans-serif; font-size: 14px; }',
-                    images_upload_url: 'http://localhost:5000/api/upload',
+                    images_upload_url: `${process.env.REACT_APP_API_URL || ''}/api/upload`,
                     images_upload_handler: async (blobInfo, progress) => {
                       try {
                         const formData = new FormData();
                         formData.append('image', blobInfo.blob(), blobInfo.filename());
                         
-                        const response = await fetch('http://localhost:5000/api/upload/image', {
-                          method: 'POST',
+                  const response = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/upload/image`, {                          method: 'POST',
                           body: formData
                         });
                         
@@ -854,7 +853,7 @@ const EditArticle = () => {
                             const formData = new FormData();
                             formData.append('image', file);
                             
-                            const response = await fetch('http://localhost:5000/api/upload/image', {
+                      const response = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/upload/image`, {
                               method: 'POST',
                               body: formData
                             });
@@ -887,7 +886,7 @@ const EditArticle = () => {
                         الصورة الحالية:
                       </p>
                       <img 
-                        src={`http://localhost:5000${article.image}`} 
+                  src={`${process.env.REACT_APP_API_URL || ''}${article.image}`}
                         alt="صورة المقال الحالية"
                         style={{ 
                           width: '100%', 

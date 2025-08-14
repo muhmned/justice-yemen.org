@@ -38,20 +38,20 @@ const ContentManagement = () => {
       const token = localStorage.getItem('admin_token');
       
       // جلب إحصائيات الأخبار
-      const newsRes = await fetch('http://localhost:5000/api/news', {
-        headers: { Authorization: `Bearer ${token}` }
+const newsRes = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/news`, {
+          headers: { Authorization: `Bearer ${token}` }
       });
       const newsData = await newsRes.json();
       
       // جلب إحصائيات التقارير
-      const reportsRes = await fetch('http://localhost:5000/api/reports', {
+const reportsRes = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/reports`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const reportsData = await reportsRes.json();
       
       // جلب إحصائيات المقالات
-      const articlesRes = await fetch('http://localhost:5000/api/articles', {
-        headers: { Authorization: `Bearer ${token}` }
+const articlesRes = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/articles`, {
+          headers: { Authorization: `Bearer ${token}` }
       });
       const articlesData = await articlesRes.json();
       

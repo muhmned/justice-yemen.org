@@ -145,7 +145,7 @@ const Profile = () => {
       console.log('هل مدير نظام؟', isSystemAdmin);
 
       // استخدام API service بدلاً من fetch مباشر
-      const response = await fetch(`http://localhost:5000/api/users/${userId}/stats`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/users/${userId}/stats`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

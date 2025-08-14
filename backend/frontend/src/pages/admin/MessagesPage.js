@@ -69,7 +69,7 @@ const MessagesPage = () => {
         search: filters.search
       });
 
-      const response = await fetch(`http://localhost:5000/api/messages?${params}`, {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/messages?${params}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -96,7 +96,7 @@ const MessagesPage = () => {
   const fetchStats = useCallback(async () => {
     if (!token) return;
     try {
-      const response = await fetch('http://localhost:5000/api/messages/stats/overview', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/messages/stats/overview`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -119,7 +119,7 @@ const MessagesPage = () => {
   const handleViewMessage = async (id) => {
     if (!token) return;
     try {
-      const response = await fetch(`http://localhost:5000/api/messages/${id}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/messages/${id}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -149,7 +149,7 @@ const MessagesPage = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:5000/api/messages/${id}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/messages/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -200,7 +200,7 @@ const MessagesPage = () => {
   const handleDeleteMessage = async (id) => {
     if (!token) return;
     try {
-      const response = await fetch(`http://localhost:5000/api/messages/${id}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/messages/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`

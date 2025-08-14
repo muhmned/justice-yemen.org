@@ -26,7 +26,7 @@ const PermissionsPage = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('http://localhost:5000/api/users', {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/users`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -52,7 +52,7 @@ const PermissionsPage = () => {
 
   const handleRoleChange = async (userId, newRole) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/users/${userId}/role`, {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/users/${userId}/role`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -157,7 +157,7 @@ const PermissionsPage = () => {
 
   const handleOk = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/api/users/${selectedUser.id}/permissions`, {
+    const res = await fetch(`${process.env.REACT_APP_API_URL}/api/users/${selectedUser.id}/permissions`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -224,7 +224,7 @@ const PermissionsPage = () => {
 const handleStatusChange = async (userId, newStatus) => {
   try {
     console.log("🔍 إرسال الحالة:", newStatus);
-    const res = await fetch(`http://localhost:5000/api/users/${userId}/status`, {
+    const res = await fetch(`${process.env.REACT_APP_API_URL}/api/users/${userId}/status`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
