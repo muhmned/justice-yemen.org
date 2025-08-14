@@ -248,7 +248,7 @@ export const newsAPI = {
   getLatest: (limit = 3) => api.get(`/api/news?limit=${limit}&status=published`),
 };
 
-// خدمات الإحصائيات
+// خدمات الإحصائيات.
 export const statsAPI = {
   getDashboardStats: () => api.get('/api/admin/dashboard'),
   getArticleStats: () => api.get('/api/stats/articles'),
