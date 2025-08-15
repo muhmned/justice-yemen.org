@@ -256,7 +256,7 @@ const res = await fetch(`${process.env.REACT_APP_API_URL}/api/reports/${id}`, {
           </Form.Item>
           <Form.Item label="نص التقرير" required>
             <Editor
-              apiKey='22zijbip010v9lxhdxb3yov0dd6lqug7j04lrsxyob7pa60x'
+              tinymceScriptSrc={process.env.PUBLIC_URL + '/tinymce/tinymce.min.js'}
               value={content}
               onEditorChange={setContent}
               init={{
@@ -344,4 +344,4 @@ const res = await fetch(`${process.env.REACT_APP_API_URL}/api/upload`, {        
   );
 };
 
-export default EditReport; 
+export default EditReport;

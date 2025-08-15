@@ -803,7 +803,7 @@ const testResponse = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/hea
                 rules={[{ required: true, message: 'يرجى إدخال محتوى المقال' }]}
               >
                 <Editor
-                  apiKey='22zijbip010v9lxhdxb3yov0dd6lqug7j04lrsxyob7pa60x'
+                  tinymceScriptSrc={process.env.PUBLIC_URL + '/tinymce/tinymce.min.js'}
                   value={content}
                   onEditorChange={(newContent) => {
                     setContent(newContent);

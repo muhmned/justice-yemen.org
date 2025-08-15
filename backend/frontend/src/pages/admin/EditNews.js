@@ -284,7 +284,7 @@ const EditNews = () => {
         
         <Form.Item label="محتوى الخبر" name="content" rules={[{ required: true, message: 'يرجى كتابة محتوى الخبر' }]}> 
           <Editor
-            apiKey='22zijbip010v9lxhdxb3yov0dd6lqug7j04lrsxyob7pa60x'
+            tinymceScriptSrc={process.env.PUBLIC_URL + '/tinymce/tinymce.min.js'}
             value={content}
             onEditorChange={(newContent) => {
               setContent(newContent);

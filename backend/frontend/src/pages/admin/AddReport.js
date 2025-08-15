@@ -232,7 +232,7 @@ action: `${process.env.REACT_APP_API_URL || ''}/api/upload`,    showUploadList: 
           </Form.Item>
           <Form.Item label="نص التقرير" required>
             <Editor
-              apiKey='22zijbip010v9lxhdxb3yov0dd6lqug7j04lrsxyob7pa60x'
+              tinymceScriptSrc={process.env.PUBLIC_URL + '/tinymce/tinymce.min.js'}
               value={content}
               onEditorChange={setContent}
               init={{
@@ -251,7 +251,7 @@ action: `${process.env.REACT_APP_API_URL || ''}/api/upload`,    showUploadList: 
                 directionality: 'rtl',
                 height: 400,
                 content_style: 'body { font-family:Tahoma,Arial,sans-serif; font-size:16px }',
-images_upload_url: `${process.env.REACT_APP_API_URL || ''}/api/upload`,
+                images_upload_url: `${process.env.REACT_APP_API_URL || ''}/api/upload`,
                   images_upload_handler: async (blobInfo, success, failure) => {
                   const formData = new FormData();
                   formData.append('file', blobInfo.blob());
@@ -323,4 +323,4 @@ images_upload_url: `${process.env.REACT_APP_API_URL || ''}/api/upload`,
   );
 };
 
-export default AddReport; 
+export default AddReport;
