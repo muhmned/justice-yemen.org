@@ -180,6 +180,8 @@ const EditNews = () => {
     const res = await fetch(`${process.env.REACT_APP_API_URL}/api/news/${id}`, {
         method: 'PUT',
         headers: {
+         
+            'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
         body: formData
