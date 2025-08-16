@@ -231,81 +231,82 @@ action: `${process.env.REACT_APP_API_URL || ''}/api/upload`,    showUploadList: 
             )}
           </Form.Item>
           <Form.Item label="نص التقرير" required>
-            <Editor
-              tinymceScriptSrc={process.env.PUBLIC_URL + '/tinymce/tinymce.min.js'}
-              value={content}
-              onEditorChange={setContent}
-              init={{
-                plugins: [
-                  'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview', 'anchor',
-                  'searchreplace', 'visualblocks', 'fullscreen', 'insertdatetime', 'media', 'table',
-                  'help', 'wordcount', 'code', 'emoticons', 'hr', 'pagebreak', 'nonbreaking', 'directionality'
-                ],
-                toolbar:
-                  'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough forecolor backcolor | ' +
-                  'alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | ' +
-                  'removeformat | link image media table | code fullscreen preview | ltr rtl | emoticons',
-                paste_data_images: false,
-                images_dataimg_filter: () => false,
-                language: 'ar',
-                directionality: 'rtl',
-                height: 400,
-                content_style: 'body { font-family:Tahoma,Arial,sans-serif; font-size:16px }',
-                images_upload_url: `${process.env.REACT_APP_API_URL || ''}/api/upload`,
-                  images_upload_handler: async (blobInfo, success, failure) => {
-                  const formData = new FormData();
-                  formData.append('file', blobInfo.blob());
-                  try {
-                    const token = localStorage.getItem('admin_token');
-                    const res = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/upload`, {
-                      method: 'POST',
-                      headers: { Authorization: `Bearer ${token}` },
-                      body: formData
-                    });
-                    const data = await res.json();
-                    if (data && data.url) {
-                      let url = data.url.replace(/^\.\.\//, '/');
-                      success(url);
-                    } else {
-                      failure('فشل رفع الصورة');
-                    }
-                  } catch (e) {
-                    failure('فشل الاتصال بالخادم');
-                  }
-                },
-                file_picker_callback: function (callback, value, meta) {
-                  if (meta.filetype === 'image') {
-                    const input = document.createElement('input');
-                    input.setAttribute('type', 'file');
-                    input.setAttribute('accept', 'image/*');
-                    input.onchange = async function () {
-                      const file = this.files[0];
-                      const formData = new FormData();
-                      formData.append('file', file);
-                      try {
-                        const token = localStorage.getItem('admin_token');
-                        const res = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/upload`, {
-                          method: 'POST',
-                          headers: { Authorization: `Bearer ${token}` },
-                          body: formData
-                        });
-                        const data = await res.json();
-                        if (data && data.url) {
-                          let url = data.url.replace(/^\.\.\//, '/');
-                          callback(url, { title: file.name });
-                        } else {
-                          alert('فشل رفع الصورة');
-                        }
-                      } catch (e) {
-                        alert('فشل الاتصال بالخادم');
-                      }
-                    };
-                    input.click();
-                  }
-                },
-              }}
-            />
-          </Form.Item>
+  <Editor
+    licenseKey="gpl"   // ✅ هذا السطر يحل مشكلة الترخيص
+    tinymceScriptSrc={process.env.PUBLIC_URL + '/tinymce/tinymce.min.js'}
+    value={content}
+    onEditorChange={setContent}
+    init={{
+      plugins: [
+        'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview', 'anchor',
+        'searchreplace', 'visualblocks', 'fullscreen', 'insertdatetime', 'media', 'table',
+        'help', 'wordcount', 'code', 'emoticons', 'hr', 'pagebreak', 'nonbreaking', 'directionality'
+      ],
+      toolbar:
+        'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough forecolor backcolor | ' +
+        'alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | ' +
+        'removeformat | link image media table | code fullscreen preview | ltr rtl | emoticons',
+      paste_data_images: false,
+      images_dataimg_filter: () => false,
+      language: 'ar',
+      directionality: 'rtl',
+      height: 400,
+      content_style: 'body { font-family:Tahoma,Arial,sans-serif; font-size:16px }',
+      images_upload_url: `${process.env.REACT_APP_API_URL || ''}/api/upload`,
+      images_upload_handler: async (blobInfo, success, failure) => {
+        const formData = new FormData();
+        formData.append('file', blobInfo.blob());
+        try {
+          const token = localStorage.getItem('admin_token');
+          const res = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/upload`, {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${token}` },
+            body: formData
+          });
+          const data = await res.json();
+          if (data && data.url) {
+            let url = data.url.replace(/^\.\.\//, '/');
+            success(url);
+          } else {
+            failure('فشل رفع الصورة');
+          }
+        } catch (e) {
+          failure('فشل الاتصال بالخادم');
+        }
+      },
+      file_picker_callback: function (callback, value, meta) {
+        if (meta.filetype === 'image') {
+          const input = document.createElement('input');
+          input.setAttribute('type', 'file');
+          input.setAttribute('accept', 'image/*');
+          input.onchange = async function () {
+            const file = this.files[0];
+            const formData = new FormData();
+            formData.append('file', file);
+            try {
+              const token = localStorage.getItem('admin_token');
+              const res = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/upload`, {
+                method: 'POST',
+                headers: { Authorization: `Bearer ${token}` },
+                body: formData
+              });
+              const data = await res.json();
+              if (data && data.url) {
+                let url = data.url.replace(/^\.\.\//, '/');
+                callback(url, { title: file.name });
+              } else {
+                alert('فشل رفع الصورة');
+              }
+            } catch (e) {
+              alert('فشل الاتصال بالخادم');
+            }
+          };
+          input.click();
+        }
+      },
+    }}
+  />
+</Form.Item>
           {errorMsg && (
             <div style={{ color: 'red', marginBottom: 16 }}>{errorMsg}</div>
           )}
