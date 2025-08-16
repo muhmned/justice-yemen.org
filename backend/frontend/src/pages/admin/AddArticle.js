@@ -201,6 +201,7 @@ fetch(`${process.env.REACT_APP_API_URL || ''}/api/sections/active`)
               </Form.Item>
               <Form.Item label="محتوى المقال">
                 <Editor
+                licenseKey="gpl"   // ✅ هذا السطر يحل مشكلة الترخيص
                  tinymceScriptSrc={process.env.PUBLIC_URL + '/tinymce/tinymce.min.js'}
                   value={content}
                   onEditorChange={(newContent) => {

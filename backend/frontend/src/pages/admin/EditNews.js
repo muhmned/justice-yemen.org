@@ -286,6 +286,7 @@ const EditNews = () => {
         
         <Form.Item label="محتوى الخبر" name="content" rules={[{ required: true, message: 'يرجى كتابة محتوى الخبر' }]}> 
           <Editor
+            licenseKey="gpl"   // ✅ هذا السطر يحل مشكلة الترخيص
             tinymceScriptSrc={process.env.PUBLIC_URL + '/tinymce/tinymce.min.js'}
             value={content}
             onEditorChange={(newContent) => {

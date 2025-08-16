@@ -256,6 +256,7 @@ const res = await fetch(`${process.env.REACT_APP_API_URL}/api/reports/${id}`, {
           </Form.Item>
           <Form.Item label="نص التقرير" required>
             <Editor
+               licenseKey="gpl"   // ✅ هذا السطر يحل مشكلة الترخيص
               tinymceScriptSrc={process.env.PUBLIC_URL + '/tinymce/tinymce.min.js'}
               value={content}
               onEditorChange={setContent}

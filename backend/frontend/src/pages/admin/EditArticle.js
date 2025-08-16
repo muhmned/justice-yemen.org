@@ -803,6 +803,7 @@ const testResponse = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/hea
                 rules={[{ required: true, message: 'يرجى إدخال محتوى المقال' }]}
               >
                 <Editor
+                  licenseKey="gpl"   // ✅ هذا السطر يحل مشكلة الترخيص
                   tinymceScriptSrc={process.env.PUBLIC_URL + '/tinymce/tinymce.min.js'}
                   value={content}
                   onEditorChange={(newContent) => {

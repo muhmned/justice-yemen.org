@@ -144,6 +144,7 @@ const res = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/news`, {
           
           <Form.Item label="محتوى الخبر" name="content" rules={[{ required: true, message: 'يرجى كتابة محتوى الخبر' }]} validateTrigger="onEditorChange">
             <Editor
+             licenseKey="gpl"   // ✅ هذا السطر يحل مشكلة الترخيص
               tinymceScriptSrc={process.env.PUBLIC_URL + '/tinymce/tinymce.min.js'}
               value={content}
               onEditorChange={(newContent) => {
