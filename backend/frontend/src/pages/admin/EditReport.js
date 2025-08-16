@@ -259,7 +259,7 @@ const res = await fetch(`${process.env.REACT_APP_API_URL}/api/reports/${id}`, {
                licenseKey="gpl"   // ✅ هذا السطر يحل مشكلة الترخيص
               tinymceScriptSrc={process.env.PUBLIC_URL + '/tinymce/tinymce.min.js'}
               value={content}
-              onEditorChange={setContent}
+              onEditorChange={setContent} // ✅ هذا السطر يحل مشكلة الترخي
               init={{
                 plugins: [
                   'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview', 'anchor',

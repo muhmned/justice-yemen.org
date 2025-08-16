@@ -51,7 +51,7 @@ const SectionsPage = () => {
                   <h3 className="card-title">{section.name}</h3>
                   <p className="card-text">{section.description || 'تفاصيل القسم'}</p>
                   <Link to={`/sections/${section.slug}`} className="btn">
-                    عرض التفاصيل
+                    عرض التفاصيـل
                   </Link>
                 </div>
               </div>
