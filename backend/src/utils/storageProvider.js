@@ -39,7 +39,7 @@ if (process.env.STORAGE_PROVIDER === 'supabase') {
  */
 export const uploadFile = async (file) => {
   const storageProvider = process.env.STORAGE_PROVIDER || 'cloudinary';
-  
+  console.log("🚀 STORAGE_PROVIDER =", process.env.STORAGE_PROVIDER);
   switch (storageProvider.toLowerCase()) {
     case 'cloudinary':
       return await uploadToCloudinary(file);
