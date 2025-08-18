@@ -41,15 +41,16 @@ export const uploadFile = async (file) => {
   const storageProvider = process.env.STORAGE_PROVIDER || 'cloudinary';
   console.log("🚀 STORAGE_PROVIDER =", process.env.STORAGE_PROVIDER);
   switch (storageProvider.toLowerCase()) {
+   
+    case 'supabase':
+      return await uploadToSupabase(file);
+   
     case 'cloudinary':
       return await uploadToCloudinary(file);
     
     case 's3':
       return await uploadToS3(file);
-    
-    case 'supabase':
-      return await uploadToSupabase(file);
-    
+      
     default:
       throw new Error(`مزود التخزين غير معروف: ${storageProvider}`);
   }
