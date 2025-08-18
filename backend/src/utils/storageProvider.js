@@ -39,7 +39,7 @@ if (process.env.STORAGE_PROVIDER === 'supabase') {
  */
 export const uploadFile = async (file) => {
   const storageProvider = process.env.STORAGE_PROVIDER || 'cloudinary';
-  console.log("🚀 [uploadFile] STORAGE_PROVIDER =", storageProvider); // 👈 هذا يساعدنا نعرف أي مزود يستخدم
+  console.log("🚀 [uploadFile] STORAGE_PROVIDER =", storageProvider); // 👈 تحقق هنا
   console.log("📂 الملف المستلم:", file.originalname);
 
   switch (storageProvider.toLowerCase()) {
