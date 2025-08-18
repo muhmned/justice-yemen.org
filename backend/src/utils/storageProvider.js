@@ -39,23 +39,20 @@ if (process.env.STORAGE_PROVIDER === 'supabase') {
  */
 export const uploadFile = async (file) => {
   const storageProvider = process.env.STORAGE_PROVIDER || 'cloudinary';
-  console.log("🚀 STORAGE_PROVIDER =", process.env.STORAGE_PROVIDER);
+  console.log("🚀 [uploadFile] STORAGE_PROVIDER =", storageProvider); // 👈 هذا يساعدنا نعرف أي مزود يستخدم
+  console.log("📂 الملف المستلم:", file.originalname);
+
   switch (storageProvider.toLowerCase()) {
-   
-    case 'supabase':
-      return await uploadToSupabase(file);
-   
     case 'cloudinary':
       return await uploadToCloudinary(file);
-    
     case 's3':
       return await uploadToS3(file);
-      
+    case 'supabase':
+      return await uploadToSupabase(file);
     default:
       throw new Error(`مزود التخزين غير معروف: ${storageProvider}`);
   }
 };
-
 /**
  * رفع الملف إلى Cloudinary
  */
