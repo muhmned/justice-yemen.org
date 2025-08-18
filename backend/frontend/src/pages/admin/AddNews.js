@@ -65,7 +65,7 @@ const AddNews = () => {
     formData.append('summary', values.summary);
     formData.append('content', content); // إرسال المحتوى الكامل (HTML)
     formData.append('status', values.status || 'draft');
-    if (image) formData.append('image', image);
+    if (image) formData.append('file', image);
 
     try {
       const token = localStorage.getItem('admin_token');

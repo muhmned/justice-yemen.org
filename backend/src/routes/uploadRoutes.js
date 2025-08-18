@@ -30,7 +30,7 @@ router.post('/', authenticateToken, requireRole(['editor', 'admin', 'system_admi
       url: fileUrl,
       originalName: req.file.originalname,
       size: req.file.size,
-      storageProvider: process.env.STORAGE_PROVIDER || 'cloudinary'
+      storageProvider: process.env.STORAGE_PROVIDER?.replace(/"/g, '') || 'cloudinary'
     });
   } catch (error) {
     console.error('خطأ في رفع الملف:', error);

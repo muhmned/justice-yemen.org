@@ -21,16 +21,27 @@ const s3Client = new S3Client({
 
 // تكوين Supabase Client (فقط إذا كان مزود التخزين هو Supabase)
 let supabase = null;
-if (process.env.STORAGE_PROVIDER === 'supabase') {
-  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    console.warn('تحذير: متغيرات Supabase غير محددة');
-  } else {
-    supabase = createClient(
-      process.env.SUPABASE_URL,
-      process.env.SUPABASE_SERVICE_ROLE_KEY
-    );
+
+// دالة لإنشاء Supabase client
+const initializeSupabase = () => {
+  const storageProvider = process.env.STORAGE_PROVIDER?.replace(/"/g, '') || 'cloudinary';
+
+  if (storageProvider === 'supabase') {
+    if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      console.warn('تحذير: متغيرات Supabase غير محددة');
+      return null;
+    } else {
+      return createClient(
+        process.env.SUPABASE_URL,
+        process.env.SUPABASE_SERVICE_ROLE_KEY
+      );
+    }
   }
-}
+  return null;
+};
+
+// تهيئة Supabase عند تحميل الملف
+supabase = initializeSupabase();
 
 /**
  * رفع الملف إلى مزود التخزين المحدد
@@ -38,7 +49,7 @@ if (process.env.STORAGE_PROVIDER === 'supabase') {
  * @returns {Promise<string>} رابط الملف المرفوع
  */
 export const uploadFile = async (file) => {
-  const storageProvider = process.env.STORAGE_PROVIDER || 'cloudinary';
+  const storageProvider = process.env.STORAGE_PROVIDER?.replace(/"/g, '') || 'cloudinary';
   console.log("🚀 [uploadFile] STORAGE_PROVIDER =", storageProvider); // 👈 تحقق هنا
   console.log("📂 الملف المستلم:", file.originalname);
 
@@ -123,11 +134,15 @@ const uploadToS3 = async (file) => {
  */
 const uploadToSupabase = async (file) => {
   try {
+    // التحقق من وجود Supabase client وإعادة إنشائه إذا لزم الأمر
     if (!supabase) {
-      throw new Error('Supabase client غير مهيأ. تأكد من إعداد متغيرات Supabase');
+      supabase = initializeSupabase();
+      if (!supabase) {
+        throw new Error('Supabase client غير مهيأ. تأكد من إعداد متغيرات Supabase');
+      }
     }
     
-    const bucketName = process.env.SUPABASE_BUCKET || 'uploads';
+    const bucketName = process.env.SUPABASE_BUCKET?.replace(/"/g, '') || 'uploads';
     const fileExtension = file.originalname.split('.').pop();
     const fileName = `${uuidv4()}.${fileExtension}`;
     const filePath = `justice_org/${fileName}`;
