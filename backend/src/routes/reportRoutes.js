@@ -1,6 +1,5 @@
 import express from 'express';
 import multer from 'multer';
-import path from 'path';
 import { body } from 'express-validator';
 import { getAllReports, createReport, updateReport, deleteReport, getReportById, searchReports } from '../controllers/reportController.js';
 import { authenticateToken, requireRole } from '../middleware/auth.js';
@@ -8,34 +7,21 @@ import logActivity from '../middleware/logActivity.js';
 
 const router = express.Router();
 
-// إعداد multer للتقارير
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, '../../uploads'));
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
-  }
-});
-
-// فلتر للملفات (PDF والصور)
-const fileFilter = (req, file, cb) => {
-  console.log('معالجة ملف تقرير:', file.originalname, 'نوع:', file.mimetype);
-  
-  // التحقق من نوع الملف
-  if (file.mimetype === 'application/pdf' || file.mimetype.startsWith('image/')) {
-    console.log('تم قبول الملف:', file.originalname);
-    cb(null, true);
-  } else {
-    console.log('تم رفض الملف (نوع غير مدعوم):', file.originalname);
-    cb(new Error('يسمح فقط بملفات PDF والصور (jpg, png, gif, webp)'), false);
-  }
-};
-
+// تكوين multer للذاكرة
 const upload = multer({ 
-  storage,
-  fileFilter,
+  storage: multer.memoryStorage(),
+  fileFilter: (req, file, cb) => {
+    console.log('معالجة ملف تقرير:', file.originalname, 'نوع:', file.mimetype);
+    
+    // التحقق من نوع الملف
+    if (file.mimetype === 'application/pdf' || file.mimetype.startsWith('image/')) {
+      console.log('تم قبول الملف:', file.originalname);
+      cb(null, true);
+    } else {
+      console.log('تم رفض الملف (نوع غير مدعوم):', file.originalname);
+      cb(new Error('يسمح فقط بملفات PDF والصور (jpg, png, gif, webp)'), false);
+    }
+  },
   limits: {
     fileSize: 10 * 1024 * 1024 // 10MB للتقارير
   }

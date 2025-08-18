@@ -1,24 +1,20 @@
 import express from 'express';
 import multer from 'multer';
-import path from 'path';
 import { PrismaClient } from '@prisma/client';
 import { authenticateToken, requireRole } from '../middleware/auth.js';
 import logActivity from '../middleware/logActivity.js';
+import { uploadFile } from '../utils/storageProvider.js';
 
 const router = express.Router();
 const prisma = new PrismaClient();
 
-// إعداد التخزين للصور
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, '../../uploads'));
-  },
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    cb(null, 'site_logo' + ext);
+// تكوين multer للذاكرة
+const upload = multer({ 
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB للصور
   }
 });
-const upload = multer({ storage });
 
 // جلب جميع الإعدادات
 router.get('/', async (req, res) => {
@@ -43,7 +39,10 @@ router.post('/logo', authenticateToken, requireRole(['admin', 'system_admin']), 
     if (!req.file) {
       return res.status(400).json({ message: 'لم يتم رفع أي ملف' });
     }
-    const logoUrl = `/uploads/${req.file.filename}`;
+    
+    // استخدام storageProvider لرفع الملف
+    const logoUrl = await uploadFile(req.file);
+    
     await prisma.setting.upsert({
       where: { key: 'site_logo' },
       update: { value: logoUrl },
@@ -130,7 +129,10 @@ router.put('/about', authenticateToken, requireRole(['admin', 'system_admin']), 
 router.post('/about-image', authenticateToken, requireRole(['admin', 'system_admin']), upload.single('about_image'), logActivity('update_settings', 'settings', () => 'About Us image updated'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ message: 'لم يتم رفع أي صورة' });
-    const imageUrl = `/uploads/${req.file.filename}`;
+    
+    // استخدام storageProvider لرفع الملف
+    const imageUrl = await uploadFile(req.file);
+    
     await prisma.setting.upsert({
       where: { key: 'about_image' },
       update: { value: imageUrl },

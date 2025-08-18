@@ -1,7 +1,5 @@
 import prisma from '../prisma.js';
-import path from 'path';
-import fs from 'fs';
-import { fileURLToPath } from 'url';
+import { uploadFile } from '../utils/storageProvider.js';
 
 const allowedImageTypes = ['image/jpeg', 'image/png', 'image/webp'];
 
@@ -60,8 +58,16 @@ async function createNews(req, res) {
         });
       }
       
-      imageUrl = `/uploads/${req.file.filename}`;
-      console.log('مسار الصورة الجديدة:', imageUrl);
+      try {
+        // استخدام storageProvider لرفع الملف
+        imageUrl = await uploadFile(req.file);
+        console.log('تم رفع الصورة بنجاح:', imageUrl);
+      } catch (uploadError) {
+        console.error('خطأ في رفع الصورة:', uploadError);
+        return res.status(500).json({ 
+          error: 'فشل في رفع الصورة: ' + uploadError.message 
+        });
+      }
     } else {
       console.log('لم يتم رفع صورة');
     }
@@ -192,8 +198,16 @@ async function updateNews(req, res) {
         });
       }
       
-      imageUrl = `/uploads/${req.file.filename}`;
-      console.log('مسار الصورة الجديدة:', imageUrl);
+      try {
+        // استخدام storageProvider لرفع الملف
+        imageUrl = await uploadFile(req.file);
+        console.log('تم رفع الصورة الجديدة بنجاح:', imageUrl);
+      } catch (uploadError) {
+        console.error('خطأ في رفع الصورة:', uploadError);
+        return res.status(500).json({ 
+          error: 'فشل في رفع الصورة: ' + uploadError.message 
+        });
+      }
     } else {
       console.log('لم يتم رفع صورة جديدة، الاحتفاظ بالصورة الحالية:', imageUrl);
     }

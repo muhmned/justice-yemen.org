@@ -1,50 +1,40 @@
 import express from 'express';
 import multer from 'multer';
-import path from 'path';
 import { authenticateToken, requireRole } from '../middleware/auth.js';
+import { uploadFile } from '../utils/storageProvider.js';
 
 const router = express.Router();
 
-// Configure multer storage
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, '../../uploads'));
-  },
-  filename: function (req, file, cb) {
-    const ext = path.extname(file.originalname);
-    const base = path.basename(file.originalname, ext);
-    const unique = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, base + '-' + unique + ext);
-  }
-});
-
+// تكوين multer للذاكرة
 const upload = multer({ 
-  storage,
+  storage: multer.memoryStorage(),
   limits: {
     fileSize: 10 * 1024 * 1024 // 10MB limit
   }
 });
 
 // POST /api/upload (single file)
-router.post('/', authenticateToken, requireRole(['editor', 'admin', 'system_admin']), upload.single('file'), (req, res) => {
+router.post('/', authenticateToken, requireRole(['editor', 'admin', 'system_admin']), upload.single('file'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'لم يتم رفع أي ملف' });
     }
     
-    const fileUrl = `/uploads/${req.file.filename}`;
+    // استخدام storageProvider لرفع الملف
+    const fileUrl = await uploadFile(req.file);
+    
     console.log('تم رفع الملف بنجاح:', req.file.originalname, '->', fileUrl);
     
     res.json({ 
       success: true, 
-      url: fileUrl, 
-      filename: req.file.filename,
+      url: fileUrl,
       originalName: req.file.originalname,
-      size: req.file.size
+      size: req.file.size,
+      storageProvider: process.env.STORAGE_PROVIDER || 'cloudinary'
     });
   } catch (error) {
     console.error('خطأ في رفع الملف:', error);
-    res.status(500).json({ error: 'حدث خطأ أثناء رفع الملف' });
+    res.status(500).json({ error: 'حدث خطأ أثناء رفع الملف: ' + error.message });
   }
 });
 

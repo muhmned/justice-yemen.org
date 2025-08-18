@@ -1,0 +1,32 @@
+0 verbose cli C:\Program Files\nodejs\node.exe C:\Program Files\nodejs\node_modules\npm\bin\npm-cli.js
+1 info using npm@10.9.2
+2 info using node@v22.17.0
+3 silly config load:file:C:\Program Files\nodejs\node_modules\npm\npmrc
+4 silly config load:file:C:\Users\Elite\Desktop\justice_org\backend\.npmrc
+5 silly config load:file:C:\Users\Elite\.npmrc
+6 silly config load:file:C:\Users\Elite\AppData\Roaming\npm\etc\npmrc
+7 verbose title npm list
+8 verbose argv "list" "--depth" "0"
+9 verbose logfile logs-max:10 dir:C:\Users\Elite\Desktop\justice_org\backend\backend\.npm-cache\_logs\2025-08-17T22_04_45_139Z-
+10 verbose logfile C:\Users\Elite\Desktop\justice_org\backend\backend\.npm-cache\_logs\2025-08-17T22_04_45_139Z-debug-0.log
+11 silly logfile done cleaning log files
+12 silly packumentCache heap:4345298944 maxSize:1086324736 maxEntrySize:543162368
+13 verbose stack Error: missing: @aws-sdk/client-s3@^3.540.0, required by backend@1.0.0
+13 verbose stack missing: @supabase/supabase-js@^2.45.4, required by backend@1.0.0
+13 verbose stack missing: cloudinary@^2.0.1, required by backend@1.0.0
+13 verbose stack missing: uuid@^10.0.0, required by backend@1.0.0
+13 verbose stack     at LS.exec (C:\Program Files\nodejs\node_modules\npm\lib\commands\ls.js:206:9)
+13 verbose stack     at async Npm.exec (C:\Program Files\nodejs\node_modules\npm\lib\npm.js:207:9)
+13 verbose stack     at async module.exports (C:\Program Files\nodejs\node_modules\npm\lib\cli\entry.js:74:5)
+14 error code ELSPROBLEMS
+15 error missing: @aws-sdk/client-s3@^3.540.0, required by backend@1.0.0
+15 error missing: @supabase/supabase-js@^2.45.4, required by backend@1.0.0
+15 error missing: cloudinary@^2.0.1, required by backend@1.0.0
+15 error missing: uuid@^10.0.0, required by backend@1.0.0
+16 verbose cwd C:\Users\Elite\Desktop\justice_org\backend\backend
+17 verbose os Windows_NT 10.0.19045
+18 verbose node v22.17.0
+19 verbose npm  v10.9.2
+20 verbose exit 1
+21 verbose code 1
+22 error A complete log of this run can be found in: C:\Users\Elite\Desktop\justice_org\backend\backend\.npm-cache\_logs\2025-08-17T22_04_45_139Z-debug-0.log

@@ -1,5 +1,6 @@
 import prisma from '../prisma.js';
 import { validationResult } from 'express-validator';
+import { uploadFile } from '../utils/storageProvider.js';
 
 // GET /api/reports
 async function getAllReports(req, res) {
@@ -64,14 +65,22 @@ async function createReport(req, res) {
   
   if (req.files) {
     console.log('Processing uploaded files...');
-    if (req.files.pdfFile && req.files.pdfFile[0]) {
-      finalPdfUrl = `/uploads/${req.files.pdfFile[0].filename}`;
-      console.log('PDF file uploaded:', finalPdfUrl);
-    }
     
-    if (req.files.thumbnail && req.files.thumbnail[0]) {
-      finalThumbnail = `/uploads/${req.files.thumbnail[0].filename}`;
-      console.log('Thumbnail uploaded:', finalThumbnail);
+    try {
+      if (req.files.pdfFile && req.files.pdfFile[0]) {
+        finalPdfUrl = await uploadFile(req.files.pdfFile[0]);
+        console.log('PDF file uploaded:', finalPdfUrl);
+      }
+      
+      if (req.files.thumbnail && req.files.thumbnail[0]) {
+        finalThumbnail = await uploadFile(req.files.thumbnail[0]);
+        console.log('Thumbnail uploaded:', finalThumbnail);
+      }
+    } catch (uploadError) {
+      console.error('خطأ في رفع الملفات:', uploadError);
+      return res.status(500).json({ 
+        error: 'فشل في رفع الملفات: ' + uploadError.message 
+      });
     }
   } else {
     console.log('No files uploaded, using URLs from request body');
@@ -146,14 +155,21 @@ async function updateReport(req, res) {
     
     // معالجة الملفات المرفوعة (إذا كانت ملفات فعلية)
     if (req.files) {
-      if (req.files.pdfFile && req.files.pdfFile[0]) {
-        updateData.pdfUrl = `/uploads/${req.files.pdfFile[0].filename}`;
-        console.log('New PDF file uploaded:', updateData.pdfUrl);
-      }
-      
-      if (req.files.thumbnail && req.files.thumbnail[0]) {
-        updateData.thumbnail = `/uploads/${req.files.thumbnail[0].filename}`;
-        console.log('New thumbnail uploaded:', updateData.thumbnail);
+      try {
+        if (req.files.pdfFile && req.files.pdfFile[0]) {
+          updateData.pdfUrl = await uploadFile(req.files.pdfFile[0]);
+          console.log('New PDF file uploaded:', updateData.pdfUrl);
+        }
+        
+        if (req.files.thumbnail && req.files.thumbnail[0]) {
+          updateData.thumbnail = await uploadFile(req.files.thumbnail[0]);
+          console.log('New thumbnail uploaded:', updateData.thumbnail);
+        }
+      } catch (uploadError) {
+        console.error('خطأ في رفع الملفات:', uploadError);
+        return res.status(500).json({ 
+          error: 'فشل في رفع الملفات: ' + uploadError.message 
+        });
       }
     } else {
       // استخدام URLs من request body

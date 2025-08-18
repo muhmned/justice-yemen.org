@@ -1,39 +1,26 @@
 import express from 'express';
 import multer from 'multer';
-import path from 'path';
 import { createArticle, getAllArticles, deleteArticle, updateArticle, getArticleById } from '../controllers/articleController.js';
 import { authenticateToken, checkPermission, requireRole } from '../middleware/auth.js';
 import logActivity from '../middleware/logActivity.js';
 
 const router = express.Router();
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, '../../uploads'));
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
-  }
-});
-
-// فلتر للصور
-const imageFilter = (req, file, cb) => {
-  console.log('معالجة ملف:', file.originalname, 'نوع:', file.mimetype);
-  
-  // التحقق من نوع الملف
-  if (file.mimetype.startsWith('image/')) {
-    console.log('تم قبول الصورة:', file.originalname);
-    cb(null, true);
-  } else {
-    console.log('تم رفض الملف (ليس صورة):', file.originalname);
-    cb(new Error('يسمح فقط بملفات الصور (jpg, png, gif, webp)'), false);
-  }
-};
-
+// تكوين multer للذاكرة
 const upload = multer({ 
-  storage,
-  fileFilter: imageFilter,
+  storage: multer.memoryStorage(),
+  fileFilter: (req, file, cb) => {
+    console.log('معالجة ملف:', file.originalname, 'نوع:', file.mimetype);
+    
+    // التحقق من نوع الملف
+    if (file.mimetype.startsWith('image/')) {
+      console.log('تم قبول الصورة:', file.originalname);
+      cb(null, true);
+    } else {
+      console.log('تم رفض الملف (ليس صورة):', file.originalname);
+      cb(new Error('يسمح فقط بملفات الصور (jpg, png, gif, webp)'), false);
+    }
+  },
   limits: {
     fileSize: 2 * 1024 * 1024 // 2MB
   }

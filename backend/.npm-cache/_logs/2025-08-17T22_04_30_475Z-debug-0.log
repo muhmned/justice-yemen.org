@@ -1,0 +1,57 @@
+0 verbose cli C:\Program Files\nodejs\node.exe C:\Program Files\nodejs\node_modules\npm\bin\npm-cli.js
+1 info using npm@10.9.2
+2 info using node@v22.17.0
+3 silly config load:file:C:\Program Files\nodejs\node_modules\npm\npmrc
+4 silly config load:file:C:\Users\Elite\Desktop\justice_org\backend\.npmrc
+5 silly config load:file:C:\Users\Elite\.npmrc
+6 silly config load:file:C:\Users\Elite\AppData\Roaming\npm\etc\npmrc
+7 verbose title npm install
+8 verbose argv "install"
+9 verbose logfile logs-max:10 dir:C:\Users\Elite\Desktop\justice_org\backend\.npm-cache\_logs\2025-08-17T22_04_30_475Z-
+10 verbose logfile C:\Users\Elite\Desktop\justice_org\backend\.npm-cache\_logs\2025-08-17T22_04_30_475Z-debug-0.log
+11 silly logfile start cleaning logs, removing 1 files
+12 silly packumentCache heap:4345298944 maxSize:1086324736 maxEntrySize:543162368
+13 silly logfile done cleaning log files
+14 silly idealTree buildDeps
+15 silly fetch manifest @aws-sdk/client-s3@^3.540.0
+16 silly packumentCache full:https://registry.npmjs.org/@aws-sdk%2fclient-s3 cache-miss
+17 http fetch GET 200 https://registry.npmjs.org/@aws-sdk%2fclient-s3 2111ms (cache miss)
+18 silly packumentCache full:https://registry.npmjs.org/@aws-sdk%2fclient-s3 set size:undefined disposed:false
+19 silly fetch manifest @supabase/supabase-js@^2.45.4
+20 silly packumentCache full:https://registry.npmjs.org/@supabase%2fsupabase-js cache-miss
+21 http fetch GET 200 https://registry.npmjs.org/@supabase%2fsupabase-js 1165ms (cache miss)
+22 silly packumentCache full:https://registry.npmjs.org/@supabase%2fsupabase-js set size:undefined disposed:false
+23 silly fetch manifest cloudinary@^2.0.1
+24 silly packumentCache full:https://registry.npmjs.org/cloudinary cache-miss
+25 http fetch GET 200 https://registry.npmjs.org/cloudinary 504ms (cache miss)
+26 silly packumentCache full:https://registry.npmjs.org/cloudinary set size:undefined disposed:false
+27 silly fetch manifest uuid@^10.0.0
+28 silly packumentCache full:https://registry.npmjs.org/uuid cache-miss
+29 http fetch GET 200 https://registry.npmjs.org/uuid 168ms (cache miss)
+30 silly packumentCache full:https://registry.npmjs.org/uuid set size:undefined disposed:false
+31 silly placeDep ROOT @aws-sdk/client-s3@3.864.0 OK for: backend@1.0.0 want: ^3.540.0
+32 silly placeDep ROOT @supabase/supabase-js@2.55.0 OK for: backend@1.0.0 want: ^2.45.4
+33 silly placeDep ROOT cloudinary@2.7.0 OK for: backend@1.0.0 want: ^2.0.1
+34 silly placeDep ROOT uuid@10.0.0 OK for: backend@1.0.0 want: ^10.0.0
+35 silly fetch manifest @aws-crypto/sha1-browser@5.2.0
+36 silly packumentCache full:https://registry.npmjs.org/@aws-crypto%2fsha1-browser cache-miss
+37 silly fetch manifest @aws-crypto/sha256-browser@5.2.0
+38 silly packumentCache full:https://registry.npmjs.org/@aws-crypto%2fsha256-browser cache-miss
+39 silly fetch manifest @aws-crypto/sha256-js@5.2.0
+40 silly packumentCache full:https://registry.npmjs.org/@aws-crypto%2fsha256-js cache-miss
+41 silly fetch manifest @aws-sdk/core@3.864.0
+42 silly packumentCache full:https://registry.npmjs.org/@aws-sdk%2fcore cache-miss
+43 silly fetch manifest @aws-sdk/credential-provider-node@3.864.0
+44 silly packumentCache full:https://registry.npmjs.org/@aws-sdk%2fcredential-provider-node cache-miss
+45 silly fetch manifest @aws-sdk/middleware-bucket-endpoint@3.862.0
+46 silly packumentCache full:https://registry.npmjs.org/@aws-sdk%2fmiddleware-bucket-endpoint cache-miss
+47 silly fetch manifest @aws-sdk/middleware-expect-continue@3.862.0
+48 silly packumentCache full:https://registry.npmjs.org/@aws-sdk%2fmiddleware-expect-continue cache-miss
+49 http fetch GET 200 https://registry.npmjs.org/@aws-crypto%2fsha256-js 823ms (cache miss)
+50 silly packumentCache full:https://registry.npmjs.org/@aws-crypto%2fsha256-js set size:undefined disposed:false
+51 silly fetch manifest @aws-sdk/middleware-flexible-checksums@3.864.0
+52 silly packumentCache full:https://registry.npmjs.org/@aws-sdk%2fmiddleware-flexible-checksums cache-miss
+53 http fetch GET 200 https://registry.npmjs.org/@aws-crypto%2fsha1-browser 969ms (cache miss)
+54 silly packumentCache full:https://registry.npmjs.org/@aws-crypto%2fsha1-browser set size:undefined disposed:false
+55 silly fetch manifest @aws-sdk/middleware-host-header@3.862.0
+56 silly packumentCache full:https://registry.npmjs.org/@aws-sdk%2fmiddleware-host-header cache-miss

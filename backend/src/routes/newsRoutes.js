@@ -1,6 +1,5 @@
 import express from 'express';
 import multer from 'multer';
-import path from 'path';
 import { authenticateToken, checkPermission, requireRole } from '../middleware/auth.js';
 import logActivity from '../middleware/logActivity.js';
 import {
@@ -14,19 +13,9 @@ import {
 
 const router = express.Router();
 
-// إعداد multer لرفع الصور
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/');
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, 'news-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
-
+// تكوين multer للذاكرة
 const upload = multer({
-  storage: storage,
+  storage: multer.memoryStorage(),
   limits: {
     fileSize: 2 * 1024 * 1024 // 2MB
   },

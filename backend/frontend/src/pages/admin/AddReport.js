@@ -113,7 +113,7 @@ const AddReport = () => {
     };
     try {
       const token = localStorage.getItem('admin_token');
-     const res = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/upload`,{
+     const res = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/reports`,{
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -142,7 +142,8 @@ const AddReport = () => {
 
   const uploadProps = {
     name: 'file',
-action: `${process.env.REACT_APP_API_URL || ''}/api/upload`,    showUploadList: false,
+action: `${process.env.REACT_APP_API_URL || ''}/api/upload`,    
+     showUploadList: false,
     headers: {
       Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
       'X-Requested-With': 'XMLHttpRequest'
