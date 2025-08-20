@@ -303,7 +303,8 @@ const res = await fetch(`${process.env.REACT_APP_API_URL}/api/upload`, {        
                       formData.append('file', file);
                       try {
                         const token = localStorage.getItem('admin_token');
-                        const res = await fetch(`${process.env.REACT_APP_API_URL}/api/upload`, {                          method: 'POST',
+                        const res = await fetch(`${process.env.REACT_APP_API_URL}/api/upload`, {            
+                          method: 'POST',
                           headers: { Authorization: `Bearer ${token}` },
                           body: formData
                         });

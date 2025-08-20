@@ -23,7 +23,7 @@ const EditNews = () => {
     try {
       setLoading(true);
       console.log('جاري تحميل الخبر:', id);
-      
+
       const token = localStorage.getItem('admin_token');
       if (!token) {
         message.error('يجب تسجيل الدخول أولاً');
@@ -42,11 +42,11 @@ const EditNews = () => {
       if (res.ok) {
         const newsData = await res.json();
         console.log('بيانات الخبر:', newsData);
-        
+
         setNews(newsData);
-        
+
         if (newsData.image) {
-      const imageUrl = `${process.env.REACT_APP_API_URL}${newsData.image}`;
+          const imageUrl = `${process.env.REACT_APP_API_URL}${newsData.image}`;
           setImagePreview(imageUrl);
           console.log('تم تعيين صورة الخبر الحالية:', imageUrl);
         } else {
@@ -55,7 +55,7 @@ const EditNews = () => {
       } else {
         const errorData = await res.json();
         console.error('خطأ في جلب الخبر:', errorData);
-        
+
         if (res.status === 404) {
           message.error('الخبر غير موجود');
         } else if (res.status === 401) {
@@ -73,14 +73,12 @@ const EditNews = () => {
     }
   }, [id, navigate]);
 
-  // تحميل البيانات عند تحميل المكون
   useEffect(() => {
     if (id) {
       loadNews();
     }
   }, [id, loadNews]);
 
-  // تعبئة النموذج فقط عند تغيير بيانات الخبر
   useEffect(() => {
     if (news && !loading) {
       form.setFieldsValue({
@@ -93,7 +91,6 @@ const EditNews = () => {
     }
   }, [news, loading, form]);
 
-  // معالجة حالة عدم وجود ID
   if (!id) {
     console.error('لا يوجد ID للخبر');
     return (
@@ -109,85 +106,79 @@ const EditNews = () => {
 
   const handleImageChange = (info) => {
     console.log('تغيير الصورة:', info);
-    
+
     if (info.file && info.file.originFileObj) {
       const file = info.file.originFileObj;
-      console.log('تم اختيار صورة جديدة:', file.name, 'حجم:', file.size);
-      
-      // التحقق من نوع الملف
       if (!file.type.startsWith('image/')) {
         message.error('يسمح فقط بملفات الصور');
         return;
       }
-      
-      // التحقق من حجم الملف (2MB)
       if (file.size > 2 * 1024 * 1024) {
         message.error('حجم الصورة يجب ألا يتجاوز 2 ميجابايت');
         return;
       }
-      
       setImageFile(file);
       setImagePreview(URL.createObjectURL(file));
-      console.log('تم تحديث الصورة بنجاح');
-    } else if (info.fileList && info.fileList.length > 0) {
-      const file = info.fileList[0].originFileObj;
-      if (file) {
-        console.log('تم اختيار صورة من fileList:', file.name);
-        
-        // التحقق من نوع الملف
-        if (!file.type.startsWith('image/')) {
-          message.error('يسمح فقط بملفات الصور');
-          return;
-        }
-        
-        // التحقق من حجم الملف (2MB)
-        if (file.size > 2 * 1024 * 1024) {
-          message.error('حجم الصورة يجب ألا يتجاوز 2 ميجابايت');
-          return;
-        }
-        
-        setImageFile(file);
-        setImagePreview(URL.createObjectURL(file));
-        console.log('تم تحديث الصورة من fileList بنجاح');
-      }
     }
   };
 
+  // ✅ التعديل الرئيسي هنا
   const handleSubmit = async (values) => {
     console.log('تشغيل handleSubmit', values, imageFile);
 
-    // استخلاص المحتوى النصي من المحرر
     const editorContent = content;
     const plainTextContent = editorContent.replace(/<[^>]+>/g, '').trim();
 
-    // تحقق من وجود محتوى فعلي
     if (!plainTextContent) {
       message.error('يرجى كتابة محتوى الخبر');
       return;
     }
 
     setLoading(true);
-    const formData = new FormData();
-    formData.append('title', values.title);
-    formData.append('summary', values.summary);
-    formData.append('content', editorContent); // إرسال المحتوى الكامل (HTML)
-    formData.append('status', values.status);
-    if (imageFile) formData.append('image', imageFile);
 
     try {
       const token = localStorage.getItem('admin_token');
-      console.log('سيتم إرسال طلب التحديث الآن');
-    const res = await fetch(`${process.env.REACT_APP_API_URL}/api/news/${id}`, {
+      let imageUrl = news.image || null;
+
+      // رفع الصورة الجديدة إن وجدت
+      if (imageFile) {
+        const uploadData = new FormData();
+        uploadData.append('file', imageFile);
+
+        const uploadRes = await fetch(`${process.env.REACT_APP_API_URL}/api/upload`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` },
+          body: uploadData
+        });
+
+        const uploadResult = await uploadRes.json();
+        if (uploadRes.ok && uploadResult.url) {
+          imageUrl = uploadResult.url;
+        } else {
+          message.error(uploadResult.error || 'فشل رفع الصورة');
+          setLoading(false);
+          return;
+        }
+      }
+
+      // إرسال البيانات كـ JSON
+      const body = {
+        title: values.title,
+        summary: values.summary,
+        content: editorContent,
+        status: values.status,
+        image: imageUrl
+      };
+
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/news/${id}`, {
         method: 'PUT',
         headers: {
-         
-            'Content-Type': 'application/json',
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
-        body: formData
+        body: JSON.stringify(body)
       });
-      console.log('تم إرسال طلب التحديث، status:', res.status);
-      
+
       if (res.ok) {
         message.success('تم تحديث الخبر بنجاح!');
         navigate('/admin/news');
@@ -195,36 +186,15 @@ const EditNews = () => {
         let errorMsg = 'لم نستطع تحديث الخبر.';
         try {
           const data = await res.json();
-          if (data && data.error) {
-            errorMsg = data.error;
-            console.log('خطأ من السيرفر:', data);
-          } else if (data && data.message) {
-            errorMsg = data.message;
-            console.log('رسالة من السيرفر:', data);
-          }
-        } catch (e) {
-          console.log('خطأ في قراءة رد السيرفر:', e);
-        }
-        
-        // معالجة أخطاء محددة
-        if (errorMsg.includes('حجم الملف')) {
-          message.error('حجم الصورة كبير جداً. الحد الأقصى 2 ميجابايت');
-        } else if (errorMsg.includes('ملفات الصور')) {
-          message.error('يسمح فقط بملفات الصور (jpg, png, gif, webp)');
-        } else if (errorMsg.includes('نوع الصورة')) {
-          message.error('نوع الصورة غير مدعوم. يسمح فقط بـ jpg, png, webp');
-        } else if (errorMsg.includes('حجم الصورة')) {
-          message.error('حجم الصورة كبير جداً. الحد الأقصى 2 ميجابايت');
-        } else {
-          message.error(errorMsg);
-        }
+          errorMsg = data.error || data.message || errorMsg;
+        } catch {}
+        message.error(errorMsg);
       }
     } catch (err) {
       console.log('خطأ في fetch:', err);
       message.error('تعذر الاتصال بالخادم');
     } finally {
       setLoading(false);
-      console.log('انتهت عملية التحديث');
     }
   };
 
@@ -274,19 +244,14 @@ const EditNews = () => {
             </Form.Item>
           </Col>
         </Row>
-        
+
         <Form.Item label="ملخص الخبر" name="summary" rules={[{ required: true, message: 'يرجى إدخال الملخص' }]}> 
-          <TextArea 
-            placeholder="ملخص مختصر للخبر" 
-            rows={3}
-            maxLength={200}
-            showCount
-          />
+          <TextArea rows={3} maxLength={200} showCount />
         </Form.Item>
-        
+
         <Form.Item label="محتوى الخبر" name="content" rules={[{ required: true, message: 'يرجى كتابة محتوى الخبر' }]}> 
           <Editor
-            licenseKey="gpl"   // ✅ هذا السطر يحل مشكلة الترخيص
+            licenseKey="gpl"
             tinymceScriptSrc={process.env.PUBLIC_URL + '/tinymce/tinymce.min.js'}
             value={content}
             onEditorChange={(newContent) => {
@@ -309,10 +274,6 @@ const EditNews = () => {
               directionality: 'rtl',
               height: 400,
               content_style: 'body { font-family:Tahoma,Arial,sans-serif; font-size:16px }',
-              paste_as_text: false,
-              paste_enable_default_filters: true,
-              paste_remove_styles_if_webkit: true,
-              paste_retain_style_properties: 'color font-size font-family',
               images_upload_url: `${process.env.REACT_APP_API_URL}/api/upload`,
               images_upload_handler: async (blobInfo, success, failure) => {
                 const formData = new FormData();
@@ -326,102 +287,40 @@ const EditNews = () => {
                   });
                   const data = await res.json();
                   if (data && data.url) {
-                    let url = data.url.replace(/^\.\.\//, '/');
-                    success(url);
+                    success(data.url);
                   } else {
                     failure('فشل رفع الصورة');
                   }
-                } catch (e) {
+                } catch {
                   failure('فشل الاتصال بالخادم');
-                }
-              },
-              file_picker_callback: function (callback, value, meta) {
-                if (meta.filetype === 'image') {
-                  const input = document.createElement('input');
-                  input.setAttribute('type', 'file');
-                  input.setAttribute('accept', 'image/*');
-                  input.onchange = async function () {
-                    const file = this.files[0];
-                    const formData = new FormData();
-                    formData.append('file', file);
-                    try {
-                      const token = localStorage.getItem('admin_token');
-                      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/upload`, {
-                        method: 'POST',
-                        headers: { Authorization: `Bearer ${token}` },
-                        body: formData
-                      });
-                      const data = await res.json();
-                      if (data && data.url) {
-                        let url = data.url.replace(/^\.\.\//, '/');
-                        callback(url, { title: file.name });
-                      } else {
-                        alert('فشل رفع الصورة');
-                      }
-                    } catch (e) {
-                      alert('فشل الاتصال بالخادم');
-                    }
-                  };
-                  input.click();
                 }
               },
             }}
           />
         </Form.Item>
+
         <Form.Item label="الصورة الرئيسية">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-            <Upload 
-              beforeUpload={() => false}
-              onChange={handleImageChange}
-              maxCount={1}
-              accept="image/*"
-              showUploadList={false}
-            >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Upload beforeUpload={() => false} onChange={handleImageChange} maxCount={1} accept="image/*" showUploadList={false}>
               <Button icon={<UploadOutlined />}>اختر صورة</Button>
             </Upload>
-            {imageFile && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ color: '#1890ff', fontWeight: 'bold', whiteSpace: 'nowrap', fontSize: 15 }}>
-                  ✓ {imageFile.name}
-                </span>
-                <Button 
-                  type="text" 
-                  danger 
-                  size="small"
-                  onClick={() => {
-                    setImageFile(null);
-                    setImagePreview(news.image ? `${process.env.REACT_APP_API_URL}${news.image}` : null);
-                  }}
-                >
-                  إزالة
-                </Button>
-              </div>
-            )}
           </div>
           {(imagePreview || news.image) && (
             <div style={{ marginTop: '8px' }}>
               <img 
                 src={imagePreview || `${process.env.REACT_APP_API_URL}${news.image}`}
                 alt="معاينة الصورة"
-                style={{ 
-                  maxWidth: '100%', 
-                  maxHeight: 200, 
-                  objectFit: 'cover',
-                  borderRadius: 8,
-                  border: '1px solid #d9d9d9'
-                }} 
+                style={{ maxWidth: '100%', maxHeight: 200, objectFit: 'cover', borderRadius: 8 }}
               />
             </div>
           )}
         </Form.Item>
-        
+
         <Form.Item>
           <Button type="primary" htmlType="submit" loading={loading} style={{ marginInlineEnd: 8 }}>
             {loading ? 'جاري التحديث...' : 'تحديث الخبر'}
           </Button>
-          <Button onClick={() => navigate('/admin/news')}>
-            إلغاء
-          </Button>
+          <Button onClick={() => navigate('/admin/news')}>إلغاء</Button>
         </Form.Item>
       </Form>
     </div>

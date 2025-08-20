@@ -22,7 +22,6 @@ const AddNews = () => {
       const file = info.file.originFileObj;
       console.log('تم اختيار صورة جديدة:', file.name, 'حجم:', file.size);
       
-      // التحقق من نوع الملف
       if (!file.type.startsWith('image/')) {
         message.error('يسمح فقط بملفات الصور');
         return;
@@ -35,7 +34,6 @@ const AddNews = () => {
       if (file) {
         console.log('تم اختيار صورة من fileList:', file.name);
         
-        // التحقق من نوع الملف
         if (!file.type.startsWith('image/')) {
           message.error('يسمح فقط بملفات الصور');
           return;
@@ -50,34 +48,60 @@ const AddNews = () => {
   const handleSubmit = async (values) => {
     console.log('تشغيل handleSubmit', values, image);
 
-    // استخلاص المحتوى النصي من المحرر
+    // ✅ المحتوى من المحرر
     const plainTextContent = content.replace(/<[^>]+>/g, '').trim();
-
-    // تحقق من وجود محتوى فعلي
     if (!plainTextContent) {
       message.error('يرجى كتابة محتوى الخبر');
       return;
     }
 
     setSubmitting(true);
-    const formData = new FormData();
-    formData.append('title', values.title);
-    formData.append('summary', values.summary);
-    formData.append('content', content); // إرسال المحتوى الكامل (HTML)
-    formData.append('status', values.status || 'draft');
-    if (image) formData.append('file', image);
 
     try {
       const token = localStorage.getItem('admin_token');
-      console.log('سيتم إرسال الطلب الآن');
-const res = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/news`, {
+
+      // ✅ رفع الصورة أول عبر /api/upload
+      let imageUrl = null;
+      if (image) {
+        const uploadData = new FormData();
+        uploadData.append('file', image);
+
+        const uploadRes = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/upload`, {
           method: 'POST',
+          headers: { Authorization: `Bearer ${token}` },
+          body: uploadData
+        });
+
+        const uploadResult = await uploadRes.json();
+        if (uploadRes.ok && uploadResult.url) {
+          imageUrl = uploadResult.url;
+        } else {
+          throw new Error(uploadResult.error || 'فشل رفع الصورة');
+        }
+      }
+
+      // ✅ إرسال بيانات JSON بدلاً من FormData
+      const payload = {
+        title: values.title,
+        summary: values.summary,
+        content,
+        status: values.status || 'draft',
+        image: imageUrl
+      };
+
+      console.log('سيتم إرسال الطلب الآن', payload);
+
+      const res = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/news`, {
+        method: 'POST',
         headers: {
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
-        body: formData
+        body: JSON.stringify(payload)
       });
+
       console.log('تم إرسال الطلب، status:', res.status);
+
       if (res.ok) {
         message.success('تم نشر الخبر بنجاح!');
         form.resetFields();
@@ -97,8 +121,7 @@ const res = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/news`, {
         } catch (e) {
           console.log('خطأ في قراءة رد السيرفر:', e);
         }
-        
-        // معالجة أخطاء محددة
+
         if (errorMsg.includes('حجم الملف')) {
           message.error('حجم الصورة كبير جداً. الحد الأقصى 2 ميجابايت');
         } else if (errorMsg.includes('ملفات الصور')) {
@@ -144,7 +167,7 @@ const res = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/news`, {
           
           <Form.Item label="محتوى الخبر" name="content" rules={[{ required: true, message: 'يرجى كتابة محتوى الخبر' }]} validateTrigger="onEditorChange">
             <Editor
-             licenseKey="gpl"   // ✅ هذا السطر يحل مشكلة الترخيص
+             licenseKey="gpl"
               tinymceScriptSrc={process.env.PUBLIC_URL + '/tinymce/tinymce.min.js'}
               value={content}
               onEditorChange={(newContent) => {
@@ -172,7 +195,7 @@ const res = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/news`, {
                 paste_remove_styles_if_webkit: true,
                 paste_retain_style_properties: 'color font-size font-family',
                 images_upload_url: `${process.env.REACT_APP_API_URL || ''}/api/upload`,
-                  images_upload_handler: async (blobInfo, success, failure) => {
+                images_upload_handler: async (blobInfo, success, failure) => {
                   const formData = new FormData();
                   formData.append('file', blobInfo.blob());
                   try {

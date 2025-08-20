@@ -827,7 +827,8 @@ const testResponse = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/hea
                         const formData = new FormData();
                         formData.append('image', blobInfo.blob(), blobInfo.filename());
                         
-                  const response = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/upload/image`, {                          method: 'POST',
+                  const response = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/upload/image`, {        
+                                      method: 'POST',
                           body: formData
                         });
                         
