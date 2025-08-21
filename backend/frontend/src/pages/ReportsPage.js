@@ -232,7 +232,7 @@ const ReportsPage = () => {
                       />
                       <div className="report-overlay">
                         <div className="overlay-actions">
-                          <Link to={`/reports/${report.id || report._id}`} className="view-btn">
+                        <Link to={`/reports/${report.id}`} className="view-btn">
                             <EyeOutlined />
                             <span>عرض</span>
                           </Link>

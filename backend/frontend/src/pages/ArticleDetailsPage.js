@@ -16,6 +16,8 @@ const ArticleDetailsPage = () => {
         }
       } catch (error) {
         console.error('خطأ في جلب المقال:', error);
+      } finally {
+        setLoading(false); // ✅ هنا عشان يوقف التحميل
       }
     };
 
@@ -30,12 +32,14 @@ const ArticleDetailsPage = () => {
       <h1>{article.title}</h1>
       {article.image && (
         <img 
-          src={article.image} 
+          src={article.image.startsWith('http') ? article.image : `${process.env.REACT_APP_API_URL || ''}${article.image}`}
           alt={article.title} 
           style={{ maxWidth: '100%', marginBottom: 16 }} 
         />
       )}
-      <p style={{ color: '#888', marginBottom: 16 }}>{article.publishDate && article.publishDate.slice(0, 10)}</p>
+      <p style={{ color: '#888', marginBottom: 16 }}>
+        {article.createdAt ? article.createdAt.slice(0, 10) : ''}
+      </p>
       <div style={{ marginBottom: 16 }}>
         <b>القسم:</b> {article.Section ? article.Section.name : 'غير محدد'}
         {article.User && (
@@ -47,4 +51,4 @@ const ArticleDetailsPage = () => {
   );
 };
 
-export default ArticleDetailsPage; 
+export default ArticleDetailsPage;
