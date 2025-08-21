@@ -266,9 +266,9 @@ const HomePage = () => {
                             <span className="result-type">
                               {item.type === 'news' ? 'خبر' : 'تقرير'}
                             </span>
-                            {item.publishDate && (
+                            {(item.publishDate || item.createdAt) && (
                               <span className="result-date">
-                                {new Date(item.publishDate).toLocaleDateString('ar-SA')}
+                                {new Date(item.publishDate || item.createdAt).toLocaleDateString('ar-SA')}
                               </span>
                             )}
                           </div>
@@ -399,7 +399,7 @@ const HomePage = () => {
                       <div className="report-meta">
                         <span className="report-date">
                           <i className="far fa-calendar-alt"></i>
-                          {report.publishDate ? new Date(report.publishDate).toLocaleDateString('ar-SA') : ''}
+                          {report.createdAt ? new Date(report.createdAt).toLocaleDateString('ar-SA') : ''}
                         </span>
                         <span className="report-type">
                           <i className="fas fa-file-pdf"></i>

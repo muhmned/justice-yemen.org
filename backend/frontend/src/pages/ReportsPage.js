@@ -23,14 +23,14 @@ const ReportsPage = () => {
           // ✅ دعم الحالتين: Array مباشرة أو { reports: [] }
           const reportsArray = Array.isArray(data) ? data : data.reports || [];
 
-          // ✅ جلب المنشورة فقط
-          const publishedReports = reportsArray.filter(item => item.status === 'published');
+          // ✅ جلب جميع التقارير (بدون فلترة status)
+          const publishedReports = reportsArray;
           setReports(publishedReports);
 
           // ✅ استخراج السنوات الفريدة
           const uniqueYears = [...new Set(
             publishedReports
-              .map(item => new Date(item.publishDate).getFullYear())
+              .map(item => new Date(item.createdAt).getFullYear())
               .filter(Boolean)
           )].sort((a, b) => b - a);
 
@@ -62,7 +62,7 @@ const ReportsPage = () => {
 
     if (selectedYear !== 'all') {
       filtered = filtered.filter(report => {
-        const year = new Date(report.publishDate).getFullYear();
+        const year = new Date(report.createdAt).getFullYear();
         return year === parseInt(selectedYear);
       });
     }
@@ -255,10 +255,10 @@ const ReportsPage = () => {
                       <div className="report-meta">
                         <span className="report-date">
                           <CalendarOutlined />
-                          {formatDate(report.publishDate)}
+                          {formatDate(report.createdAt)}
                         </span>
                         <span className="report-year">
-                          {new Date(report.publishDate).getFullYear()}
+                          {new Date(report.createdAt).getFullYear()}
                         </span>
                       </div>
                       

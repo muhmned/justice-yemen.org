@@ -40,7 +40,7 @@ const SectionDetailsPage = () => {
         if (response.ok) {
           const data = await response.json();
 
-          // ✅ فلترة المقالات بالقسم + حالة النشر
+          // ✅ فلترة المقالات بالقسم فقط (بدون فلترة status)
           const sectionArticles = Array.isArray(data)
             ? data.filter(article =>
                 (
@@ -48,8 +48,7 @@ const SectionDetailsPage = () => {
                   article.sectionId === section._id ||
                   article.sectionId?._id === section.id ||
                   article.sectionId?._id === section._id
-                ) &&
-                ['active', 'published'].includes(article.status)
+                )
               )
             : [];
 
@@ -141,7 +140,7 @@ const SectionDetailsPage = () => {
                       {article.summary || (article.content ? article.content.slice(0, 100) + '...' : '')}
                     </p>
                     <p className="card-date" style={{ color: '#888', fontSize: 13 }}>
-                      {article.publishDate ? article.publishDate.slice(0, 10) : ''}
+                      {article.createdAt ? article.createdAt.slice(0, 10) : ''}
                     </p>
                   </div>
                 </Link>

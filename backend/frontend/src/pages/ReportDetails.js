@@ -30,7 +30,7 @@ const ReportDetails = () => {
     <div className="report-details" style={{ maxWidth: 900, margin: '0 auto', background: '#fff', padding: 24, borderRadius: 12 }}>
       <h1>{report.title}</h1>
       {report.thumbnail && <img src={report.thumbnail} alt={report.title} style={{ maxWidth: '100%', marginBottom: 16 }} />}
-      <p style={{ color: '#888', marginBottom: 16 }}>{report.publishDate && report.publishDate.slice(0, 10)}</p>
+      <p style={{ color: '#888', marginBottom: 16 }}>{report.createdAt && report.createdAt.slice(0, 10)}</p>
       <div dangerouslySetInnerHTML={{ __html: report.content }} style={{ marginBottom: 24 }} />
       {report.pdfUrl && (
         <a 

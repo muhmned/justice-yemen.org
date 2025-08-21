@@ -25,14 +25,17 @@ const Carousel = () => {
                     .map(item => ({ ...item, type: 'news', link: `/news/${item.id}` }));
 
                 const formattedReports = reportsData
-                    .filter(item => item.status === 'published')
                     .map(item => ({ ...item, type: 'report', link: `/reports/${item.id}` }));
                 
                 const formattedArticles = articlesData.map(item => ({ ...item, type: 'article', link: `/articles/${item.id}` }));
 
                 const combinedData = [...formattedNews, ...formattedReports, ...formattedArticles];
                 
-                combinedData.sort((a, b) => new Date(b.publishDate) - new Date(a.publishDate));
+                combinedData.sort((a, b) => {
+                    const dateA = new Date(a.publishDate || a.createdAt || 0);
+                    const dateB = new Date(b.publishDate || b.createdAt || 0);
+                    return dateB - dateA;
+                });
 
                 setSlides(combinedData.slice(0, 10)); // Get top 10 latest items
             } catch (error) {
