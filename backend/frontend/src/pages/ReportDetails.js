@@ -16,12 +16,13 @@ const ReportDetails = () => {
         }
       } catch (error) {
         console.error('خطأ في جلب التقرير:', error);
+      } finally {
+        setLoading(false); // ✅ مهم عشان يوقف شاشة "جاري التحميل..."
       }
     };
-
+  
     fetchReport();
   }, [id]);
-
   if (loading) return <div>جاري التحميل...</div>;
   if (!report) return <div>لم يتم العثور على التقرير</div>;
 

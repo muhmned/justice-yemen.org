@@ -18,20 +18,30 @@ const ReportsPage = () => {
         const response = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/reports`);
         if (response.ok) {
           const data = await response.json();
-          const publishedReports = Array.isArray(data) ? data.filter(item => item.status === 'published') : [];
+          console.log("📊 بيانات السيرفر:", data);
+
+          // ✅ دعم الحالتين: Array مباشرة أو { reports: [] }
+          const reportsArray = Array.isArray(data) ? data : data.reports || [];
+
+          // ✅ جلب المنشورة فقط
+          const publishedReports = reportsArray.filter(item => item.status === 'published');
           setReports(publishedReports);
-          
-          // استخراج السنوات الفريدة
-          const uniqueYears = [...new Set(publishedReports.map(item => new Date(item.publishDate).getFullYear()).filter(Boolean))].sort((a, b) => b - a);
+
+          // ✅ استخراج السنوات الفريدة
+          const uniqueYears = [...new Set(
+            publishedReports
+              .map(item => new Date(item.publishDate).getFullYear())
+              .filter(Boolean)
+          )].sort((a, b) => b - a);
+
           setYears(uniqueYears);
-          
           setFilteredReports(publishedReports);
-          setLoading(false);
         }
       } catch (error) {
-        console.error('خطأ في جلب التقارير:', error);
+        console.error('❌ خطأ في جلب التقارير:', error);
         setReports([]);
         setFilteredReports([]);
+      } finally {
         setLoading(false);
       }
     };
@@ -39,11 +49,10 @@ const ReportsPage = () => {
     fetchReports();
   }, []);
 
-  // تصفية التقارير
+  // ✅ التصفية حسب البحث والسنة
   useEffect(() => {
     let filtered = reports;
 
-    // تصفية حسب البحث
     if (searchQuery) {
       filtered = filtered.filter(report =>
         report.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -51,7 +60,6 @@ const ReportsPage = () => {
       );
     }
 
-    // تصفية حسب السنة
     if (selectedYear !== 'all') {
       filtered = filtered.filter(report => {
         const year = new Date(report.publishDate).getFullYear();
@@ -77,7 +85,7 @@ const ReportsPage = () => {
     e.stopPropagation();
     
     try {
-      const downloadUrl = report.pdfUrl.startsWith('http') 
+      const downloadUrl = report.pdfUrl?.startsWith('http') 
         ? report.pdfUrl 
         : `${process.env.REACT_APP_API_URL || ''}${report.pdfUrl}`;
 
@@ -97,7 +105,7 @@ const ReportsPage = () => {
       a.remove();
       window.URL.revokeObjectURL(url);
     } catch (err) {
-      console.error("حدث خطأ أثناء تحميل الملف:", err);
+      console.error("⚠️ حدث خطأ أثناء تحميل الملف:", err);
       alert('حدث خطأ أثناء تحميل الملف: ' + err.message);
     }
   };
@@ -208,16 +216,23 @@ const ReportsPage = () => {
             ) : (
               <div className="reports-grid">
                 {filteredReports.map(report => (
-                  <article key={report.id} className="report-card">
+                  <article key={report.id || report._id} className="report-card">
                     <div className="report-image">
                       <img 
-                        src={report.thumbnail ? (report.thumbnail.startsWith('http') ? report.thumbnail : report.thumbnail) : 'https://via.placeholder.com/400x250/28a745/ffffff?text=لا+توجد+صورة'} 
+                        src={
+                          report.thumbnail
+                            ? (report.thumbnail.startsWith('http')
+                                ? report.thumbnail
+                                : `${process.env.REACT_APP_API_URL || ''}${report.thumbnail}`
+                              )
+                            : 'https://via.placeholder.com/400x250/28a745/ffffff?text=لا+توجد+صورة'
+                        } 
                         alt={report.title} 
                         className="report-image"
                       />
                       <div className="report-overlay">
                         <div className="overlay-actions">
-                          <Link to={`/reports/${report.id}`} className="view-btn">
+                          <Link to={`/reports/${report.id || report._id}`} className="view-btn">
                             <EyeOutlined />
                             <span>عرض</span>
                           </Link>
@@ -247,7 +262,7 @@ const ReportsPage = () => {
                         </span>
                       </div>
                       
-                      <Link to={`/reports/${report.id}`} className="report-title">
+                      <Link to={`/reports/${report.id || report._id}`} className="report-title">
                         <h3>{report.title}</h3>
                       </Link>
                       
@@ -256,7 +271,7 @@ const ReportsPage = () => {
                       </p>
                       
                       <div className="report-footer">
-                        <Link to={`/reports/${report.id}`} className="view-link">
+                        <Link to={`/reports/${report.id || report._id}`} className="view-link">
                           عرض التقرير
                           <span className="arrow">→</span>
                         </Link>
@@ -275,29 +290,9 @@ const ReportsPage = () => {
             )}
           </div>
         </section>
-
-        {/* Call to Action */}
-        <section className="cta-section">
-          <div className="container">
-            <div className="cta-content">
-              <div className="cta-text">
-                <h3>هل تبحث عن تقرير معين؟</h3>
-                <p>تواصل معنا للحصول على تقارير محددة أو لطلب تقارير مخصصة</p>
-              </div>
-              <div className="cta-actions">
-                <Link to="/contact-us" className="cta-btn primary">
-                  تواصل معنا
-                </Link>
-                <Link to="/about-us" className="cta-btn secondary">
-                  تعرف علينا
-                </Link>
-              </div>
-            </div>
-          </div>
-        </section>
       </div>
     </>
   );
 };
 
-export default ReportsPage; 
+export default ReportsPage;

@@ -23,7 +23,7 @@ const SectionDetailsPage = () => {
         console.error('خطأ في جلب بيانات القسم:', error);
         setError('خطأ في الاتصال بالخادم');
       } finally {
-        setLoading(false); // ✅ إضافة إيقاف التحميل
+        setLoading(false);
       }
     };
 
@@ -39,12 +39,20 @@ const SectionDetailsPage = () => {
         const response = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/articles`);
         if (response.ok) {
           const data = await response.json();
-          // ✅ فلترة المقالات بالقسم وحالة النشر
+
+          // ✅ فلترة المقالات بالقسم + حالة النشر
           const sectionArticles = Array.isArray(data)
             ? data.filter(article =>
-                article.sectionId === section.id && article.status === 'active'
+                (
+                  article.sectionId === section.id ||
+                  article.sectionId === section._id ||
+                  article.sectionId?._id === section.id ||
+                  article.sectionId?._id === section._id
+                ) &&
+                ['active', 'published'].includes(article.status)
               )
             : [];
+
           setArticles(sectionArticles);
         }
       } catch (error) {
@@ -90,7 +98,7 @@ const SectionDetailsPage = () => {
           <div className="cards-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(270px,1fr))', gap: 32 }}>
             {articles.map(article => (
               <div
-                key={article.id}
+                key={article.id || article._id}
                 className="card"
                 style={{
                   background: '#fff',
@@ -112,9 +120,15 @@ const SectionDetailsPage = () => {
                   e.currentTarget.style.boxShadow = '0 2px 8px #eee';
                 }}
               >
-                <Link to={`/articles/${article.id}`} style={{ display: 'block', flex: 1 }}>
+                <Link to={`/articles/${article.id || article._id}`} style={{ display: 'block', flex: 1 }}>
                   <img
-                    src={article.image}
+                    src={
+                      article.image
+                        ? (article.image.startsWith('http')
+                            ? article.image
+                            : `${process.env.REACT_APP_API_URL || ''}${article.image}`)
+                        : 'https://via.placeholder.com/400x250/cccccc/000000?text=No+Image'
+                    }
                     alt={article.title}
                     className="card-image"
                     style={{ width: '100%', height: 170, objectFit: 'cover', borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
@@ -136,7 +150,9 @@ const SectionDetailsPage = () => {
           </div>
         </div>
       ) : (
-        <div style={{ textAlign: 'center', color: '#888', marginTop: 40, fontSize: 20 }}>لا توجد مقالات منشورة في هذا القسم حالياً.</div>
+        <div style={{ textAlign: 'center', color: '#888', marginTop: 40, fontSize: 20 }}>
+          لا توجد مقالات منشورة في هذا القسم حالياً.
+        </div>
       )}
     </div>
   );
