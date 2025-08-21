@@ -122,7 +122,6 @@ const EditNews = () => {
     }
   };
 
-  // ✅ التعديل الرئيسي هنا
   const handleSubmit = async (values) => {
     console.log('تشغيل handleSubmit', values, imageFile);
 
@@ -138,45 +137,24 @@ const EditNews = () => {
 
     try {
       const token = localStorage.getItem('admin_token');
-      let imageUrl = news.image || null;
 
-      // رفع الصورة الجديدة إن وجدت
+      // ✅ إرسال Multipart FormData مباشرة إلى /api/news/:id
+      const formData = new FormData();
+      formData.append('title', values.title);
+      formData.append('summary', values.summary);
+      formData.append('content', editorContent);
+      formData.append('status', values.status);
       if (imageFile) {
-        const uploadData = new FormData();
-        uploadData.append('file', imageFile);
-
-        const uploadRes = await fetch(`${process.env.REACT_APP_API_URL}/api/upload`, {
-          method: 'POST',
-          headers: { Authorization: `Bearer ${token}` },
-          body: uploadData
-        });
-
-        const uploadResult = await uploadRes.json();
-        if (uploadRes.ok && uploadResult.url) {
-          imageUrl = uploadResult.url;
-        } else {
-          message.error(uploadResult.error || 'فشل رفع الصورة');
-          setLoading(false);
-          return;
-        }
+        formData.append('image', imageFile);
       }
-
-      // إرسال البيانات كـ JSON
-      const body = {
-        title: values.title,
-        summary: values.summary,
-        content: editorContent,
-        status: values.status,
-        image: imageUrl
-      };
 
       const res = await fetch(`${process.env.REACT_APP_API_URL}/api/news/${id}`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
+          // اترك Content-Type ليتم تعيين boundary تلقائياً
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify(body)
+        body: formData
       });
 
       if (res.ok) {

@@ -60,44 +60,23 @@ const AddNews = () => {
     try {
       const token = localStorage.getItem('admin_token');
 
-      // ✅ رفع الصورة أول عبر /api/upload
-      let imageUrl = null;
+      // ✅ إرسال Multipart FormData إلى /api/news مع الحقل image للصورة
+      const formData = new FormData();
+      formData.append('title', values.title);
+      formData.append('summary', values.summary);
+      formData.append('content', content);
+      formData.append('status', values.status || 'draft');
       if (image) {
-        const uploadData = new FormData();
-        uploadData.append('file', image);
-
-        const uploadRes = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/upload`, {
-          method: 'POST',
-          headers: { Authorization: `Bearer ${token}` },
-          body: uploadData
-        });
-
-        const uploadResult = await uploadRes.json();
-        if (uploadRes.ok && uploadResult.url) {
-          imageUrl = uploadResult.url;
-        } else {
-          throw new Error(uploadResult.error || 'فشل رفع الصورة');
-        }
+        formData.append('image', image);
       }
-
-      // ✅ إرسال بيانات JSON بدلاً من FormData
-      const payload = {
-        title: values.title,
-        summary: values.summary,
-        content,
-        status: values.status || 'draft',
-        image: imageUrl
-      };
-
-      console.log('سيتم إرسال الطلب الآن', payload);
 
       const res = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/news`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          // لا تقم بتحديد Content-Type يدوياً حتى يُضاف boundary تلقائياً
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify(payload)
+        body: formData
       });
 
       console.log('تم إرسال الطلب، status:', res.status);
