@@ -219,7 +219,7 @@ async function deleteReport(req, res) {
 async function getReportById(req, res) {
   const { id } = req.params;
   try {
-    const report = await prisma.report.findUnique({ where: { id } });
+    const report = await prisma.report.findUnique({ where: { id: parseInt(id) } });
     if (!report) {
       return res.status(404).json({ error: 'التقرير غير موجود' });
     }

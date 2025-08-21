@@ -122,7 +122,7 @@ async function getAllArticles(req, res) {
         User: true,
         Category: true
       },
-      orderBy: { publishDate: 'desc' }
+      orderBy: { createdAt: 'desc' }
     });
     res.json(articles);
   } catch (err) {
