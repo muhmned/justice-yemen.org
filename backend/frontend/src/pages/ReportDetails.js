@@ -43,7 +43,13 @@ const ReportDetails = () => {
 
       {/* تاريخ الإنشاء */}
       <p style={{ color: '#888', marginBottom: 16 }}>
-        {report.createdAt ? new Date(report.createdAt).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' }) : ''}
+        {report.createdAt
+          ? new Date(report.createdAt).toLocaleDateString('ar-EG', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })
+          : ''}
       </p>
 
       {/* المحتوى */}
@@ -66,7 +72,7 @@ const ReportDetails = () => {
             color: '#fff',
             borderRadius: 6,
             textDecoration: 'none',
-            fontWeight: 'bold'
+            fontWeight: 'bold',
           }}
         >
           تحميل التقرير PDF
