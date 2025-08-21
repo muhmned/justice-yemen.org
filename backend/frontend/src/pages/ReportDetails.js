@@ -9,10 +9,15 @@ const ReportDetails = () => {
   useEffect(() => {
     const fetchReport = async () => {
       try {
+        console.log("📌 جلب التقرير بالـ id:", id); // ✅ تتبع
+
         const response = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/reports/${id}`);
         if (response.ok) {
           const data = await response.json();
+          console.log("📊 البيانات القادمة من السيرفر:", data); // ✅ تتبع
           setReport(data);
+        } else {
+          console.error("❌ لم يتم العثور على التقرير. الكود:", response.status);
         }
       } catch (error) {
         console.error('خطأ في جلب التقرير:', error);
