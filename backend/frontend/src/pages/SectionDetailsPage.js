@@ -40,16 +40,13 @@ const SectionDetailsPage = () => {
         if (response.ok) {
           const data = await response.json();
 
-          // ✅ فلترة المقالات بالقسم فقط (بدون فلترة status)
+          // ✅ فلترة المقالات لتكون خاصة بهذا القسم فقط
           const sectionArticles = Array.isArray(data)
-            ? data.filter(article =>
-                (
-                  article.sectionId === section.id ||
-                  article.sectionId === section._id ||
-                  article.sectionId?._id === section.id ||
-                  article.sectionId?._id === section._id
-                )
-              )
+            ? data.filter(article => {
+                const articleSectionId =
+                  article.sectionId?.id || article.sectionId?._id || article.sectionId || null;
+                return articleSectionId && section.id && articleSectionId === section.id;
+              })
             : [];
 
           setArticles(sectionArticles);
