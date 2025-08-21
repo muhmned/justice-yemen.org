@@ -219,16 +219,19 @@ async function deleteReport(req, res) {
 async function getReportById(req, res) {
   const { id } = req.params;
   try {
-    const report = await prisma.report.findUnique({ where: { id: parseInt(id) } });
+    // ✅ إزالة parseInt لأن id عندك نص (cuid)
+    const report = await prisma.report.findUnique({ where: { id } });
+
     if (!report) {
       return res.status(404).json({ error: 'التقرير غير موجود' });
     }
+
     res.json(report);
   } catch (err) {
+    console.error('❌ خطأ في getReportById:', err);
     res.status(500).json({ error: 'حدث خطأ أثناء جلب التقرير' });
   }
 }
-
 // GET /api/reports/search
 async function searchReports(req, res) {
   const { q } = req.query;
