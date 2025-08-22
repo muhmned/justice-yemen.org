@@ -193,8 +193,7 @@ const res = await fetch(`${process.env.REACT_APP_API_URL}/api/reports/${id}`, {
       )}
       <div style={{ maxWidth: 700, margin: '0 auto', background: '#fff', padding: 24, borderRadius: 12, boxShadow: '0 2px 8px #eee' }}>
         <h2 style={{ marginBottom: 24 }}>تعديل تقرير</h2>
-        <Form layout="vertical" form={form} onFinish={handleSubmit}>
-          <Form.Item label="العنوان" required>
+        <Form layout="vertical" form={form} onFinish={() => handleSubmit()}>          <Form.Item label="العنوان" required>
             <Input value={title} onChange={e => setTitle(e.target.value)} placeholder="عنوان التقرير" />
           </Form.Item>
           <Form.Item label="الملخص" required>
