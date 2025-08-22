@@ -135,12 +135,15 @@ const res = await fetch(`${process.env.REACT_APP_API_URL}/api/reports/${id}`, {
         },
         body: JSON.stringify({
           ...values,
+          title,
+          summary,
           content: fixedContent,
           pdfUrl,
           thumbnail: imageUrl,
           publishDate: date ? date.toISOString() : new Date().toISOString(),
           status: 'draft'
         })
+        
       });
       const data = await res.json();
       if (!res.ok) {
