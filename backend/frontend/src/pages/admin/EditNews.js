@@ -46,7 +46,9 @@ const EditNews = () => {
         setNews(newsData);
 
         if (newsData.image) {
-          const imageUrl = `${process.env.REACT_APP_API_URL}${newsData.image}`;
+          const imageUrl = newsData.image.startsWith('http')
+            ? newsData.image
+            : `${process.env.REACT_APP_API_URL}${newsData.image}`;
           setImagePreview(imageUrl);
           console.log('تم تعيين صورة الخبر الحالية:', imageUrl);
         } else {
@@ -151,7 +153,6 @@ const EditNews = () => {
       const res = await fetch(`${process.env.REACT_APP_API_URL}/api/news/${id}`, {
         method: 'PUT',
         headers: {
-          // اترك Content-Type ليتم تعيين boundary تلقائياً
           Authorization: `Bearer ${token}`
         },
         body: formData
@@ -283,12 +284,20 @@ const EditNews = () => {
               <Button icon={<UploadOutlined />}>اختر صورة</Button>
             </Upload>
           </div>
+          
+          {/* ✅ التعديل هنا */}
           {(imagePreview || news.image) && (
             <div style={{ marginTop: '8px' }}>
               <img 
-                src={imagePreview || `${process.env.REACT_APP_API_URL}${news.image}`}
+                src={
+                  imagePreview
+                    ? imagePreview
+                    : news.image.startsWith('http')
+                    ? news.image
+                    : `${process.env.REACT_APP_API_URL || ''}${news.image}`
+                }
                 alt="معاينة الصورة"
-                style={{ maxWidth: '100%', maxHeight: 200, objectFit: 'cover', borderRadius: 8 }}
+                style={{ maxWidth: '100%', maxHeight: 200, objectFit: 'cover', borderRadius: 8, border: '1px solid #ddd' }}
               />
             </div>
           )}

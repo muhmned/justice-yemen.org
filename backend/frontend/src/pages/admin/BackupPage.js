@@ -37,7 +37,6 @@ const BackupPage = () => {
       console.error('Error fetching backups:', error);
     }
   };
-
   const handleBackup = async () => {
     setLoading(true);
     setMessage('');
@@ -83,6 +82,20 @@ const BackupPage = () => {
       if (response.ok) {
         setMessage(data.message);
         setMessageType('success');
+  
+        // 🟢 تنزيل النسخة الاحتياطية كملف (نافذة حفظ باسم)
+        if (data.backupFileContent) {
+          const blob = new Blob([data.backupFileContent], { type: 'application/json' });
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = data.filename || "backup.json"; // اسم النسخة
+          document.body.appendChild(a);
+          a.click(); // هنا المتصفح يفتح نافذة الحفظ
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+        }
+  
         fetchBackups(); // تحديث القائمة
         setTimeout(() => {
           setCurrentStep(1);
@@ -104,6 +117,7 @@ const BackupPage = () => {
       setLoading(false);
     }
   };
+  
 
   const handleImport = async () => {
     if (!importFile) {

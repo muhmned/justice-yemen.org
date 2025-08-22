@@ -8,29 +8,18 @@ const execAsync = util.promisify(exec);
 export const backupDatabase = async (req, res) => {
   try {
     const { type = 'full' } = req.body;
-    
-    // التحقق من صحة نوع النسخة الاحتياطية
+
     if (!['full', 'tables', 'sections'].includes(type)) {
       return res.status(400).json({ error: 'نوع النسخة الاحتياطية غير صالح' });
     }
-    
-    // التحقق من وجود المستخدم
+
     if (!req.user || !req.user.id) {
       return res.status(401).json({ error: 'غير مصرح لك بإنشاء نسخ احتياطية' });
     }
-    
-    // إنشاء مجلد النسخ الاحتياطية إذا لم يكن موجوداً
-    const backupDir = path.join(__dirname, '../../backups');
-    await fs.mkdir(backupDir, { recursive: true });
-    
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const backupFileName = `backup-${type}-${timestamp}.json`;
-    const backupPath = path.join(backupDir, backupFileName);
-    
+
     let backupData = {};
-    
+
     if (type === 'full') {
-      // نسخ احتياطية كاملة لجميع الجداول
       backupData = {
         users: await prisma.user.findMany(),
         sections: await prisma.section.findMany(),
@@ -52,7 +41,6 @@ export const backupDatabase = async (req, res) => {
         }
       };
     } else if (type === 'tables') {
-      // نسخ احتياطية للجداول الرئيسية فقط
       backupData = {
         users: await prisma.user.findMany(),
         sections: await prisma.section.findMany(),
@@ -67,7 +55,6 @@ export const backupDatabase = async (req, res) => {
         }
       };
     } else if (type === 'sections') {
-      // نسخ احتياطية للأقسام والمقالات فقط
       backupData = {
         sections: await prisma.section.findMany(),
         categories: await prisma.category.findMany(),
@@ -79,28 +66,16 @@ export const backupDatabase = async (req, res) => {
         }
       };
     }
-    
-    // حفظ النسخة الاحتياطية
-    await fs.writeFile(backupPath, JSON.stringify(backupData, null, 2));
-    
-    // تسجيل النشاط
-    await prisma.activityLog.create({
-      data: {
-        userId: req.user.id,
-        action: 'backup_created',
-        details: `Created ${type} backup: ${backupFileName}`,
-        actionType: 'system',
-        status: 'success'
-      }
-    });
-    
-    res.json({ 
+
+    const filename = `backup-${type}-${Date.now()}.json`;
+
+    // ✅ رجع البيانات مباشرة للفرونت
+    res.json({
       message: 'تم إنشاء النسخة الاحتياطية بنجاح',
-      filename: backupFileName,
-      type: type,
-      timestamp: new Date().toISOString()
+      filename,
+      backupFileContent: JSON.stringify(backupData, null, 2)
     });
-    
+
   } catch (error) {
     console.error('Backup error:', error);
     res.status(500).json({ error: 'فشل في إنشاء النسخة الاحتياطية: ' + error.message });
