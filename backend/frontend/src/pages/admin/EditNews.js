@@ -79,55 +79,21 @@ const EditNews = () => {
     }
   }, [news, loading, form]);
 
-  // مراقبة تغييرات imagePreview للتأكد من التحديث
-  useEffect(() => {
-    console.log('imagePreview changed:', imagePreview);
-  }, [imagePreview]);
+
 
   const handleImageChange = (info) => {
-    console.log('handleImageChange called:', info);
-    
-    // التحقق من وجود ملف في fileList
-    if (info.fileList && info.fileList.length > 0) {
-      let file = info.fileList[0].originFileObj || info.fileList[0];
-      console.log('Selected file:', file);
-      
-      // محاولة بديلة للحصول على الملف
-      if (!file && info.file) {
-        file = info.file.originFileObj || info.file;
-        console.log('Using alternative file:', file);
-      }
-      
-      if (file && file.type && !file.type.startsWith('image/')) {
+    if (info.file && info.file.originFileObj) {
+      const file = info.file.originFileObj;
+      if (!file.type.startsWith('image/')) {
         message.error('يسمح فقط بملفات الصور');
         return;
       }
-      
-      if (file && file.size && file.size > 2 * 1024 * 1024) {
+      if (file.size > 2 * 1024 * 1024) {
         message.error('حجم الصورة يجب ألا يتجاوز 2 ميجابايت');
         return;
       }
-      
-      if (file && file instanceof File) {
-        setImageFile(file);
-        const previewUrl = URL.createObjectURL(file);
-        console.log('Setting preview URL:', previewUrl);
-        setImagePreview(previewUrl);
-      } else {
-        console.log('File is not valid:', file);
-        // محاولة أخيرة باستخدام info.file مباشرة
-        if (info.file && info.file instanceof File) {
-          console.log('Using info.file directly');
-          setImageFile(info.file);
-          const previewUrl = URL.createObjectURL(info.file);
-          setImagePreview(previewUrl);
-        }
-      }
-    } else if (info.fileList && info.fileList.length === 0) {
-      // عند إزالة الصورة
-      console.log('Removing image');
-      setImageFile(null);
-      setImagePreview('');
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
     }
   };
 
