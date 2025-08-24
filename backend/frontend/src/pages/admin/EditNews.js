@@ -82,6 +82,7 @@ const EditNews = () => {
 
 
   const handleImageChange = (info) => {
+    // عند اختيار صورة جديدة
     if (info.file && info.file.originFileObj) {
       const file = info.file.originFileObj;
       if (!file.type.startsWith('image/')) {
@@ -94,6 +95,12 @@ const EditNews = () => {
       }
       setImageFile(file);
       setImagePreview(URL.createObjectURL(file));
+    }
+    
+    // عند إزالة الصورة (عندما يكون fileList فارغ)
+    if (info.fileList && info.fileList.length === 0) {
+      setImageFile(null);
+      setImagePreview('');
     }
   };
 
@@ -116,12 +123,18 @@ const EditNews = () => {
       formData.append('content', editorContent);
       formData.append('status', values.status);
 
+      // إرسال الصورة الجديدة إذا تم اختيارها
       if (imageFile) {
         formData.append('image', imageFile);
-      } else if (!imagePreview && news.image) {
-        // لو حذف الصورة وكانت موجودة أصلاً
+      }
+      
+      // إرسال removeImage إذا تم حذف الصورة وكانت موجودة أصلاً
+      // أو إذا لم يتم اختيار صورة جديدة وكانت هناك صورة قديمة
+      if (!imageFile && news.image && !imagePreview) {
         formData.append('removeImage', 'true');
       }
+      
+      // إذا لم يتم تغيير الصورة، لا نرسل أي شيء (الصورة القديمة تبقى)
 
       const res = await fetch(`${process.env.REACT_APP_API_URL}/api/news/${id}`, {
         method: 'PUT',
@@ -281,6 +294,18 @@ const EditNews = () => {
                   border: '1px solid #d9d9d9'
                 }}
               />
+              <Button
+                type="text"
+                danger
+                size="small"
+                style={{ marginTop: '4px' }}
+                onClick={() => {
+                  setImageFile(null);
+                  setImagePreview('');
+                }}
+              >
+                إزالة الصورة الحالية
+              </Button>
             </div>
           )}
 
@@ -313,6 +338,14 @@ const EditNews = () => {
                     e.stopPropagation();
                     setImageFile(null);
                     setImagePreview('');
+                    // إعادة تعيين Upload component
+                    const uploadElement = e.target.closest('.ant-upload');
+                    if (uploadElement) {
+                      const input = uploadElement.querySelector('input[type="file"]');
+                      if (input) {
+                        input.value = '';
+                      }
+                    }
                   }}
                 >
                   ×
