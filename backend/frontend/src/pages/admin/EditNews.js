@@ -17,13 +17,9 @@ const EditNews = () => {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  console.log('EditNews - ID:', id);
-
   const loadNews = useCallback(async () => {
     try {
       setLoading(true);
-      console.log('جاري تحميل الخبر:', id);
-
       const token = localStorage.getItem('admin_token');
       if (!token) {
         message.error('يجب تسجيل الدخول أولاً');
@@ -37,12 +33,8 @@ const EditNews = () => {
         }
       });
 
-      console.log('استجابة جلب الخبر:', res.status, res.statusText);
-
       if (res.ok) {
         const newsData = await res.json();
-        console.log('بيانات الخبر:', newsData);
-
         setNews(newsData);
 
         if (newsData.image) {
@@ -50,14 +42,9 @@ const EditNews = () => {
             ? newsData.image
             : `${process.env.REACT_APP_API_URL}${newsData.image}`;
           setImagePreview(imageUrl);
-          console.log('تم تعيين صورة الخبر الحالية:', imageUrl);
-        } else {
-          console.log('الخبر لا يحتوي على صورة');
         }
       } else {
         const errorData = await res.json();
-        console.error('خطأ في جلب الخبر:', errorData);
-
         if (res.status === 404) {
           message.error('الخبر غير موجود');
         } else if (res.status === 401) {
@@ -68,7 +55,6 @@ const EditNews = () => {
         }
       }
     } catch (error) {
-      console.error('خطأ في تحميل الخبر:', error);
       message.error('تعذر الاتصال بالخادم: ' + error.message);
     } finally {
       setLoading(false);
@@ -93,22 +79,7 @@ const EditNews = () => {
     }
   }, [news, loading, form]);
 
-  if (!id) {
-    console.error('لا يوجد ID للخبر');
-    return (
-      <div style={{ textAlign: 'center', padding: '50px' }}>
-        <h2>خطأ في تحميل الخبر</h2>
-        <p>لم يتم تحديد معرف الخبر</p>
-        <Button type="primary" onClick={() => navigate('/admin/news')}>
-          العودة لقائمة الأخبار
-        </Button>
-      </div>
-    );
-  }
-
   const handleImageChange = (info) => {
-    console.log('تغيير الصورة:', info);
-
     if (info.file && info.file.originFileObj) {
       const file = info.file.originFileObj;
       if (!file.type.startsWith('image/')) {
@@ -125,8 +96,6 @@ const EditNews = () => {
   };
 
   const handleSubmit = async (values) => {
-    console.log('تشغيل handleSubmit', values, imageFile);
-
     const editorContent = content;
     const plainTextContent = editorContent.replace(/<[^>]+>/g, '').trim();
 
@@ -139,8 +108,6 @@ const EditNews = () => {
 
     try {
       const token = localStorage.getItem('admin_token');
-
-      // ✅ إرسال Multipart FormData مباشرة إلى /api/news/:id
       const formData = new FormData();
       formData.append('title', values.title);
       formData.append('summary', values.summary);
@@ -170,12 +137,23 @@ const EditNews = () => {
         message.error(errorMsg);
       }
     } catch (err) {
-      console.log('خطأ في fetch:', err);
       message.error('تعذر الاتصال بالخادم');
     } finally {
       setLoading(false);
     }
   };
+
+  if (!id) {
+    return (
+      <div style={{ textAlign: 'center', padding: '50px' }}>
+        <h2>خطأ في تحميل الخبر</h2>
+        <p>لم يتم تحديد معرف الخبر</p>
+        <Button type="primary" onClick={() => navigate('/admin/news')}>
+          العودة لقائمة الأخبار
+        </Button>
+      </div>
+    );
+  }
 
   if (loading && !news) {
     return (
@@ -278,17 +256,12 @@ const EditNews = () => {
           />
         </Form.Item>
 
+        {/* ✅ إدارة الصور مثل المقالات */}
         <Form.Item label="الصورة الرئيسية">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <Upload beforeUpload={() => false} onChange={handleImageChange} maxCount={1} accept="image/*" showUploadList={false}>
-              <Button icon={<UploadOutlined />}>اختر صورة</Button>
-            </Upload>
-          </div>
-          
-          {/* ✅ التعديل هنا */}
-          {(imagePreview || news.image) && (
-            <div style={{ marginTop: '8px' }}>
-              <img 
+          {(imagePreview || news.image) && !imageFile && (
+            <div style={{ marginBottom: '8px' }}>
+              <p style={{ fontSize: '12px', color: '#666' }}>الصورة الحالية:</p>
+              <img
                 src={
                   imagePreview
                     ? imagePreview
@@ -296,11 +269,59 @@ const EditNews = () => {
                     ? news.image
                     : `${process.env.REACT_APP_API_URL || ''}${news.image}`
                 }
-                alt="معاينة الصورة"
-                style={{ maxWidth: '100%', maxHeight: 200, objectFit: 'cover', borderRadius: 8, border: '1px solid #ddd' }}
+                alt="صورة الخبر الحالية"
+                style={{
+                  width: '100%',
+                  height: '150px',
+                  objectFit: 'cover',
+                  borderRadius: '8px',
+                  border: '1px solid #d9d9d9'
+                }}
               />
             </div>
           )}
+
+          <Upload
+            name="image"
+            listType="picture-card"
+            showUploadList={false}
+            beforeUpload={() => false}
+            onChange={handleImageChange}
+          >
+            {imagePreview ? (
+              <div style={{ position: 'relative' }}>
+                <img
+                  src={imagePreview}
+                  alt="preview"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+                <Button
+                  type="text"
+                  danger
+                  size="small"
+                  style={{
+                    position: 'absolute',
+                    top: '5px',
+                    right: '5px',
+                    background: 'rgba(255,255,255,0.8)',
+                    border: 'none'
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setImageFile(null);
+                    setImagePreview(null);
+                  }}
+                >
+                  ×
+                </Button>
+              </div>
+            ) : (
+              <div>
+                <UploadOutlined />
+                <div style={{ marginTop: 8 }}>رفع صورة</div>
+              </div>
+            )}
+          </Upload>
         </Form.Item>
 
         <Form.Item>
