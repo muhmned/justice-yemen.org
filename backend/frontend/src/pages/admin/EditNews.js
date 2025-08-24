@@ -92,6 +92,10 @@ const EditNews = () => {
       }
       setImageFile(file);
       setImagePreview(URL.createObjectURL(file));
+    } else if (info.fileList && info.fileList.length === 0) {
+      // عند إزالة الصورة
+      setImageFile(null);
+      setImagePreview('');
     }
   };
 
@@ -116,8 +120,8 @@ const EditNews = () => {
 
       if (imageFile) {
         formData.append('image', imageFile);
-      } else if (!imagePreview) {
-        // لو حذف الصورة
+      } else if (!imagePreview && news.image) {
+        // لو حذف الصورة وكانت موجودة أصلاً
         formData.append('removeImage', 'true');
       }
 
@@ -261,14 +265,12 @@ const EditNews = () => {
         </Form.Item>
 
         <Form.Item label="الصورة الرئيسية">
-          {(imagePreview || news.image) && !imageFile && (
+          {news.image && !imageFile && (
             <div style={{ marginBottom: '8px' }}>
               <p style={{ fontSize: '12px', color: '#666' }}>الصورة الحالية:</p>
               <img
                 src={
-                  imagePreview
-                    ? imagePreview
-                    : news.image.startsWith('http')
+                  news.image.startsWith('http')
                     ? news.image
                     : `${process.env.REACT_APP_API_URL}${news.image}`
                 }
@@ -312,7 +314,7 @@ const EditNews = () => {
                   onClick={(e) => {
                     e.stopPropagation();
                     setImageFile(null);
-                    setImagePreview(null);
+                    setImagePreview('');
                   }}
                 >
                   ×
