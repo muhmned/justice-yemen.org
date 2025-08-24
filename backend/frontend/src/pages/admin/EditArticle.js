@@ -1,19 +1,19 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Form, Input, Select, Button, Upload, message, Card, Row, Col, Spin } from 'antd';
-import { UploadOutlined, ArrowLeftOutlined } from '@ant-design/icons';
+import { UploadOutlined, ArrowLeftOutlined, SearchOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Editor } from '@tinymce/tinymce-react';
 
 const { Option } = Select;
 const { TextArea } = Input;
 
-const EditNews = () => {
+const EditArticle = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(true);
-  const [news, setNews] = useState(null);
-  const [categories, setCategories] = useState([]);
+  const [article, setArticle] = useState(null);
+  const [sections, setSections] = useState([]);
   const [content, setContent] = useState('');
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
@@ -27,7 +27,7 @@ const EditNews = () => {
     return cleaned;
   };
 
-  const loadNews = useCallback(async () => {
+  const loadArticle = useCallback(async () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('admin_token');
@@ -37,23 +37,23 @@ const EditNews = () => {
         return;
       }
 
-      const res = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/news/${id}`, {
+      const res = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/articles/${id}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
       if (res.ok) {
-        const newsData = await res.json();
-        setNews(newsData);
-        setContent(cleanContent(newsData.content || ''));
+        const articleData = await res.json();
+        setArticle(articleData);
+        setContent(cleanContent(articleData.content || ''));
 
-        if (newsData.image) {
-          const imageUrl = newsData.image.startsWith('http')
-            ? newsData.image
-            : `${process.env.REACT_APP_API_URL || ''}${newsData.image}`;
+        if (articleData.image) {
+          const imageUrl = articleData.image.startsWith('http')
+            ? articleData.image
+            : `${process.env.REACT_APP_API_URL || ''}${articleData.image}`;
           setImagePreview(imageUrl);
         }
       } else {
-        message.error('تعذر جلب الخبر');
+        message.error('تعذر جلب المقال');
       }
     } catch (error) {
       message.error('تعذر الاتصال بالخادم: ' + error.message);
@@ -62,20 +62,20 @@ const EditNews = () => {
     }
   }, [id, navigate]);
 
-  const fetchCategories = async () => {
+  const fetchSections = async () => {
     try {
       const token = localStorage.getItem('admin_token');
       if (!token) {
         navigate('/admin/login');
         return;
       }
-      const res = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/news-categories/active`, {
+      const res = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/sections/active`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
       if (res.ok) {
         const data = await res.json();
-        setCategories(Array.isArray(data) ? data : []);
+        setSections(Array.isArray(data) ? data : []);
       }
     } catch (error) {
       console.error(error);
@@ -84,20 +84,20 @@ const EditNews = () => {
 
   useEffect(() => {
     if (id) {
-      fetchCategories();
-      loadNews();
+      fetchSections();
+      loadArticle();
     }
-  }, [id, loadNews]);
+  }, [id, loadArticle]);
 
   useEffect(() => {
-    if (news && !loading) {
+    if (article && !loading) {
       form.setFieldsValue({
-        title: news.title,
-        content: cleanContent(news.content || ''),
-        categoryId: news.categoryId
+        title: article.title,
+        content: cleanContent(article.content || ''),
+        sectionId: article.sectionId
       });
     }
-  }, [news, loading, form]);
+  }, [article, loading, form]);
 
   const handleImageChange = (info) => {
     if (info.file && info.file.originFileObj) {
@@ -128,24 +128,24 @@ const EditNews = () => {
       const formData = new FormData();
       formData.append('title', values.title);
       formData.append('content', content);
-      formData.append('categoryId', values.categoryId);
+      formData.append('sectionId', values.sectionId);
 
       if (imageFile) {
         formData.append('image', imageFile);
       }
 
-      const res = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/news/${id}`, {
+      const res = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/articles/${id}`, {
         method: 'PUT',
         headers: { Authorization: `Bearer ${token}` },
         body: formData
       });
 
       if (res.ok) {
-        message.success('تم تحديث الخبر بنجاح');
-        navigate('/admin/news');
+        message.success('تم تحديث المقال بنجاح');
+        navigate('/admin/articles');
       } else {
         const errorData = await res.json();
-        message.error(errorData.error || 'تعذر تحديث الخبر');
+        message.error(errorData.error || 'تعذر تحديث المقال');
       }
     } catch (error) {
       message.error('تعذر الاتصال بالخادم: ' + error.message);
@@ -154,21 +154,21 @@ const EditNews = () => {
     }
   };
 
-  if (loading && !news) {
+  if (loading && !article) {
     return (
       <div style={{ textAlign: 'center', padding: '50px' }}>
         <Spin size="large" />
-        <p>جاري تحميل الخبر...</p>
+        <p>جاري تحميل المقال...</p>
       </div>
     );
   }
 
-  if (!news && !loading) {
+  if (!article && !loading) {
     return (
       <div style={{ textAlign: 'center', padding: '50px' }}>
-        <h2>الخبر غير موجود</h2>
-        <Button type="primary" onClick={() => navigate('/admin/news')}>
-          العودة لقائمة الأخبار
+        <h2>المقال غير موجود</h2>
+        <Button type="primary" onClick={() => navigate('/admin/articles')}>
+          العودة لقائمة المقالات
         </Button>
       </div>
     );
@@ -181,11 +181,11 @@ const EditNews = () => {
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Button 
               icon={<ArrowLeftOutlined />} 
-              onClick={() => navigate('/admin/news')}
+              onClick={() => navigate('/admin/articles')}
             >
               عودة
             </Button>
-            تعديل الخبر
+            تعديل المقال
           </div>
         }
       >
@@ -193,27 +193,27 @@ const EditNews = () => {
           form={form}
           layout="vertical"
           onFinish={handleSubmit}
-          initialValues={{ title: '', content: '', categoryId: '' }}
+          initialValues={{ title: '', content: '', sectionId: '' }}
         >
           <Row gutter={24}>
             <Col span={16}>
               <Form.Item
                 name="title"
-                label="عنوان الخبر"
-                rules={[{ required: true, message: 'يرجى إدخال عنوان الخبر' }]}
+                label="عنوان المقال"
+                rules={[{ required: true, message: 'يرجى إدخال عنوان المقال' }]}
               >
-                <Input placeholder="أدخل عنوان الخبر" />
+                <Input placeholder="أدخل عنوان المقال" />
               </Form.Item>
 
               <Form.Item
-                name="categoryId"
-                label="الفئة"
-                rules={[{ required: true, message: 'يرجى اختيار الفئة' }]}
+                name="sectionId"
+                label="القسم"
+                rules={[{ required: true, message: 'يرجى اختيار القسم' }]}
               >
-                <Select placeholder="اختر الفئة">
-                  {categories.map(category => (
-                    <Option key={category.id} value={category.id}>
-                      {category.name}
+                <Select placeholder="اختر القسم">
+                  {sections.map(section => (
+                    <Option key={section.id} value={section.id}>
+                      {section.name}
                     </Option>
                   ))}
                 </Select>
@@ -221,8 +221,8 @@ const EditNews = () => {
 
               <Form.Item
                 name="content"
-                label="محتوى الخبر"
-                rules={[{ required: true, message: 'يرجى إدخال محتوى الخبر' }]}
+                label="محتوى المقال"
+                rules={[{ required: true, message: 'يرجى إدخال محتوى المقال' }]}
               >
                 <Editor
                   licenseKey="gpl"
@@ -248,19 +248,19 @@ const EditNews = () => {
             </Col>
 
             <Col span={8}>
-              <Form.Item label="صورة الخبر">
-                {(imagePreview || news.image) && !imageFile && (
+              <Form.Item label="صورة المقال">
+                {(imagePreview || article.image) && !imageFile && (
                   <div style={{ marginBottom: '8px' }}>
                     <p style={{ fontSize: '12px', color: '#666' }}>الصورة الحالية:</p>
                     <img
                       src={
                         imagePreview
                           ? imagePreview
-                          : news.image.startsWith('http')
-                          ? news.image
-                          : `${process.env.REACT_APP_API_URL || ''}${news.image}`
+                          : article.image.startsWith('http')
+                          ? article.image
+                          : `${process.env.REACT_APP_API_URL || ''}${article.image}`
                       }
-                      alt="صورة الخبر الحالية"
+                      alt="صورة المقال الحالية"
                       style={{
                         width: '100%',
                         height: '150px',
@@ -319,9 +319,9 @@ const EditNews = () => {
 
           <Form.Item style={{ marginTop: '24px', textAlign: 'center' }}>
             <Button type="primary" htmlType="submit" loading={loading} size="large" style={{ marginRight: '8px' }}>
-              تحديث الخبر
+              تحديث المقال
             </Button>
-            <Button onClick={() => navigate('/admin/news')} size="large">
+            <Button onClick={() => navigate('/admin/articles')} size="large">
               إلغاء
             </Button>
           </Form.Item>
@@ -331,4 +331,4 @@ const EditNews = () => {
   );
 };
 
-export default EditNews;
+export default EditArticle;
