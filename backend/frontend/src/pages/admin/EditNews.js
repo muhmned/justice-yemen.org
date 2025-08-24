@@ -80,8 +80,10 @@ const EditNews = () => {
   }, [news, loading, form]);
 
   const handleImageChange = (info) => {
+    console.log('handleImageChange called:', info);
     if (info.file && info.file.originFileObj) {
       const file = info.file.originFileObj;
+      console.log('Selected file:', file);
       if (!file.type.startsWith('image/')) {
         message.error('يسمح فقط بملفات الصور');
         return;
@@ -91,9 +93,12 @@ const EditNews = () => {
         return;
       }
       setImageFile(file);
-      setImagePreview(URL.createObjectURL(file));
+      const previewUrl = URL.createObjectURL(file);
+      console.log('Setting preview URL:', previewUrl);
+      setImagePreview(previewUrl);
     } else if (info.fileList && info.fileList.length === 0) {
       // عند إزالة الصورة
+      console.log('Removing image');
       setImageFile(null);
       setImagePreview('');
     }
@@ -293,6 +298,7 @@ const EditNews = () => {
             beforeUpload={() => false}
             onChange={handleImageChange}
           >
+            {console.log('Rendering upload area, imagePreview:', imagePreview)}
             {imagePreview ? (
               <div style={{ position: 'relative' }}>
                 <img
