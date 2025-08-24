@@ -117,7 +117,7 @@ const EditNews = () => {
       if (imageFile) {
         formData.append('image', imageFile);
       } else if (!imagePreview) {
-        // إذا حذف الصورة
+        // لو حذف الصورة
         formData.append('removeImage', 'true');
       }
 
@@ -260,7 +260,7 @@ const EditNews = () => {
           />
         </Form.Item>
 
-        {/* ✅ إدارة الصور مع زر إزالة */}
+        {/* ✅ رفع صورة + زر إزالة */}
         <Form.Item label="الصورة الرئيسية">
           <Upload
             name="image"
@@ -270,19 +270,17 @@ const EditNews = () => {
             onChange={handleImageChange}
             maxCount={1}
           >
-            {imagePreview ? (
-              <div style={{ position: 'relative' }}>
-                <img
-                  src={imagePreview}
-                  alt="preview"
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
-              </div>
-            ) : (
+            {!imagePreview ? (
               <div>
                 <UploadOutlined />
                 <div style={{ marginTop: 8 }}>رفع صورة</div>
               </div>
+            ) : (
+              <img
+                src={imagePreview}
+                alt="preview"
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
             )}
           </Upload>
 
