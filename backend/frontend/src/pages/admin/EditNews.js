@@ -17,14 +17,6 @@ const EditNews = () => {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  const cleanContent = (html) => {
-    if (!html) return '';
-    let cleaned = html.replace(/<script.*?>.*?<\/script>/gi, '');
-    cleaned = cleaned.replace(/<iframe.*?>.*?<\/iframe>/gi, '');
-    cleaned = cleaned.replace(/\s+/g, ' ').trim();
-    return cleaned;
-  };
-
   const loadNews = useCallback(async () => {
     try {
       setLoading(true);
@@ -42,7 +34,6 @@ const EditNews = () => {
       if (res.ok) {
         const newsData = await res.json();
         setNews(newsData);
-        setContent(cleanContent(newsData.content));
 
         if (newsData.image) {
           const imageUrl = newsData.image.startsWith('http')
@@ -52,14 +43,11 @@ const EditNews = () => {
         }
       } else {
         const errorData = await res.json();
-        if (res.status === 404) {
-          message.error('الخبر غير موجود');
-        } else if (res.status === 401) {
+        if (res.status === 404) message.error('الخبر غير موجود');
+        else if (res.status === 401) {
           message.error('يجب تسجيل الدخول أولاً');
           navigate('/admin/login');
-        } else {
-          message.error(errorData.error || 'تعذر جلب الخبر');
-        }
+        } else message.error(errorData.error || 'تعذر جلب الخبر');
       }
     } catch (error) {
       message.error('تعذر الاتصال بالخادم: ' + error.message);
@@ -68,45 +56,60 @@ const EditNews = () => {
     }
   }, [id, navigate]);
 
-  useEffect(() => { if (id) loadNews(); }, [id, loadNews]);
+  useEffect(() => {
+    if (id) loadNews();
+  }, [id, loadNews]);
 
   useEffect(() => {
     if (news && !loading) {
       form.setFieldsValue({
         title: news.title,
         summary: news.summary,
-        content: cleanContent(news.content),
+        content: news.content,
         status: news.status
       });
-      setContent(cleanContent(news.content));
+      setContent(news.content || '');
     }
   }, [news, loading, form]);
 
   const handleImageChange = (info) => {
     if (info.file && info.file.originFileObj) {
       const file = info.file.originFileObj;
-      if (!file.type.startsWith('image/')) { message.error('يسمح فقط بملفات الصور'); return; }
-      if (file.size > 2 * 1024 * 1024) { message.error('حجم الصورة يجب ألا يتجاوز 2 ميجابايت'); return; }
+      if (!file.type.startsWith('image/')) {
+        message.error('يسمح فقط بملفات الصور');
+        return;
+      }
+      if (file.size > 2 * 1024 * 1024) {
+        message.error('حجم الصورة يجب ألا يتجاوز 2 ميجابايت');
+        return;
+      }
       setImageFile(file);
       setImagePreview(URL.createObjectURL(file));
     }
   };
 
-  const handleSubmit = async (values) => {
-    const editorContent = cleanContent(content);
-    if (!editorContent.replace(/<[^>]+>/g, '').trim()) {
+  const handleSubmit = async () => {
+    const editorContent = content;
+    const plainTextContent = editorContent.replace(/<[^>]+>/g, '').trim();
+    if (!plainTextContent) {
       message.error('يرجى كتابة محتوى الخبر');
       return;
     }
 
+    if (!form.getFieldValue('title') || !form.getFieldValue('summary')) {
+      message.error('يرجى تعبئة جميع الحقول المطلوبة');
+      return;
+    }
+
     setLoading(true);
+
     try {
       const token = localStorage.getItem('admin_token');
       const formData = new FormData();
-      formData.append('title', values.title);
-      formData.append('summary', values.summary);
+      formData.append('title', form.getFieldValue('title'));
+      formData.append('summary', form.getFieldValue('summary'));
       formData.append('content', editorContent);
-      formData.append('status', values.status);
+      formData.append('status', form.getFieldValue('status'));
 
       if (imageFile) formData.append('image', imageFile);
       else if (!imagePreview) formData.append('removeImage', 'true');
@@ -122,33 +125,36 @@ const EditNews = () => {
         navigate('/admin/news');
       } else {
         let errorMsg = 'لم نستطع تحديث الخبر.';
-        try { const data = await res.json(); errorMsg = data.error || data.message || errorMsg; } catch {}
+        try {
+          const data = await res.json();
+          errorMsg = data.error || data.message || errorMsg;
+        } catch {}
         message.error(errorMsg);
       }
     } catch (err) {
       message.error('تعذر الاتصال بالخادم');
-    } finally { setLoading(false); }
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (!id) return (
-    <div style={{ textAlign: 'center', padding: 50 }}>
+    <div style={{ textAlign: 'center', padding: '50px' }}>
       <h2>خطأ في تحميل الخبر</h2>
-      <p>لم يتم تحديد معرف الخبر</p>
       <Button type="primary" onClick={() => navigate('/admin/news')}>العودة لقائمة الأخبار</Button>
     </div>
   );
 
   if (loading && !news) return (
-    <div style={{ textAlign: 'center', padding: 50 }}>
+    <div style={{ textAlign: 'center', padding: '50px' }}>
       <Spin size="large" />
       <p style={{ marginTop: 16 }}>جاري تحميل الخبر...</p>
     </div>
   );
 
   if (!news) return (
-    <div style={{ textAlign: 'center', padding: 50 }}>
+    <div style={{ textAlign: 'center', padding: '50px' }}>
       <h2>الخبر غير موجود</h2>
-      <p>لم يتم العثور على الخبر المطلوب</p>
       <Button type="primary" onClick={() => navigate('/admin/news')}>العودة لقائمة الأخبار</Button>
     </div>
   );
@@ -163,12 +169,12 @@ const EditNews = () => {
       <Form layout="vertical" form={form} onFinish={handleSubmit}>
         <Row gutter={16}>
           <Col span={16}>
-            <Form.Item label="عنوان الخبر" name="title" rules={[{ required: true, message: 'يرجى إدخال العنوان' }]}>
+            <Form.Item label="عنوان الخبر" name="title" rules={[{ required: true, message: 'يرجى إدخال العنوان' }]}> 
               <Input placeholder="عنوان الخبر" />
             </Form.Item>
           </Col>
           <Col span={8}>
-            <Form.Item label="حالة النشر" name="status">
+            <Form.Item label="حالة النشر" name="status"> 
               <Select placeholder="اختر حالة النشر">
                 <Option value="draft">مسودة</Option>
                 <Option value="published">منشور</Option>
@@ -177,30 +183,28 @@ const EditNews = () => {
           </Col>
         </Row>
 
-        <Form.Item label="ملخص الخبر" name="summary" rules={[{ required: true, message: 'يرجى إدخال الملخص' }]}>
+        <Form.Item label="ملخص الخبر" name="summary" rules={[{ required: true, message: 'يرجى إدخال الملخص' }]}> 
           <TextArea rows={3} maxLength={200} showCount />
         </Form.Item>
 
-        <Form.Item label="محتوى الخبر" name="content" rules={[{ required: true, message: 'يرجى كتابة محتوى الخبر' }]}>
+        <Form.Item label="محتوى الخبر" name="content" rules={[{ required: true, message: 'يرجى كتابة محتوى الخبر' }]}> 
           <Editor
             licenseKey="gpl"
             tinymceScriptSrc={process.env.PUBLIC_URL + '/tinymce/tinymce.min.js'}
             value={content}
-            onEditorChange={(newContent) => { setContent(newContent); form.setFieldsValue({ content: newContent }); }}
+            onEditorChange={(newContent) => setContent(newContent)}
             init={{
-              plugins: ['advlist','autolink','lists','link','image','charmap','preview','anchor',
-                        'searchreplace','visualblocks','fullscreen','insertdatetime','media','table',
-                        'help','wordcount','code','emoticons','hr','pagebreak','nonbreaking','directionality'],
-              toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough forecolor backcolor | ' +
-                       'alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | ' +
-                       'removeformat | link image media table | code fullscreen preview | ltr rtl | emoticons',
+              plugins: [
+                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview', 'anchor',
+                'searchreplace', 'visualblocks', 'fullscreen', 'insertdatetime', 'media', 'table',
+                'help', 'wordcount', 'code', 'emoticons', 'hr', 'pagebreak', 'nonbreaking', 'directionality'
+              ],
+              toolbar:
+                'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough forecolor backcolor | ' +
+                'alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | ' +
+                'removeformat | link image media table | code fullscreen preview | ltr rtl | emoticons',
               paste_data_images: false,
               images_dataimg_filter: () => false,
-              language: 'ar',
-              directionality: 'rtl',
-              height: 400,
-              content_style: 'body { font-family:Tahoma,Arial,sans-serif; font-size:16px }',
-              images_upload_url: `${process.env.REACT_APP_API_URL}/api/upload`,
               images_upload_handler: async (blobInfo, success, failure) => {
                 const formData = new FormData();
                 formData.append('file', blobInfo.blob());
@@ -212,10 +216,16 @@ const EditNews = () => {
                     body: formData
                   });
                   const data = await res.json();
-                  if (data && data.url) success(data.url);
+                  if (data && data.url) success(data.url.replace(/^\.\.\//, '/'));
                   else failure('فشل رفع الصورة');
-                } catch { failure('فشل الاتصال بالخادم'); }
+                } catch {
+                  failure('فشل الاتصال بالخادم');
+                }
               },
+              language: 'ar',
+              directionality: 'rtl',
+              height: 400,
+              content_style: 'body { font-family:Tahoma,Arial,sans-serif; font-size:16px }',
             }}
           />
         </Form.Item>
@@ -223,24 +233,32 @@ const EditNews = () => {
         <Form.Item label="الصورة الرئيسية">
           <Upload
             name="image"
-            listType="picture-card"
+            accept="image/*"
+            maxCount={1}
             showUploadList={false}
             beforeUpload={() => false}
             onChange={handleImageChange}
-            maxCount={1}
           >
-            {!imagePreview ? (
-              <div>
-                <UploadOutlined />
-                <div style={{ marginTop: 8 }}>رفع صورة</div>
-              </div>
-            ) : (
-              <img src={imagePreview} alt="preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            )}
+            <Button type="primary">{imagePreview ? 'تغيير الصورة' : 'رفع صورة'}</Button>
           </Upload>
+
           {imagePreview && (
             <div style={{ marginTop: 8 }}>
-              <Button type="text" danger size="small" onClick={() => { setImageFile(null); setImagePreview(null); }}>
+              <img
+                src={imagePreview}
+                alt="معاينة الصورة"
+                style={{
+                  maxWidth: '100%',
+                  maxHeight: 200,
+                  objectFit: 'cover',
+                  borderRadius: 8,
+                  border: '1px solid #d9d9d9'
+                }}
+              />
+              <Button type="text" danger size="small" onClick={() => {
+                setImageFile(null);
+                setImagePreview(null);
+              }}>
                 إزالة
               </Button>
             </div>
