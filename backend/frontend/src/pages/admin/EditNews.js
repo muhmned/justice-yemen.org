@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Form, Input, Select, Button, Upload, message, Card, Row, Col, Spin } from 'antd';
+import { Form, Input, Select, Button, Upload, message, Row, Col, Spin } from 'antd';
 import { UploadOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Editor } from '@tinymce/tinymce-react';
@@ -113,8 +113,12 @@ const EditNews = () => {
       formData.append('summary', values.summary);
       formData.append('content', editorContent);
       formData.append('status', values.status);
+
       if (imageFile) {
         formData.append('image', imageFile);
+      } else if (!imagePreview) {
+        // إذا حذف الصورة
+        formData.append('removeImage', 'true');
       }
 
       const res = await fetch(`${process.env.REACT_APP_API_URL}/api/news/${id}`, {
@@ -256,37 +260,15 @@ const EditNews = () => {
           />
         </Form.Item>
 
-        {/* ✅ إدارة الصور مثل المقالات */}
+        {/* ✅ إدارة الصور مع زر إزالة */}
         <Form.Item label="الصورة الرئيسية">
-          {(imagePreview || news.image) && !imageFile && (
-            <div style={{ marginBottom: '8px' }}>
-              <p style={{ fontSize: '12px', color: '#666' }}>الصورة الحالية:</p>
-              <img
-                src={
-                  imagePreview
-                    ? imagePreview
-                    : news.image.startsWith('http')
-                    ? news.image
-                    : `${process.env.REACT_APP_API_URL || ''}${news.image}`
-                }
-                alt="صورة الخبر الحالية"
-                style={{
-                  width: '100%',
-                  height: '150px',
-                  objectFit: 'cover',
-                  borderRadius: '8px',
-                  border: '1px solid #d9d9d9'
-                }}
-              />
-            </div>
-          )}
-
           <Upload
             name="image"
             listType="picture-card"
             showUploadList={false}
             beforeUpload={() => false}
             onChange={handleImageChange}
+            maxCount={1}
           >
             {imagePreview ? (
               <div style={{ position: 'relative' }}>
@@ -295,25 +277,6 @@ const EditNews = () => {
                   alt="preview"
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 />
-                <Button
-                  type="text"
-                  danger
-                  size="small"
-                  style={{
-                    position: 'absolute',
-                    top: '5px',
-                    right: '5px',
-                    background: 'rgba(255,255,255,0.8)',
-                    border: 'none'
-                  }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setImageFile(null);
-                    setImagePreview(null);
-                  }}
-                >
-                  ×
-                </Button>
               </div>
             ) : (
               <div>
@@ -322,6 +285,22 @@ const EditNews = () => {
               </div>
             )}
           </Upload>
+
+          {imagePreview && (
+            <div style={{ marginTop: 8 }}>
+              <Button
+                type="text"
+                danger
+                size="small"
+                onClick={() => {
+                  setImageFile(null);
+                  setImagePreview(null);
+                }}
+              >
+                إزالة
+              </Button>
+            </div>
+          )}
         </Form.Item>
 
         <Form.Item>
