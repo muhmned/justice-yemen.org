@@ -11,7 +11,6 @@ const EditNews = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [news, setNews] = useState(null);
-  const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
   const [content, setContent] = useState('');
   const navigate = useNavigate();
@@ -79,31 +78,6 @@ const EditNews = () => {
     }
   }, [news, loading, form]);
 
-
-
-  const handleImageChange = (info) => {
-    // عند اختيار صورة جديدة
-    if (info.file && info.file.originFileObj) {
-      const file = info.file.originFileObj;
-      if (!file.type.startsWith('image/')) {
-        message.error('يسمح فقط بملفات الصور');
-        return;
-      }
-      if (file.size > 2 * 1024 * 1024) {
-        message.error('حجم الصورة يجب ألا يتجاوز 2 ميجابايت');
-        return;
-      }
-      setImageFile(file);
-      setImagePreview(URL.createObjectURL(file));
-    }
-    
-    // عند إزالة الصورة (عندما يكون fileList فارغ)
-    if (info.fileList && info.fileList.length === 0) {
-      setImageFile(null);
-      setImagePreview('');
-    }
-  };
-
   const handleSubmit = async (values) => {
     const editorContent = content;
     const plainTextContent = editorContent.replace(/<[^>]+>/g, '').trim();
@@ -117,31 +91,21 @@ const EditNews = () => {
 
     try {
       const token = localStorage.getItem('admin_token');
-      const formData = new FormData();
-      formData.append('title', values.title);
-      formData.append('summary', values.summary);
-      formData.append('content', editorContent);
-      formData.append('status', values.status);
-
-      // إرسال الصورة الجديدة إذا تم اختيارها
-      if (imageFile) {
-        formData.append('image', imageFile);
-      }
-      
-      // إرسال removeImage إذا تم حذف الصورة وكانت موجودة أصلاً
-      // أو إذا لم يتم اختيار صورة جديدة وكانت هناك صورة قديمة
-      if (!imageFile && news.image && !imagePreview) {
-        formData.append('removeImage', 'true');
-      }
-      
-      // إذا لم يتم تغيير الصورة، لا نرسل أي شيء (الصورة القديمة تبقى)
+      const body = {
+        title: values.title,
+        summary: values.summary,
+        content: editorContent,
+        status: values.status,
+        image: imagePreview || null, // نرسل الرابط بدال الملف
+      };
 
       const res = await fetch(`${process.env.REACT_APP_API_URL}/api/news/${id}`, {
         method: 'PUT',
         headers: {
-          Authorization: `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
         },
-        body: formData
+        body: JSON.stringify(body),
       });
 
       if (res.ok) {
@@ -276,81 +240,28 @@ const EditNews = () => {
         </Form.Item>
 
         <Form.Item label="الصورة الرئيسية">
-          {news.image && !imageFile && (
-            <div style={{ marginBottom: '8px' }}>
-              <p style={{ fontSize: '12px', color: '#666' }}>الصورة الحالية:</p>
-              <img
-                src={
-                  news.image.startsWith('http')
-                    ? news.image
-                    : `${process.env.REACT_APP_API_URL}${news.image}`
-                }
-                alt="صورة الخبر الحالية"
-                style={{
-                  width: '100%',
-                  height: '150px',
-                  objectFit: 'cover',
-                  borderRadius: '8px',
-                  border: '1px solid #d9d9d9'
-                }}
-              />
-              <Button
-                type="text"
-                danger
-                size="small"
-                style={{ marginTop: '4px' }}
-                onClick={() => {
-                  setImageFile(null);
-                  setImagePreview('');
-                }}
-              >
-                إزالة الصورة الحالية
-              </Button>
-            </div>
-          )}
-
           <Upload
-            name="image"
+            name="file"
             listType="picture-card"
             showUploadList={false}
-            beforeUpload={() => false}
-            onChange={handleImageChange}
+            action={`${process.env.REACT_APP_API_URL}/api/upload`}
+            headers={{ Authorization: `Bearer ${localStorage.getItem('admin_token')}` }}
+            onChange={(info) => {
+              if (info.file.status === 'done') {
+                const url = info.file.response.url;
+                setImagePreview(url);
+                message.success('تم رفع الصورة بنجاح');
+              } else if (info.file.status === 'error') {
+                message.error('فشل رفع الصورة');
+              }
+            }}
           >
             {imagePreview ? (
-              <div style={{ position: 'relative' }}>
-                <img
-                  src={imagePreview}
-                  alt="preview"
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
-                <Button
-                  type="text"
-                  danger
-                  size="small"
-                  style={{
-                    position: 'absolute',
-                    top: '5px',
-                    right: '5px',
-                    background: 'rgba(255,255,255,0.8)',
-                    border: 'none'
-                  }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setImageFile(null);
-                    setImagePreview('');
-                    // إعادة تعيين Upload component
-                    const uploadElement = e.target.closest('.ant-upload');
-                    if (uploadElement) {
-                      const input = uploadElement.querySelector('input[type="file"]');
-                      if (input) {
-                        input.value = '';
-                      }
-                    }
-                  }}
-                >
-                  ×
-                </Button>
-              </div>
+              <img
+                src={imagePreview}
+                alt="preview"
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
             ) : (
               <div>
                 <UploadOutlined />
@@ -358,6 +269,17 @@ const EditNews = () => {
               </div>
             )}
           </Upload>
+          {imagePreview && (
+            <Button
+              type="text"
+              danger
+              size="small"
+              style={{ marginTop: '8px' }}
+              onClick={() => setImagePreview('')}
+            >
+              إزالة الصورة
+            </Button>
+          )}
         </Form.Item>
 
         <Form.Item>
