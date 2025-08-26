@@ -99,37 +99,29 @@ const EditArticle = () => {
     }
   }, [article, loading, form]);
 
-  const handleImageChange = (info) => {
-    if (info.file && info.file.originFileObj) {
-      const file = info.file.originFileObj;
-      if (!file.type.startsWith('image/')) {
-        message.error('يسمح فقط بملفات الصور');
-        return;
-      }
-      if (file.size > 5 * 1024 * 1024) {
-        message.error('حجم الصورة يجب ألا يتجاوز 5 ميجابايت');
-        return;
-      }
-      setImageFile(file);
-      setImagePreview(URL.createObjectURL(file));
-    }
-  };
+
 
   const handleSubmit = async (values) => {
-    try {
-      setLoading(true);
-      const token = localStorage.getItem('admin_token');
-      if (!token) {
-        message.error('يجب تسجيل الدخول أولاً');
-        navigate('/admin/login');
-        return;
-      }
+    const editorContent = content;
+    const plainTextContent = editorContent.replace(/<[^>]+>/g, '').trim();
 
+    if (!plainTextContent) {
+      message.error('يرجى كتابة محتوى المقال');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const token = localStorage.getItem('admin_token');
+      
+      // إنشاء FormData لإرسال البيانات والملفات
       const formData = new FormData();
       formData.append('title', values.title);
-      formData.append('content', content);
+      formData.append('content', editorContent);
       formData.append('sectionId', values.sectionId);
-
+      
+      // إذا كان هناك صورة جديدة، أضفها للـ FormData
       if (imageFile) {
         formData.append('image', imageFile);
       } else if (imagePreview && !imagePreview.startsWith('blob:')) {
@@ -139,22 +131,26 @@ const EditArticle = () => {
 
       const res = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/articles/${id}`, {
         method: 'PUT',
-        headers: { 
-          Authorization: `Bearer ${token}`,
+        headers: {
+          'Authorization': `Bearer ${token}`,
           // لا تقم بتحديد Content-Type يدوياً حتى يُضاف boundary تلقائياً
         },
-        body: formData
+        body: formData,
       });
 
       if (res.ok) {
-        message.success('تم تحديث المقال بنجاح');
+        message.success('تم تحديث المقال بنجاح!');
         navigate('/admin/articles');
       } else {
-        const errorData = await res.json();
-        message.error(errorData.error || 'تعذر تحديث المقال');
+        let errorMsg = 'لم نستطع تحديث المقال.';
+        try {
+          const data = await res.json();
+          errorMsg = data.error || data.message || errorMsg;
+        } catch {}
+        message.error(errorMsg);
       }
-    } catch (error) {
-      message.error('تعذر الاتصال بالخادم: ' + error.message);
+    } catch (err) {
+      message.error('تعذر الاتصال بالخادم');
     } finally {
       setLoading(false);
     }
@@ -282,36 +278,42 @@ const EditArticle = () => {
                   name="image"
                   listType="picture-card"
                   showUploadList={false}
-                  beforeUpload={() => false}
-                  onChange={handleImageChange}
+                  beforeUpload={(file) => {
+                    // التحقق من نوع الملف
+                    if (!file.type.startsWith('image/')) {
+                      message.error('يسمح فقط بملفات الصور');
+                      return false;
+                    }
+                    
+                    // التحقق من حجم الملف (5MB)
+                    if (file.size > 5 * 1024 * 1024) {
+                      message.error('حجم الصورة يجب ألا يتجاوز 5 ميجابايت');
+                      return false;
+                    }
+                    
+                    // حفظ الملف وعرض الصورة
+                    setImageFile(file);
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                      setImagePreview(e.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                    
+                    return false; // منع الرفع التلقائي
+                  }}
+                  onChange={(info) => {
+                    if (info.file.status === 'removed') {
+                      setImagePreview('');
+                      setImageFile(null);
+                    }
+                  }}
                 >
                   {imagePreview ? (
-                    <div style={{ position: 'relative' }}>
-                      <img
-                        src={imagePreview}
-                        alt="preview"
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      />
-                      <Button
-                        type="text"
-                        danger
-                        size="small"
-                        style={{
-                          position: 'absolute',
-                          top: '5px',
-                          right: '5px',
-                          background: 'rgba(255,255,255,0.8)',
-                          border: 'none'
-                        }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setImageFile(null);
-                          setImagePreview(null);
-                        }}
-                      >
-                        ×
-                      </Button>
-                    </div>
+                    <img
+                      src={imagePreview}
+                      alt="preview"
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
                   ) : (
                     <div>
                       <UploadOutlined />
@@ -319,6 +321,20 @@ const EditArticle = () => {
                     </div>
                   )}
                 </Upload>
+                {imagePreview && (
+                  <Button
+                    type="text"
+                    danger
+                    size="small"
+                    style={{ marginTop: '8px' }}
+                    onClick={() => {
+                      setImagePreview('');
+                      setImageFile(null);
+                    }}
+                  >
+                    إزالة الصورة
+                  </Button>
+                )}
               </Form.Item>
             </Col>
           </Row>
