@@ -12,6 +12,7 @@ const EditNews = () => {
   const [loading, setLoading] = useState(false);
   const [news, setNews] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
+  const [imageFile, setImageFile] = useState(null);
   const [content, setContent] = useState('');
   const navigate = useNavigate();
   const { id } = useParams();
@@ -91,21 +92,29 @@ const EditNews = () => {
 
     try {
       const token = localStorage.getItem('admin_token');
-      const body = {
-        title: values.title,
-        summary: values.summary,
-        content: editorContent,
-        status: values.status,
-        image: imagePreview || null, // نرسل الرابط بدال الملف
-      };
+      
+      // إنشاء FormData لإرسال البيانات والملفات
+      const formData = new FormData();
+      formData.append('title', values.title);
+      formData.append('summary', values.summary);
+      formData.append('content', editorContent);
+      formData.append('status', values.status);
+      
+      // إذا كان هناك صورة جديدة، أضفها للـ FormData
+      if (imageFile) {
+        formData.append('image', imageFile);
+      } else if (imagePreview && !imagePreview.startsWith('blob:')) {
+        // إذا كانت الصورة رابط موجود، أضفها كـ URL
+        formData.append('image', imagePreview);
+      }
 
       const res = await fetch(`${process.env.REACT_APP_API_URL}/api/news/${id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          // لا تقم بتحديد Content-Type يدوياً حتى يُضاف boundary تلقائياً
         },
-        body: JSON.stringify(body),
+        body: formData,
       });
 
       if (res.ok) {
@@ -241,18 +250,36 @@ const EditNews = () => {
 
         <Form.Item label="الصورة الرئيسية">
           <Upload
-            name="file"
+            name="image"
             listType="picture-card"
             showUploadList={false}
-            action={`${process.env.REACT_APP_API_URL}/api/upload`}
-            headers={{ Authorization: `Bearer ${localStorage.getItem('admin_token')}` }}
+            beforeUpload={(file) => {
+              // التحقق من نوع الملف
+              if (!file.type.startsWith('image/')) {
+                message.error('يسمح فقط بملفات الصور');
+                return false;
+              }
+              
+              // التحقق من حجم الملف (5MB)
+              if (file.size > 5 * 1024 * 1024) {
+                message.error('حجم الصورة يجب ألا يتجاوز 5 ميجابايت');
+                return false;
+              }
+              
+              // حفظ الملف وعرض الصورة
+              setImageFile(file);
+              const reader = new FileReader();
+              reader.onload = (e) => {
+                setImagePreview(e.target.result);
+              };
+              reader.readAsDataURL(file);
+              
+              return false; // منع الرفع التلقائي
+            }}
             onChange={(info) => {
-              if (info.file.status === 'done') {
-                const url = info.file.response.url;
-                setImagePreview(url);
-                message.success('تم رفع الصورة بنجاح');
-              } else if (info.file.status === 'error') {
-                message.error('فشل رفع الصورة');
+              if (info.file.status === 'removed') {
+                setImagePreview('');
+                setImageFile(null);
               }
             }}
           >
@@ -275,7 +302,10 @@ const EditNews = () => {
               danger
               size="small"
               style={{ marginTop: '8px' }}
-              onClick={() => setImagePreview('')}
+              onClick={() => {
+                setImagePreview('');
+                setImageFile(null);
+              }}
             >
               إزالة الصورة
             </Button>

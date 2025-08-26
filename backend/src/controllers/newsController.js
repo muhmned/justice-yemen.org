@@ -10,7 +10,7 @@ async function createNews(req, res) {
 
     console.log('إنشاء خبر جديد');
     console.log('البيانات المرسلة:', { title, summary, content, status });
-    console.log('الملف المرفوع:', req.file);
+    console.log('الملفات المرفوعة:', req.files);
 
     // تحقق من الحقول المطلوبة
     if (!title || !summary || !content) {
@@ -45,27 +45,33 @@ async function createNews(req, res) {
 
     // التحقق من الصورة (اختياري)
     let imageUrl = null;
-    if (req.file) {
-      console.log('تم رفع صورة جديدة:', req.file.originalname);
-      console.log('نوع الملف:', req.file.mimetype);
-      console.log('حجم الملف:', req.file.size);
-      
-      // التحقق من نوع الملف
-      if (!allowedImageTypes.includes(req.file.mimetype)) {
-        console.log('نوع الملف غير مدعوم:', req.file.mimetype);
-        return res.status(400).json({ 
-          error: 'نوع الصورة غير مدعوم (jpg, png, webp فقط)' 
-        });
-      }
+    
+    // معالجة الملفات المرفوعة (إذا كانت ملفات فعلية)
+    if (req.files) {
+      console.log('Processing uploaded files...');
       
       try {
-        // استخدام storageProvider لرفع الملف
-        imageUrl = await uploadFile(req.file);
-        console.log('تم رفع الصورة بنجاح:', imageUrl);
+        if (req.files.image && req.files.image[0]) {
+          console.log('تم رفع صورة جديدة:', req.files.image[0].originalname);
+          console.log('نوع الملف:', req.files.image[0].mimetype);
+          console.log('حجم الملف:', req.files.image[0].size);
+          
+          // التحقق من نوع الملف
+          if (!allowedImageTypes.includes(req.files.image[0].mimetype)) {
+            console.log('نوع الملف غير مدعوم:', req.files.image[0].mimetype);
+            return res.status(400).json({ 
+              error: 'نوع الصورة غير مدعوم (jpg, png, webp فقط)' 
+            });
+          }
+          
+          // استخدام storageProvider لرفع الملف
+          imageUrl = await uploadFile(req.files.image[0]);
+          console.log('تم رفع الصورة بنجاح:', imageUrl);
+        }
       } catch (uploadError) {
-        console.error('خطأ في رفع الصورة:', uploadError);
+        console.error('خطأ في رفع الملفات:', uploadError);
         return res.status(500).json({ 
-          error: 'فشل في رفع الصورة: ' + uploadError.message 
+          error: 'فشل في رفع الملفات: ' + uploadError.message 
         });
       }
     } else {
@@ -145,11 +151,11 @@ async function getNewsById(req, res) {
 async function updateNews(req, res) {
   try {
     const { id } = req.params;
-    const { title, summary, content, status } = req.body;
+    const { title, summary, content, status, image } = req.body;
     
     console.log('تحديث الخبر:', id);
-    console.log('البيانات المرسلة:', { title, summary, content, status });
-    console.log('الملف المرفوع:', req.file);
+    console.log('البيانات المرسلة:', { title, summary, content, status, image });
+    console.log('الملفات المرفوعة:', req.files);
     
     // تحقق من وجود الخبر
     const existingNews = await prisma.news.findUnique({
@@ -185,31 +191,43 @@ async function updateNews(req, res) {
     
     // التحقق من الصورة (اختياري)
     let imageUrl = existingNews.image;
-    if (req.file) {
-      console.log('تم رفع صورة جديدة:', req.file.originalname);
-      console.log('نوع الملف:', req.file.mimetype);
-      console.log('حجم الملف:', req.file.size);
-      
-      // التحقق من نوع الملف
-      if (!allowedImageTypes.includes(req.file.mimetype)) {
-        console.log('نوع الملف غير مدعوم:', req.file.mimetype);
-        return res.status(400).json({ 
-          error: 'نوع الصورة غير مدعوم (jpg, png, webp فقط)' 
-        });
-      }
+    
+    // معالجة الملفات المرفوعة (إذا كانت ملفات فعلية)
+    if (req.files) {
+      console.log('Processing uploaded files...');
       
       try {
-        // استخدام storageProvider لرفع الملف
-        imageUrl = await uploadFile(req.file);
-        console.log('تم رفع الصورة الجديدة بنجاح:', imageUrl);
+        if (req.files.image && req.files.image[0]) {
+          console.log('تم رفع صورة جديدة:', req.files.image[0].originalname);
+          console.log('نوع الملف:', req.files.image[0].mimetype);
+          console.log('حجم الملف:', req.files.image[0].size);
+          
+          // التحقق من نوع الملف
+          if (!allowedImageTypes.includes(req.files.image[0].mimetype)) {
+            console.log('نوع الملف غير مدعوم:', req.files.image[0].mimetype);
+            return res.status(400).json({ 
+              error: 'نوع الصورة غير مدعوم (jpg, png, webp فقط)' 
+            });
+          }
+          
+          // استخدام storageProvider لرفع الملف
+          imageUrl = await uploadFile(req.files.image[0]);
+          console.log('تم رفع الصورة الجديدة بنجاح:', imageUrl);
+        }
       } catch (uploadError) {
-        console.error('خطأ في رفع الصورة:', uploadError);
+        console.error('خطأ في رفع الملفات:', uploadError);
         return res.status(500).json({ 
-          error: 'فشل في رفع الصورة: ' + uploadError.message 
+          error: 'فشل في رفع الملفات: ' + uploadError.message 
         });
       }
     } else {
-      console.log('لم يتم رفع صورة جديدة، الاحتفاظ بالصورة الحالية:', imageUrl);
+      // استخدام URL من request body إذا لم يتم رفع ملف جديد
+      if (image !== undefined) {
+        imageUrl = image;
+        console.log('استخدام URL من request body:', imageUrl);
+      } else {
+        console.log('لم يتم رفع صورة جديدة، الاحتفاظ بالصورة الحالية:', imageUrl);
+      }
     }
     
     // تحديث الخبر
