@@ -106,8 +106,8 @@ const EditArticle = () => {
         message.error('يسمح فقط بملفات الصور');
         return;
       }
-      if (file.size > 2 * 1024 * 1024) {
-        message.error('حجم الصورة يجب ألا يتجاوز 2 ميجابايت');
+      if (file.size > 5 * 1024 * 1024) {
+        message.error('حجم الصورة يجب ألا يتجاوز 5 ميجابايت');
         return;
       }
       setImageFile(file);
@@ -132,11 +132,17 @@ const EditArticle = () => {
 
       if (imageFile) {
         formData.append('image', imageFile);
+      } else if (imagePreview && !imagePreview.startsWith('blob:')) {
+        // إذا كانت الصورة رابط موجود، أضفها كـ URL
+        formData.append('image', imagePreview);
       }
 
       const res = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/articles/${id}`, {
         method: 'PUT',
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          // لا تقم بتحديد Content-Type يدوياً حتى يُضاف boundary تلقائياً
+        },
         body: formData
       });
 

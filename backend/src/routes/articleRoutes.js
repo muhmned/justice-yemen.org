@@ -10,7 +10,7 @@ const router = express.Router();
 const upload = multer({ 
   storage: multer.memoryStorage(),
   fileFilter: (req, file, cb) => {
-    console.log('معالجة ملف:', file.originalname, 'نوع:', file.mimetype);
+    console.log('معالجة ملف مقال:', file.originalname, 'نوع:', file.mimetype);
     
     // التحقق من نوع الملف
     if (file.mimetype.startsWith('image/')) {
@@ -22,27 +22,31 @@ const upload = multer({
     }
   },
   limits: {
-    fileSize: 2 * 1024 * 1024 // 2MB
+    fileSize: 5 * 1024 * 1024 // 5MB للمقالات
   }
 });
 
 // Routes for articles - ترتيب المسارات مهم!
 router.get('/', getAllArticles); // جلب جميع المقالات (عام)
-router.post('/', authenticateToken, requireRole(['editor', 'admin', 'system_admin']), upload.single('image'), logActivity('create_article', 'content', (req) => `Article created: ${req.body.title}`), createArticle); // إضافة مقال جديد
+router.post('/', authenticateToken, requireRole(['editor', 'admin', 'system_admin']), upload.fields([
+  { name: 'image', maxCount: 1 }
+]), logActivity('create_article', 'content', (req) => `Article created: ${req.body.title}`), createArticle); // إضافة مقال جديد
 router.get('/:id', getArticleById); // جلب مقال محدد (عام)
-router.put('/:id', authenticateToken, requireRole(['editor', 'admin', 'system_admin']), upload.single('image'), logActivity('update_article', 'content', (req) => `Article updated: ${req.body.title}`), updateArticle); // تحديث مقال
+router.put('/:id', authenticateToken, requireRole(['editor', 'admin', 'system_admin']), upload.fields([
+  { name: 'image', maxCount: 1 }
+]), logActivity('update_article', 'content', (req) => `Article updated: ${req.body.title}`), updateArticle); // تحديث مقال
 router.delete('/:id', authenticateToken, requireRole(['editor', 'admin', 'system_admin']), logActivity('delete_article', 'content', (req) => `Article deleted: ID ${req.params.id}`), deleteArticle); // حذف مقال
 
 // معالجة أخطاء multer
 router.use((error, req, res, next) => {
-  console.error('خطأ في رفع الملف:', error);
+  console.error('خطأ في رفع ملف مقال:', error);
   
   if (error instanceof multer.MulterError) {
     console.error('خطأ Multer:', error.code, error.message);
     
     if (error.code === 'LIMIT_FILE_SIZE') {
       return res.status(400).json({ 
-        error: 'حجم الملف كبير جداً. الحد الأقصى 2 ميجابايت' 
+        error: 'حجم الملف كبير جداً. الحد الأقصى 5 ميجابايت' 
       });
     }
     
