@@ -28,13 +28,18 @@ const ContactUsPage = () => {
   useEffect(() => {
     const fetchContactInfo = async () => {
       try {
+        setIsLoading(true);
         const response = await fetch(`${process.env.REACT_APP_API_URL || ''}/api/contact/info`);
         if (response.ok) {
           const data = await response.json();
           setContactInfo(data);
+        } else {
+          console.error('فشل في جلب معلومات الاتصال:', response.status);
         }
       } catch (error) {
         console.error('خطأ في جلب معلومات الاتصال:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -181,8 +186,8 @@ const ContactUsPage = () => {
                   <PhoneOutlined className="info-icon" />
                   <div className="info-content">
                     <h3 className="info-title">الهاتف</h3>
-                    <a href="tel:04262918-771678010" className="info-value">
-                      04262918-771678010
+                    <a href={`tel:${contactInfo?.phone || '04262918-771678010'}`} className="info-value">
+                      {contactInfo?.phone || '04262918-771678010'}
                     </a>
                   </div>
                 </div>
@@ -191,8 +196,8 @@ const ContactUsPage = () => {
                   <MailOutlined className="info-icon" />
                   <div className="info-content">
                     <h3 className="info-title">البريد الإلكتروني</h3>
-                    <a href="mailto:justiceorganzation@gmail.com" className="info-value">
-                      justiceorganzation@gmail.com
+                    <a href={`mailto:${contactInfo?.email || 'justiceorganzation@gmail.com'}`} className="info-value">
+                      {contactInfo?.email || 'justiceorganzation@gmail.com'}
                     </a>
                   </div>
                 </div>
@@ -202,11 +207,17 @@ const ContactUsPage = () => {
                   <div className="info-content">
                     <h3 className="info-title">العنوان</h3>
                     <span className="info-value">
-                      اليمن-تعز-شارع جمال-خلف الكريمي-وسوق ديلوكس
+                      {contactInfo?.address || 'اليمن-تعز-شارع جمال-خلف الكريمي-وسوق ديلوكس'}
                     </span>
                   </div>
                 </div>
               </div>
+              
+              {contactInfo?.description && (
+                <div className="contact-description">
+                  <p>{contactInfo.description}</p>
+                </div>
+              )}
               
               <div className="contact-description">
                 <h3>ساعات العمل</h3>
