@@ -1,0 +1,70 @@
+name: Build & Deploy
+
+on:
+  push:
+    branches: [ main ]
+
+env:
+  DOMAIN: justice-yemen.org   # غيّر لدومينك
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Build frontend
+        working-directory: backend/frontend
+        env:
+          REACT_APP_API_URL: "https://${{ env.justice-yemen.org }}"
+        run: |
+          npm ci --legacy-peer-deps
+          npm run build
+
+      - name: Copy built frontend into backend/public
+        run: |
+          rm -rf backend/public || true
+          mkdir -p backend/public
+          cp -r backend/frontend/build/* backend/public/
+
+      - name: Install backend deps (optional: to check)
+        working-directory: backend
+        run: npm ci --legacy-peer-deps
+
+      - name: Pack release tarball
+        run: |
+          TAR=release-${{ github.sha }}.tar.gz
+          tar czf $TAR backend/
+          echo "TAR=$TAR" >> $GITHUB_ENV
+
+      # Option A: direct SCP to server (recommended for simplicity)
+      - name: Copy tar to server (SCP)
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.72.60.47.187}}
+          username: ${{ secrets.mohammed }}
+          key: ${{ secrets.ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAjZQrpUHhxqu830b3SznallPOP3I3AiI/6ITLkk6lb9 mohammed@72.60.47.187 }}
+          port: ${{ secrets.22 }}
+          source: ${{ env.TAR }}
+          target: /tmp/
+
+      - name: Run mohammed script on server (SSH)
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.72.60.47.187 }}
+          username: ${{ secrets.mohammed }}
+          key: ${{ secrets.ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAjZQrpUHhxqu830b3SznallPOP3I3AiI/6ITLkk6lb9 mohammed@72.60.47.187 }}
+          port: ${{ secrets.22 }}
+          script: |
+            # ensure deploy.sh is present and executable
+            if [ ! -f /home/mohammed/mohammed.sh ]; then
+              echo "ERROR: mohammed.sh not found. Please upload /home/mohammed/mohammed.sh first."
+              exit 2
+            fi
+            bash /home/mohammed/mohammed.sh /tmp/${{ env.TAR }}
