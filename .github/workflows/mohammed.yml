@@ -49,7 +49,14 @@ jobs:
         with:
           host: ${{ secrets.72.60.47.187}}
           username: ${{ secrets.mohammed }}
-          key: ${{ secrets.ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAjZQrpUHhxqu830b3SznallPOP3I3AiI/6ITLkk6lb9 mohammed@72.60.47.187 }}
+          key: ${{ secrets.-----BEGIN OPENSSH PRIVATE KEY-----
+b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
+QyNTUxOQAAACAI2UK6VB4carvN9G90s52pZTzj9yNwIiP+iEy5JOpW/QAAAJghBkiLIQZI
+iwAAAAtzc2gtZWQyNTUxOQAAACAI2UK6VB4carvN9G90s52pZTzj9yNwIiP+iEy5JOpW/Q
+AAAEDu9ejOJUJutktzp+3xrcBpYlU890nFyXqvluPXnAaPYAjZQrpUHhxqu830b3Sznall
+POP3I3AiI/6ITLkk6lb9AAAAFW1vaGFtbWVkQDcyLjYwLjQ3LjE4Nw==
+-----END OPENSSH PRIVATE KEY-----
+}}
           port: ${{ secrets.22 }}
           source: ${{ env.TAR }}
           target: /tmp/
@@ -59,8 +66,14 @@ jobs:
         with:
           host: ${{ secrets.72.60.47.187 }}
           username: ${{ secrets.mohammed }}
-          key: ${{ secrets.ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAjZQrpUHhxqu830b3SznallPOP3I3AiI/6ITLkk6lb9 mohammed@72.60.47.187 }}
-          port: ${{ secrets.22 }}
+          key: ${{ secrets.-----BEGIN OPENSSH PRIVATE KEY-----
+b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
+QyNTUxOQAAACAI2UK6VB4carvN9G90s52pZTzj9yNwIiP+iEy5JOpW/QAAAJghBkiLIQZI
+iwAAAAtzc2gtZWQyNTUxOQAAACAI2UK6VB4carvN9G90s52pZTzj9yNwIiP+iEy5JOpW/Q
+AAAEDu9ejOJUJutktzp+3xrcBpYlU890nFyXqvluPXnAaPYAjZQrpUHhxqu830b3Sznall
+POP3I3AiI/6ITLkk6lb9AAAAFW1vaGFtbWVkQDcyLjYwLjQ3LjE4Nw==
+-----END OPENSSH PRIVATE KEY-----
+}}         port: ${{ secrets.22 }}
           script: |
             # ensure deploy.sh is present and executable
             if [ ! -f /home/mohammed/mohammed.sh ]; then
