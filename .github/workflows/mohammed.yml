@@ -22,7 +22,7 @@ jobs:
       - name: Build frontend
         working-directory: backend/frontend
         env:
-          REACT_APP_API_URL: "https://${{ env.justice-yemen.org }}"
+          REACT_APP_API_URL: "https://${{ env.DOMAIN }}"
         run: |
           npm ci --legacy-peer-deps
           npm run build
@@ -33,7 +33,7 @@ jobs:
           mkdir -p backend/public
           cp -r backend/frontend/build/* backend/public/
 
-      - name: Install backend deps (optional: to check)
+      - name: Install backend deps
         working-directory: backend
         run: npm ci --legacy-peer-deps
 
@@ -43,39 +43,24 @@ jobs:
           tar czf $TAR backend/
           echo "TAR=$TAR" >> $GITHUB_ENV
 
-      # Option A: direct SCP to server (recommended for simplicity)
       - name: Copy tar to server (SCP)
         uses: appleboy/scp-action@master
         with:
-          host: ${{ secrets.72.60.47.187}}
-          username: ${{ secrets.mohammed }}
-          key: ${{ secrets.-----BEGIN OPENSSH PRIVATE KEY-----
-b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
-QyNTUxOQAAACAI2UK6VB4carvN9G90s52pZTzj9yNwIiP+iEy5JOpW/QAAAJghBkiLIQZI
-iwAAAAtzc2gtZWQyNTUxOQAAACAI2UK6VB4carvN9G90s52pZTzj9yNwIiP+iEy5JOpW/Q
-AAAEDu9ejOJUJutktzp+3xrcBpYlU890nFyXqvluPXnAaPYAjZQrpUHhxqu830b3Sznall
-POP3I3AiI/6ITLkk6lb9AAAAFW1vaGFtbWVkQDcyLjYwLjQ3LjE4Nw==
------END OPENSSH PRIVATE KEY-----
-}}
-          port: ${{ secrets.22 }}
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
           source: ${{ env.TAR }}
           target: /tmp/
 
-      - name: Run mohammed script on server (SSH)
+      - name: Run deploy script on server (SSH)
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.72.60.47.187 }}
-          username: ${{ secrets.mohammed }}
-          key: ${{ secrets.-----BEGIN OPENSSH PRIVATE KEY-----
-b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
-QyNTUxOQAAACAI2UK6VB4carvN9G90s52pZTzj9yNwIiP+iEy5JOpW/QAAAJghBkiLIQZI
-iwAAAAtzc2gtZWQyNTUxOQAAACAI2UK6VB4carvN9G90s52pZTzj9yNwIiP+iEy5JOpW/Q
-AAAEDu9ejOJUJutktzp+3xrcBpYlU890nFyXqvluPXnAaPYAjZQrpUHhxqu830b3Sznall
-POP3I3AiI/6ITLkk6lb9AAAAFW1vaGFtbWVkQDcyLjYwLjQ3LjE4Nw==
------END OPENSSH PRIVATE KEY-----
-}}         port: ${{ secrets.22 }}
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
           script: |
-            # ensure deploy.sh is present and executable
             if [ ! -f /home/mohammed/mohammed.sh ]; then
               echo "ERROR: mohammed.sh not found. Please upload /home/mohammed/mohammed.sh first."
               exit 2
