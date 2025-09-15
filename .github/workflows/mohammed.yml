@@ -53,7 +53,7 @@ jobs:
           source: ${{ env.TAR }}
           target: /tmp/
 
-      - name: Run deploy script on server (SSH)
+      - name: Run mohammed script on server (SSH)
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SERVER_HOST }}
